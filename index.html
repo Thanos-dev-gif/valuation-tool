@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Valuation Tool — Value Bridge Partners</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#060f1c;
+  --navy2:#0d1f2d;
+  --navy3:#1a3348;
+  --gold:#C9A227;
+  --gold2:#e8b830;
+  --red:#b91c1c;
+  --white:#fff;
+  --text:#e8edf2;
+  --text2:rgba(232,237,242,.6);
+  --text3:rgba(232,237,242,.35);
+  --serif:'DM Serif Display',Georgia,serif;
+  --sans:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--navy);color:var(--text);font-family:var(--sans);overflow-x:hidden}
+
+/* scroll offset so buttons land at the sign-in form inside the iframe */
+#tool{scroll-margin-top:0px}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,15,28,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-logo{font-family:var(--serif);font-size:20px;display:flex;align-items:baseline;gap:1px}
+.nav-logo span.va{color:#8b9aa8}.nav-logo span.lue{color:var(--red)}
+.nav-logo span.sub{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:3px;color:var(--text3);margin-left:8px;text-transform:uppercase}
+.nav-cta{padding:8px 22px;background:var(--gold);color:#060f1c;border:none;border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;letter-spacing:.04em;transition:background .2s}
+.nav-cta:hover{background:var(--gold2)}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:100px 40px 60px}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(185,28,28,.12) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(201,162,39,.08) 0%,transparent 50%),var(--navy)}
+.grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:60px 60px}
+.hero-content{position:relative;max-width:900px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.25);border-radius:100px;font-size:12px;font-weight:500;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:32px;animation:fadeUp .8s ease both}
+.hero-badge span{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:var(--serif);font-size:clamp(42px,7vw,84px);line-height:1.05;margin-bottom:24px;animation:fadeUp .8s .1s ease both}
+h1 em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:18px;font-weight:300;color:var(--text2);line-height:1.7;max-width:600px;margin:0 auto 44px;animation:fadeUp .8s .2s ease both}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .3s ease both}
+.btn-primary{padding:14px 36px;background:linear-gradient(135deg,var(--red),var(--gold));color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;letter-spacing:.04em;transition:opacity .2s,transform .2s}
+.btn-primary:hover{opacity:.88;transform:translateY(-2px)}
+.btn-outline{padding:14px 36px;background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.2);border-radius:8px;font-family:var(--sans);font-size:15px;font-weight:400;cursor:pointer;text-decoration:none;letter-spacing:.04em;transition:border-color .2s,transform .2s}
+.btn-outline:hover{border-color:rgba(255,255,255,.5);transform:translateY(-2px)}
+.hero-stats{display:flex;gap:48px;justify-content:center;margin-top:64px;padding-top:48px;border-top:1px solid rgba(255,255,255,.07);animation:fadeUp .8s .4s ease both}
+.stat{text-align:center}
+.stat-num{font-family:var(--serif);font-size:36px;color:var(--gold);line-height:1}
+.stat-label{font-size:12px;font-weight:400;color:var(--text3);margin-top:6px;letter-spacing:.06em;text-transform:uppercase}
+
+/* ── FEATURES ── */
+.section{padding:100px 40px;max-width:1200px;margin:0 auto}
+.section-label{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.section-title{font-family:var(--serif);font-size:clamp(32px,4vw,52px);line-height:1.1;margin-bottom:16px}
+.section-sub{font-size:16px;color:var(--text2);max-width:560px;line-height:1.7}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:56px}
+.feature-card{background:var(--navy2);padding:36px 32px;position:relative;overflow:hidden;transition:background .2s}
+.feature-card:hover{background:var(--navy3)}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--gold));opacity:0;transition:opacity .3s}
+.feature-card:hover::before{opacity:1}
+.feature-icon{width:44px;height:44px;border-radius:10px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.2);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.feature-icon svg{width:22px;height:22px;stroke:var(--gold);stroke-width:1.5;fill:none}
+.feature-title{font-size:16px;font-weight:600;margin-bottom:10px;color:var(--white)}
+.feature-desc{font-size:14px;color:var(--text2);line-height:1.7}
+
+/* ── HOW IT WORKS ── */
+.how-section{padding:100px 40px;background:var(--navy2)}
+.how-inner{max-width:1200px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:60px;position:relative}
+.steps::before{content:'';position:absolute;top:28px;left:12.5%;right:12.5%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.3}
+.step{padding:0 24px;text-align:center}
+.step-num{width:56px;height:56px;border-radius:50%;background:var(--navy);border:1px solid rgba(201,162,39,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-family:var(--serif);font-size:22px;color:var(--gold);position:relative;z-index:1}
+.step-title{font-size:15px;font-weight:600;margin-bottom:8px}
+.step-desc{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* ── METHODS ── */
+.methods-section{padding:100px 40px;max-width:1200px;margin:0 auto}
+.methods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:48px}
+.method-pill{padding:20px 24px;background:var(--navy2);border:1px solid rgba(255,255,255,.06);border-radius:10px;display:flex;align-items:center;gap:14px;transition:border-color .2s,transform .2s}
+.method-pill:hover{border-color:rgba(201,162,39,.3);transform:translateY(-2px)}
+.method-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.method-name{font-size:14px;font-weight:500}
+.method-sub{font-size:12px;color:var(--text3);margin-top:2px}
+
+/* ── TOOL EMBED ── */
+.embed-section{padding:80px 40px;background:var(--navy2)}
+.embed-inner{max-width:1400px;margin:0 auto}
+.embed-header{text-align:center;margin-bottom:48px}
+.embed-wrapper{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 40px 120px rgba(0,0,0,.6)}
+iframe{display:block;width:100%;height:1100px;border:none}
+
+/* ── CTA STRIP ── */
+.cta-strip{padding:100px 40px;text-align:center;position:relative;overflow:hidden}
+.cta-strip::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(201,162,39,.07) 0%,transparent 70%)}
+.cta-title{font-family:var(--serif);font-size:clamp(32px,4vw,52px);margin-bottom:16px;position:relative}
+.cta-sub{font-size:17px;color:var(--text2);margin-bottom:40px;max-width:500px;margin-left:auto;margin-right:auto;position:relative}
+
+/* ── FOOTER ── */
+footer{padding:40px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:gap}
+.footer-logo{font-family:var(--serif);font-size:16px}.footer-logo .va{color:#8b9aa8}.footer-logo .lue{color:var(--red)}
+footer p{font-size:12px;color:var(--text3)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  .features-grid{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr;gap:32px}
+  .steps::before{display:none}
+  .methods-grid{grid-template-columns:1fr 1fr}
+  .hero-stats{gap:24px}
+}
+@media(max-width:600px){
+  .features-grid,.methods-grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  nav{padding:0 20px}
+  .hero{padding:100px 20px 60px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="va">VA</span><span class="lue">LUE</span>
+    <span class="sub">Bridge Partners</span>
+  </div>
+  <a href="/valuation.html" class="nav-cta">Launch Tool</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="grid-lines"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span></span>Now Live — Free to Use</div>
+    <h1>Know What Your<br>Business Is <em>Worth</em></h1>
+    <p class="hero-sub">Institutional-grade business valuation in minutes. Nine IFRS-based methodologies, Argos Index benchmarking, and a professional report — built for SMEs.</p>
+    <div class="hero-btns">
+      <a href="/valuation.html" class="btn-primary">Launch Valuation Tool →</a>
+      <a href="#how" class="btn-outline">How it works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">9</div><div class="stat-label">Valuation Methods</div></div>
+      <div class="stat"><div class="stat-num">IFRS</div><div class="stat-label">Based Framework</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Free to Use</div></div>
+      <div class="stat"><div class="stat-num">PDF</div><div class="stat-label">Report Export</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section style="padding:100px 0;background:var(--navy)">
+  <div class="section">
+    <div class="reveal">
+      <div class="section-label">Why Value Bridge</div>
+      <h2 class="section-title">Valuation that works<br>for real businesses</h2>
+      <p class="section-sub">Most valuation tools are built for listed companies with analyst teams. We built this for everyone else.</p>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+        <div class="feature-title">9 Valuation Methods</div>
+        <div class="feature-desc">DCF, EBITDA multiples, revenue multiples, NAV, P/E, Market/Book, capitalised earnings, and practitioner ranges — all blended with industry-specific weights.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div>
+        <div class="feature-title">Argos Index Benchmarking</div>
+        <div class="feature-desc">Compare your multiples against real SME transaction data from the Argos Index — the leading reference for private company valuations in Europe.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="feature-title">IFRS Financial Statements</div>
+        <div class="feature-desc">Full income statement, balance sheet, and cash flow inputs — structured in accordance with IFRS principles for professional-grade accuracy.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg></div>
+        <div class="feature-title">Sensitivity Analysis</div>
+        <div class="feature-desc">WACC vs terminal growth heat maps and tornado charts show you exactly which assumptions move the needle most on your valuation.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg></div>
+        <div class="feature-title">Qualitative Scorecard</div>
+        <div class="feature-desc">Business quality, management strength, customer concentration, and market position are factored into the valuation through a structured scoring model.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <div class="feature-title">PDF Report Export</div>
+        <div class="feature-desc">Download a branded, professional valuation report ready to share with investors, advisers, or boards — no formatting required.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <div class="reveal" style="text-align:center">
+      <div class="section-label">Process</div>
+      <h2 class="section-title">Four steps to your valuation</h2>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Company & Industry</div>
+        <div class="step-desc">Enter your company details, select your industry, and define your business model.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Financial Data</div>
+        <div class="step-desc">Input three years of financials — income statement, balance sheet, and cash flows.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Assumptions & Scorecard</div>
+        <div class="step-desc">Set your WACC, growth assumptions, and complete the qualitative scorecard.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">Valuation & Report</div>
+        <div class="step-desc">Receive your blended valuation, peer benchmarking, and downloadable PDF report.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODS -->
+<section class="methods-section">
+  <div class="reveal">
+    <div class="section-label">Methodology</div>
+    <h2 class="section-title">Nine methods, one<br>blended answer</h2>
+    <p class="section-sub">Each method is weighted by industry profile. Zero or negative inputs are automatically excluded and weights renormalised.</p>
+  </div>
+  <div class="methods-grid reveal">
+    <div class="method-pill"><div class="method-dot"></div><div><div class="method-name">DCF Method</div><div class="method-sub">Discounted free cash flows + terminal value</div></div></div>
+    <div class="method-pill"><div class="method-dot"></div><div><div class="method-name">EBITDA Multiple</div><div class="method-sub">Adjusted EBITDA × sector multiple</div></div></div>
+    <div class="method-pill"><div class="method-dot"></div><div><div class="method-name">Revenue Multiple</div><div class="method-sub">Sales × industry revenue multiple</div></div></div>
+    <div class="method-pill"><div class="method-dot"></div><div><div class="method-name">EBIT Multiple</div><div class="method-sub">Operating profit × sector multiple</div></div></div>
+    <div class="method-pill"><div class="method-dot"></div><div><div class="method-name">P/E Multiple</div><div class="method-sub">Net profit × price-earnings ratio</div></div></div>
+    <div class="method-pill"><div class="method-dot"></div><div><div class="method-name">Net Asset Value</div><div class="method-sub">Assets minus liabilities (equity basis)</div></div></div>
+    <div class="method-pill"><div class="method-dot"></div><div><div class="method-name">Market / Book</div><div class="method-sub">Book equity × market-to-book multiple</div></div></div>
+    <div class="method-pill"><div class="method-dot"></div><div><div class="method-name">Capitalised Earnings</div><div class="method-sub">Adjusted EBITDA ÷ capitalisation rate</div></div></div>
+    <div class="method-pill"><div class="method-dot"></div><div><div class="method-name">Practitioner's Range</div><div class="method-sub">Industry low–high EBITDA multiple band</div></div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><span class="va">VA</span><span class="lue">LUE</span> BRIDGE PARTNERS</div>
+  <p>© 2025 Value Bridge Partners. For indicative purposes only — not financial advice.</p>
+</footer>
+
+<script>
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); }});
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
