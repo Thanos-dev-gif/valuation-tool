@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XNJSH8BKLH"></script>
+<!-- Google tag (gtag.js) — Value Bridge Partners · G-YQVQV6BRE0 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQVQV6BRE0"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-XNJSH8BKLH');
+  gtag('config', 'G-YQVQV6BRE0', {
+    send_page_view: true,
+    cookie_flags: 'SameSite=None;Secure',
+    stream_id: '14823451744'
+  });
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -294,14 +298,6 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
 .argos-chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 @media(max-width:900px){.argos-chart-row{grid-template-columns:1fr}.argos-kpi-row{grid-template-columns:1fr 1fr}}
 </style>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQVQV6BRE0"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag("js", new Date());
-  gtag("config", "G-YQVQV6BRE0");
-</script>
 </head>
 <body>
 
@@ -1474,6 +1470,7 @@ function updateHeader() {
 }
 
 // ═══ MAIN RECALC ═══
+let _lastFiredEV = 0;
 function recalc() {
   updateHeader();
   updateCalcRows();
@@ -1489,6 +1486,29 @@ function recalc() {
   else if (activePage === 'methods')    buildMethods(D);
   else if (activePage === 'dcf')        buildDCF(D);
   else if (activePage === 'sensitivity') buildSensitivity(D);
+
+  // ── GA4: valuation_complete — fires once per meaningful EV change ──
+  if (typeof gtag !== 'undefined' && D.blendedEV > 0) {
+    var evRounded = Math.round(D.blendedEV / 100000) * 100000; // bucket to nearest 100k
+    if (evRounded !== _lastFiredEV) {
+      _lastFiredEV = evRounded;
+      var currency = document.getElementById('currency')?.value || 'EUR';
+      var industry = document.getElementById('industry')?.value || '(not set)';
+      var _p = new URLSearchParams(window.location.search);
+      gtag('event', 'valuation_complete', {
+        send_to          : 'G-YQVQV6BRE0',
+        tool_name        : 'valuation-tool',
+        blended_ev       : D.blendedEV,
+        equity_value     : D.equityValue,
+        currency         : currency,
+        industry         : industry,
+        methods_active   : (D.allMethods || []).filter(function(m){ return m.active; }).length,
+        campaign         : _p.get('utm_campaign') || '(not set)',
+        source           : _p.get('utm_source')   || '(direct)',
+        language         : _p.get('hl')           || 'en'
+      });
+    }
+  }
 }
 
 function updateCalcRows() {
@@ -2925,6 +2945,22 @@ async function exportPDF() {
   btn.innerHTML = '<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg> Generating...';
   btn.disabled = true;
 
+  // ── GA4: pdf_download ──
+  if (typeof gtag !== 'undefined') {
+    var _D = gatherData();
+    var _p = new URLSearchParams(window.location.search);
+    gtag('event', 'pdf_download', {
+      send_to      : 'G-YQVQV6BRE0',
+      tool_name    : 'valuation-tool',
+      blended_ev   : _D.blendedEV || 0,
+      currency     : document.getElementById('currency')?.value || 'EUR',
+      industry     : document.getElementById('industry')?.value || '(not set)',
+      campaign     : _p.get('utm_campaign') || '(not set)',
+      source       : _p.get('utm_source')   || '(direct)',
+      language     : _p.get('hl')           || 'en'
+    });
+  }
+
   try {
     const jsPDF = await loadJsPDF();
     const D = gatherData();
@@ -3565,6 +3601,19 @@ function showMainApp(user) {
     argosScheduleRefresh();
     document.addEventListener('input',  e => { if (e.target.matches('input,select,textarea')) _schedSave(user); });
     document.addEventListener('change', e => { if (e.target.matches('select')) _schedSave(user); });
+
+    // ── GA4: tool_open (first load after auth) ──
+    if (typeof gtag !== 'undefined') {
+      var _p = new URLSearchParams(window.location.search);
+      gtag('event', 'tool_open', {
+        send_to   : 'G-YQVQV6BRE0',
+        tool_name : 'valuation-tool',
+        user_id   : user.id || '(unknown)',
+        campaign  : _p.get('utm_campaign') || '(not set)',
+        source    : _p.get('utm_source')   || '(direct)',
+        language  : _p.get('hl')           || 'en'
+      });
+    }
     if (!document.getElementById('ifrsBadgeSb')) {
       const sb = document.querySelector('.sb-progress');
       if (sb) {
@@ -3617,6 +3666,19 @@ async function doSignIn() {
       showError('siError', error.message);
     }
     return;
+  }
+
+  // ── GA4: login ──
+  if (typeof gtag !== 'undefined') {
+    var _p = new URLSearchParams(window.location.search);
+    gtag('event', 'login', {
+      send_to   : 'G-YQVQV6BRE0',
+      method    : 'email',
+      tool_name : 'valuation-tool',
+      campaign  : _p.get('utm_campaign') || '(not set)',
+      source    : _p.get('utm_source')   || '(direct)',
+      language  : _p.get('hl')           || 'en'
+    });
   }
 
   // onAuthStateChange handles the rest
@@ -3711,7 +3773,21 @@ async function doSignUp() {
   document.getElementById('verifyEmail').textContent = email;
   setView('authVerify');
   showNotice('verifySuccess', 'Verification email sent to ' + email + ' — please check your inbox.', 'success');
-}
+
+  // ── GA4: sign_up ──
+  if (typeof gtag !== 'undefined') {
+    var _p = new URLSearchParams(window.location.search);
+    gtag('event', 'sign_up', {
+      send_to    : 'G-YQVQV6BRE0',
+      method     : 'email',
+      tool_name  : 'valuation-tool',
+      lead_role  : job,
+      country    : country,
+      campaign   : _p.get('utm_campaign') || '(not set)',
+      source     : _p.get('utm_source')   || '(direct)',
+      language   : _p.get('hl')           || 'en'
+    });
+  }
 
 // ── FORGOT PASSWORD ──
 async function doForgot() {
