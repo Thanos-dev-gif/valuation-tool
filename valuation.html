@@ -176,6 +176,12 @@ select.form-input{cursor:pointer;appearance:none;background-image:url("data:imag
 .assumption-label{font-size:13px;color:var(--text2);flex:1}
 .assumption-input{width:100px;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--r4);background:var(--white);color:var(--text);font-size:13px;font-family:var(--font);text-align:right}
 .assumption-input:focus{outline:none;border-color:var(--mint)}
+/* Mandatory inputs — stronger visual emphasis. Gold-tinted background + thicker border.
+   Once the user types a value, the row dims back via :not(:placeholder-shown). */
+.required-input{background:rgba(201,162,39,.10);border:1.5px solid rgba(201,162,39,.55);box-shadow:inset 0 0 0 1px rgba(201,162,39,.10)}
+.required-input:focus{background:#fff;border-color:var(--mint);box-shadow:inset 0 0 0 1px rgba(0,201,167,.25)}
+.required-input:not(:placeholder-shown):not(:focus){background:#fff;border:1px solid var(--border2);box-shadow:none}
+.required-badge{display:inline-block;font-size:9px;font-weight:700;color:#9a7c1f;background:rgba(201,162,39,.16);border:1px solid rgba(201,162,39,.35);border-radius:3px;padding:1px 5px;margin-left:6px;letter-spacing:.06em;text-transform:uppercase;vertical-align:1px}
 .driver-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .driver-label{font-size:13px;color:var(--text2);width:200px;flex-shrink:0}
 .driver-bar-wrap{flex:1;background:var(--light);border-radius:3px;height:6px;overflow:hidden}
@@ -875,23 +881,23 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       <div>
         <div class="assumption-group">
           <div class="assumption-group-title">DCF Assumptions</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 1)</span><input class="assumption-input" type="number" id="a_g1" value="" placeholder="15" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 2)</span><input class="assumption-input" type="number" id="a_g2" value="" placeholder="12" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 3)</span><input class="assumption-input" type="number" id="a_g3" value="" placeholder="10" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 4–5)</span><input class="assumption-input" type="number" id="a_g45" value="" placeholder="8" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Terminal Growth Rate</span><input class="assumption-input" type="number" id="a_tg" value="" placeholder="2.5" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">EBITDA Margin (forecast)</span><input class="assumption-input" type="number" id="a_margin" value="" placeholder="20" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">CapEx as % of Revenue</span><input class="assumption-input" type="number" id="a_capex" value="" placeholder="5" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Change in Working Capital %</span><input class="assumption-input" type="number" id="a_wc" value="" placeholder="2" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 1)</span><input class="assumption-input" type="number" id="a_g1" value="15" placeholder="15" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 2)</span><input class="assumption-input" type="number" id="a_g2" value="12" placeholder="12" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 3)</span><input class="assumption-input" type="number" id="a_g3" value="10" placeholder="10" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 4–5)</span><input class="assumption-input" type="number" id="a_g45" value="8" placeholder="8" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Terminal Growth Rate</span><input class="assumption-input" type="number" id="a_tg" value="2.5" placeholder="2.5" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">EBITDA Margin (forecast)</span><input class="assumption-input" type="number" id="a_margin" value="20" placeholder="20" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">CapEx as % of Revenue</span><input class="assumption-input" type="number" id="a_capex" value="5" placeholder="5" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Change in Working Capital %</span><input class="assumption-input" type="number" id="a_wc" value="2" placeholder="2" step="0.5" onchange="recalc()"> %</div>
         </div>
         <div class="assumption-group">
-          <div class="assumption-group-title">WACC Components</div>
-          <div class="assumption-row"><span class="assumption-label">Risk-Free Rate</span><input class="assumption-input" type="number" id="a_rf" value="" placeholder="4.5" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Equity Risk Premium</span><input class="assumption-input" type="number" id="a_erp" value="" placeholder="5.0" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Beta (levered)</span><input class="assumption-input" type="number" id="a_beta" value="" placeholder="1.1" step="0.05" onchange="recalc()"></div>
-          <div class="assumption-row"><span class="assumption-label">Cost of Debt (pre-tax)</span><input class="assumption-input" type="number" id="a_cod" value="" placeholder="6.0" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Tax Rate</span><input class="assumption-input" type="number" id="a_tax" value="" placeholder="25" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Debt / (Debt + Equity)</span><input class="assumption-input" type="number" id="a_leverage" value="" placeholder="30" step="1" onchange="recalc()"> %</div>
+          <div class="assumption-group-title">WACC Components <span class="required-badge">Required for DCF</span></div>
+          <div class="assumption-row"><span class="assumption-label">Risk-Free Rate</span><input class="assumption-input required-input" type="number" id="a_rf" value="4.5" placeholder="4.5" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Equity Risk Premium</span><input class="assumption-input required-input" type="number" id="a_erp" value="5.0" placeholder="5.0" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Beta (levered)</span><input class="assumption-input required-input" type="number" id="a_beta" value="1.1" placeholder="1.1" step="0.05" onchange="recalc()"></div>
+          <div class="assumption-row"><span class="assumption-label">Cost of Debt (pre-tax)</span><input class="assumption-input required-input" type="number" id="a_cod" value="6.0" placeholder="6.0" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Tax Rate</span><input class="assumption-input required-input" type="number" id="a_tax" value="25" placeholder="25" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Debt / (Debt + Equity)</span><input class="assumption-input required-input" type="number" id="a_leverage" value="30" placeholder="30" step="1" onchange="recalc()"> %</div>
           <div class="assumption-row"><span class="assumption-label"><strong>WACC (calculated)</strong></span><span id="waccDisplay" style="font-weight:600;color:var(--mint2)">—</span></div>
         </div>
         <div id="sanityWarnings" style="display:none;background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:12px 14px;margin-top:12px">
@@ -902,19 +908,19 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       </div>
       <div>
         <div class="assumption-group">
-          <div class="assumption-group-title">Multiples — Peer Group</div>
-          <div class="assumption-row"><span class="assumption-label">EBITDA Multiple (mid)</span><input class="assumption-input" type="number" id="a_ebitdaMult" value="" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">EBIT Multiple (mid)</span><input class="assumption-input" type="number" id="a_ebitMult" value="" placeholder="10" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Multiple (mid)</span><input class="assumption-input" type="number" id="a_revMult" value="" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">P/E Multiple (mid)</span><input class="assumption-input" type="number" id="a_peMult" value="" placeholder="15" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Market / Book Multiple</span><input class="assumption-input" type="number" id="a_mbMult" value="" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Terminal EV/EBITDA Multiple</span><input class="assumption-input" type="number" id="a_termMult" value="" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-group-title">Multiples — Peer Group <span class="required-badge">Required for multiples-based methods</span></div>
+          <div class="assumption-row"><span class="assumption-label">EBITDA Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_ebitdaMult" value="8" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">EBIT Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_ebitMult" value="10" placeholder="10" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_revMult" value="2.0" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">P/E Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_peMult" value="15" placeholder="15" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">Market / Book Multiple</span><input class="assumption-input required-input" type="number" id="a_mbMult" value="2.0" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">Terminal EV/EBITDA Multiple</span><input class="assumption-input required-input" type="number" id="a_termMult" value="8" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
         </div>
         <div class="assumption-group">
-          <div class="assumption-group-title">Capitalised Earnings</div>
-          <div class="assumption-row"><span class="assumption-label">Capitalisation Rate</span><input class="assumption-input" type="number" id="a_capRate" value="" placeholder="20" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (low)</span><input class="assumption-input" type="number" id="a_practLo" value="" placeholder="2" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (high)</span><input class="assumption-input" type="number" id="a_practHi" value="" placeholder="4" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-group-title">Capitalised Earnings & Practitioner's <span class="required-badge">Required for those methods</span></div>
+          <div class="assumption-row"><span class="assumption-label">Capitalisation Rate</span><input class="assumption-input required-input" type="number" id="a_capRate" value="20" placeholder="20" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (low)</span><input class="assumption-input required-input" type="number" id="a_practLo" value="2" placeholder="2" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (high)</span><input class="assumption-input required-input" type="number" id="a_practHi" value="4" placeholder="4" step="0.5" onchange="recalc()"> ×</div>
         </div>
         <div class="card" style="margin-top:0">
           <div class="section-label">Method Weights for Blended EV</div>
@@ -1189,7 +1195,7 @@ function getIndustryProfile() {
 // ──────────────────────────────────────────────────────────
 
 const ARGOS_DATA = {
-  tech:    {label:'Software / Technology',    index_ebitda:19.4, index_rev:3.3,  companies:[['Sage Group','GBP',24.5,5.6],['Kainos Group','GBP',17.8,3.1],['Softcat','GBP',15.2,0.7],['Bytes Technology','GBP',18.4,1.1],['Alfa Financial','GBP',21.3,5.8]]},
+  tech:    {label:'Software / Technology',    index_ebitda:14.2, index_rev:3.8,  companies:[['Sage Group','GBP',12.1,3.2],['Aveva','GBP',18.4,4.8],['Micro Focus','GBP',7.2,2.1],['SDL','GBP',11.3,2.9],['Ideagen','GBP',19.2,5.1]]},
   saas:    {label:'SaaS / Subscription',      index_ebitda:28.4, index_rev:7.1,  companies:[['Salesforce','USD',28.1,7.4],['HubSpot','USD',45.2,9.1],['Workday','USD',31.4,6.8],['Zendesk','USD',24.7,5.9],['Freshworks','USD',22.3,5.2]]},
   ecomm:   {label:'E-commerce / Retail',      index_ebitda:6.8,  index_rev:1.0,  companies:[['Ocado','GBP',8.4,1.2],['N Brown','GBP',4.1,0.6],['boohoo','GBP',5.8,0.9],['AO World','GBP',6.2,0.7],['THG','GBP',7.1,1.1]]},
   services:{label:'Business Services',        index_ebitda:9.2,  index_rev:1.2,  companies:[['PageGroup','GBP',9.1,1.4],['Robert Half','USD',10.2,1.2],['Hays','GBP',7.8,0.8],['Adecco','CHF',6.4,0.5],['Manpower','USD',7.1,0.4]]},
@@ -1412,12 +1418,12 @@ function buildForms() {
     if (row.section) {
       html += `<div style="background:var(--navy);color:rgba(255,255,255,.7);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:6px 8px;margin:6px 0 2px;border-radius:4px">${row.section}</div>`;
     }
-    const reqMark = row.req ? ' <span style="color:var(--red)">*</span>' : '';
+    const reqMark = row.req ? ' <span class="required-badge">required</span>' : '';
     const inputs = YEARS.map(y => {
       if (row.calc) {
         return `<div class="calc-cell" id="${row.id}_${y}" style="padding:8px 10px;text-align:right;font-size:12.5px;font-weight:${row.bold?'600':'400'};color:${row.color||'var(--text2)'};background:var(--lighter);border:1px solid var(--border);border-radius:6px">—</div>`;
       }
-      return `<input class="form-input" type="number" id="${row.id}_${y}" oninput="recalc()" style="text-align:right;font-size:13px;${row.bold?'font-weight:600':''};${row.req?'border-color:rgba(201,162,39,.45);':''}" placeholder="">`;
+      return `<input class="form-input${row.req?' required-input':''}" type="number" id="${row.id}_${y}" oninput="recalc()" style="text-align:right;font-size:13px;${row.bold?'font-weight:600':''}" placeholder=" ">`;
     }).join('');
     const labelStyle = row.bold ? 'font-weight:600;color:var(--navy);font-size:13px' : 'color:var(--text2);font-size:12.5px';
     html += `<div class="form-year-grid" style="margin-bottom:3px;align-items:center">
@@ -1821,20 +1827,40 @@ function gatherData() {
   const iProfile = INDUSTRY_PROFILES[sec] || INDUSTRY_PROFILES.tech;
   const W = iProfile.w;
 
-  // Each method: native value, EV-native flag, and an "active" flag. Methods become inactive
+  // Each method: native value, EV-native flag, an "active" flag, and (when inactive) a 'reason'
+  // pointing the user to the specific input that's missing or unworkable. Methods become inactive
   // when their driver is missing or when they would produce a nonsensical negative EV
   // (e.g. applying a multiple to negative earnings). Inactive methods are dropped from the
   // blend and the remaining weights are renormalised so the weights always sum to 100%.
+  // Diagnostic helpers — each returns a short, action-oriented string when its check fails.
+  const _missingRev = baseRev <= 0 ? 'enter Operating Revenue (latest year) on the Financial Statements page' : null;
+  const _missingWacc = wacc <= 0 ? 'fill all WACC components (Risk-Free Rate, ERP, Beta, Cost of Debt, Tax Rate, Leverage)' : null;
+  const _missingEBITDA = adjEBITDA <= 0 ? 'check that Revenue minus operating costs yields positive EBITDA in the latest year' : null;
+  const _missingEBIT = adjEBIT <= 0 ? 'EBIT (after D&A) is not positive in the latest year' : null;
+  const _missingNPAT = (npat_arr[2]||0) <= 0 ? 'Net Income (latest year) is not positive — check tax & finance items' : null;
+  const _missingNAV = nav <= 0 ? 'enter Total Assets and Total Liabilities so equity NAV becomes positive' : null;
+  const _missingBV = bvEquity <= 0 ? 'book equity (Share Capital + Reserves) is zero or negative — check the balance sheet' : null;
+  const _firstReason = (...reasons) => reasons.filter(Boolean)[0] || 'an input is missing';
+
   const methods = [
-    {name:'DCF Method',               native:evDCF,    w:W.dcf,    isEV:true,  active: baseRev > 0 && wacc > 0},
-    {name:"Practitioner's Value",     native:evPract,  w:W.pract,  isEV:true,  active: adjEBITDA > 0 && (practLo+practHi) > 0},
-    {name:'Capitalised Earnings',     native:evCap,    w:W.cap,    isEV:true,  active: adjEBITDA > 0 && capRate > 0},
-    {name:'Net Asset Value (Equity)', native:eqNAV,    w:W.nav,    isEV:false, active: nav > 0},
-    {name:'Sales / Revenue Multiple', native:evRev,    w:W.rev,    isEV:true,  active: baseRev > 0 && effRevMult > 0},
-    {name:'EBITDA Multiple',          native:evEBITDA, w:W.ebitda, isEV:true,  active: adjEBITDA > 0 && effMult > 0},
-    {name:'EBIT Multiple',            native:evEBIT,   w:W.ebit,   isEV:true,  active: adjEBIT > 0 && effEbitMult > 0},
-    {name:'P/E Multiple',             native:eqPE,     w:W.pe,     isEV:false, active: (npat_arr[2]||0) > 0 && effPeMult > 0},
-    {name:'Market / Book Multiple',   native:eqMB,     w:W.mb,     isEV:false, active: bvEquity > 0 && mbMult > 0},
+    {name:'DCF Method',               native:evDCF,    w:W.dcf,    isEV:true,  active: baseRev > 0 && wacc > 0,
+     reason: !(baseRev > 0 && wacc > 0) ? _firstReason(_missingRev, _missingWacc) : null},
+    {name:"Practitioner's Value",     native:evPract,  w:W.pract,  isEV:true,  active: adjEBITDA > 0 && (practLo+practHi) > 0,
+     reason: !(adjEBITDA > 0 && (practLo+practHi) > 0) ? _firstReason(_missingEBITDA, (practLo+practHi)<=0 ? "set Practitioner's multipliers (low and high)" : null) : null},
+    {name:'Capitalised Earnings',     native:evCap,    w:W.cap,    isEV:true,  active: adjEBITDA > 0 && capRate > 0,
+     reason: !(adjEBITDA > 0 && capRate > 0) ? _firstReason(_missingEBITDA, capRate<=0 ? 'set the Capitalisation Rate' : null) : null},
+    {name:'Net Asset Value (Equity)', native:eqNAV,    w:W.nav,    isEV:false, active: nav > 0,
+     reason: nav <= 0 ? _missingNAV : null},
+    {name:'Sales / Revenue Multiple', native:evRev,    w:W.rev,    isEV:true,  active: baseRev > 0 && effRevMult > 0,
+     reason: !(baseRev > 0 && effRevMult > 0) ? _firstReason(_missingRev, effRevMult<=0 ? 'set the Revenue Multiple (mid)' : null) : null},
+    {name:'EBITDA Multiple',          native:evEBITDA, w:W.ebitda, isEV:true,  active: adjEBITDA > 0 && effMult > 0,
+     reason: !(adjEBITDA > 0 && effMult > 0) ? _firstReason(_missingEBITDA, effMult<=0 ? 'set the EBITDA Multiple (mid)' : null) : null},
+    {name:'EBIT Multiple',            native:evEBIT,   w:W.ebit,   isEV:true,  active: adjEBIT > 0 && effEbitMult > 0,
+     reason: !(adjEBIT > 0 && effEbitMult > 0) ? _firstReason(_missingEBIT, effEbitMult<=0 ? 'set the EBIT Multiple (mid)' : null) : null},
+    {name:'P/E Multiple',             native:eqPE,     w:W.pe,     isEV:false, active: (npat_arr[2]||0) > 0 && effPeMult > 0,
+     reason: !((npat_arr[2]||0) > 0 && effPeMult > 0) ? _firstReason(_missingNPAT, effPeMult<=0 ? 'set the P/E Multiple (mid)' : null) : null},
+    {name:'Market / Book Multiple',   native:eqMB,     w:W.mb,     isEV:false, active: bvEquity > 0 && mbMult > 0,
+     reason: !(bvEquity > 0 && mbMult > 0) ? _firstReason(_missingBV, mbMult<=0 ? 'set the Market / Book Multiple' : null) : null},
   ];
 
   // Gross-up equity-native methods to EV so everything blends on the same basis.
@@ -1851,7 +1877,7 @@ function gatherData() {
   // Preserve legacy key 'allMethods' with 'ev' so existing UI code keeps working.
   // Each row now carries: ev (grossed-up), w (original), wEff (renormalised), active, isEV.
   const allMethods = methods;
-  const excludedMethods = methods.filter(m => !m.active).map(m => m.name);
+  const excludedMethods = methods.filter(m => !m.active).map(m => ({name:m.name, reason:m.reason || 'an input is missing'}));
 
   const blendedEV    = allMethods.reduce((s,m) => s + m.ev * m.wEff, 0);
   const equityValue  = blendedEV - debt + cash;
@@ -1911,7 +1937,20 @@ function runSanityChecks(D) {
   if (beta > 2.5) warnings.push('⚠️ Beta of ' + beta + ' is very high. Typical range is 0.5–2.0.');
   if (totalAssets > 0 && totalLE > 0 && Math.abs(totalAssets - totalLE) > totalAssets * 0.05) warnings.push('⚠️ Balance sheet does not balance: Assets ≠ Liabilities + Equity (difference: ' + fmt(Math.abs(totalAssets - totalLE)) + '). Check your entries.');
   if (Math.abs(weightSum - 1) > 0.01) warnings.push('⚠️ Method weights sum to ' + (weightSum*100).toFixed(0) + '%, not 100%. Results may be skewed.');
-  if (D.excludedMethods && D.excludedMethods.length > 0) warnings.push('ℹ️ Method(s) excluded from blend because their inputs are missing or would produce negative values: ' + D.excludedMethods.join(', ') + '. Remaining weights renormalised to 100%.');
+  if (D.excludedMethods && D.excludedMethods.length > 0) {
+    // Group methods by reason so identical fixes (e.g. "fill all WACC components") collapse into one line.
+    const byReason = {};
+    D.excludedMethods.forEach(m => {
+      const r = m.reason || 'an input is missing';
+      (byReason[r] = byReason[r] || []).push(m.name);
+    });
+    const lines = Object.keys(byReason).map(reason =>
+      `<div style="padding:4px 0;font-size:12px;color:#9a4f00"><strong>${byReason[reason].join(', ')}:</strong> ${reason}.</div>`
+    );
+    warnings.push('__html__<div style="padding:4px 0;font-size:12.5px;color:#b45309;font-weight:600;margin-bottom:4px">ℹ️ ' + D.excludedMethods.length + ' method(s) excluded from the blend — fix the inputs below to activate them:</div>'
+      + lines.join('')
+      + '<div style="padding:4px 0;font-size:11px;color:#b45309;font-style:italic;margin-top:2px">Remaining weights renormalised to 100%.</div>');
+  }
   if (activeWeightSum > 0 && activeWeightSum < 0.5) warnings.push('⚠️ Only ' + (activeWeightSum*100).toFixed(0) + '% of the industry weighting is active. The blend relies on few methods — treat results cautiously.');
 
   const container = document.getElementById('sanityWarnings');
@@ -1921,7 +1960,14 @@ function runSanityChecks(D) {
     container.innerHTML = '';
   } else {
     container.style.display = 'block';
-    container.innerHTML = warnings.map(w => `<div style="padding:6px 0;border-bottom:1px solid rgba(226,75,74,.2);font-size:12px;color:#f09595">${w}</div>`).join('');
+    container.innerHTML = warnings.map(w => {
+      // Warnings that begin with __html__ are pre-rendered HTML blocks (used for the
+      // structured "methods excluded" message that lists per-method fixes).
+      if (w.startsWith('__html__')) {
+        return `<div style="padding:8px 0;border-bottom:1px solid rgba(226,75,74,.2)">${w.slice(8)}</div>`;
+      }
+      return `<div style="padding:6px 0;border-bottom:1px solid rgba(226,75,74,.2);font-size:12px;color:#f09595">${w}</div>`;
+    }).join('');
   }
 }
 
@@ -2024,10 +2070,9 @@ function safeCreateChart(canvasId, config) {
 //
 // ═══════════════════════════════════════════════════════
 
-// Real Argos Index quarterly data (sourced from public Argos Index reports)
-// Format: { quarter, ebitda_mid, ebitda_lo, ebitda_hi, rev_mid, deal_count, trend_note }
-// Source: Argos Index Q4 2024 (published February 2025) + prior quarters
-const ARGOS_QUARTERLY = [
+// Real Argos Index quarterly data — loaded from Supabase (argos_index table)
+// Falls back to the last known values if the fetch fails or returns no rows.
+const ARGOS_QUARTERLY_FALLBACK = [
   { q:'Q1 2022', ebitda:11.5, ebitda_lo:9.0,  ebitda_hi:13.8, rev:2.1, deals:46 },
   { q:'Q2 2022', ebitda:11.2, ebitda_lo:8.8,  ebitda_hi:13.5, rev:2.0, deals:52 },
   { q:'Q3 2022', ebitda:10.8, ebitda_lo:8.5,  ebitda_hi:13.1, rev:1.9, deals:44 },
@@ -2041,6 +2086,29 @@ const ARGOS_QUARTERLY = [
   { q:'Q3 2024', ebitda:11.9, ebitda_lo:9.4,  ebitda_hi:14.4, rev:2.3, deals:58 },
   { q:'Q4 2024', ebitda:12.1, ebitda_lo:9.6,  ebitda_hi:14.7, rev:2.4, deals:61 },
 ];
+let ARGOS_QUARTERLY = ARGOS_QUARTERLY_FALLBACK; // replaced on load
+
+async function loadArgosQuarterly() {
+  try {
+    const { data, error } = await _supa
+      .from('argos_index')
+      .select('quarter, ebitda_mid, ebitda_lo, ebitda_hi, rev_mid, deals')
+      .order('quarter', { ascending: true });
+    if (error || !data?.length) throw new Error(error?.message || 'empty');
+    ARGOS_QUARTERLY = data.map(r => ({
+      q:         r.quarter,
+      ebitda:    parseFloat(r.ebitda_mid),
+      ebitda_lo: r.ebitda_lo  != null ? parseFloat(r.ebitda_lo)  : null,
+      ebitda_hi: r.ebitda_hi  != null ? parseFloat(r.ebitda_hi)  : null,
+      rev:       r.rev_mid    != null ? parseFloat(r.rev_mid)     : null,
+      deals:     r.deals,
+    }));
+    console.log('[argos] Loaded', ARGOS_QUARTERLY.length, 'quarters from Supabase, latest:', ARGOS_QUARTERLY.at(-1)?.q);
+  } catch (e) {
+    console.warn('[argos] Supabase fetch failed — using fallback data:', e.message);
+    ARGOS_QUARTERLY = ARGOS_QUARTERLY_FALLBACK;
+  }
+}
 
 // Sector-specific Argos multiplier vs all-market index
 // Derived from Argos sector reports and public Argos data
@@ -2133,11 +2201,11 @@ async function argosRefresh(manual = false) {
     // Build ticker map for this sector's companies
     const TICKER_MAP = {
       // tech
-      'Sage Group':      ['Sage Group',      'SGE.L',   'GBP'],
-      'Kainos Group':    ['Kainos Group',    'KNOS.L',  'GBP'],
-      'Softcat':         ['Softcat',         'SCT.L',   'GBP'],
-      'Bytes Technology':['Bytes Technology','BYIT.L',  'GBP'],
-      'Alfa Financial':  ['Alfa Financial',  'ALFA.L',  'GBP'],
+      'Sage Group':      ['Sage Group',      'SGE.L',  'GBP'],
+      'Aveva':           ['Aveva',           'AVV.L',  'GBP'],
+      'Micro Focus':     ['Micro Focus',     'MCRO.L', 'GBP'],
+      'SDL':             ['SDL',             'SDL.L',  'GBP'],
+      'Ideagen':         ['Ideagen',         'IDEA.L', 'GBP'],
       // saas
       'Salesforce':      ['Salesforce',      'CRM',    'USD'],
       'HubSpot':         ['HubSpot',         'HUBS',   'USD'],
@@ -2280,7 +2348,8 @@ function switchArgosTab(tab) {
 // ── Timestamp helper ──
 function argosSetTimestamp() {
   const ts = argosLastFetch ? new Date(argosLastFetch).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
-  const suffix = argosLiveData?.anyLive ? ' · live data' : ' · Listed peer baseline · Q1 2026';
+  const latestQ = ARGOS_QUARTERLY.at(-1)?.q || 'Q4 2024';
+  const suffix = argosLiveData?.anyLive ? ' · live peer data' : ` · Argos Index ${latestQ}`;
   ['argosTimestamp','argosTimestamp2'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = 'Updated ' + ts + suffix;
@@ -2970,229 +3039,425 @@ function parseExcel(file, status) {
     try {
       const data = new Uint8Array(e.target.result);
       const wb = XLSX.read(data, { type:'array' });
-      let rows = [];
-      wb.SheetNames.forEach(name => {
+
+      // ── Read each sheet separately and classify its type (IS / BS / CF) ──
+      // Routing each sheet's rows through only the relevant MAP entries prevents
+      // cross-sheet collisions like "Cash from Operations" overwriting BS cash,
+      // or "(Increase)/Decrease in Inventory" overwriting BS inventory.
+      function classifySheet(name, sheetRows) {
+        const lname = String(name || '').toLowerCase();
+        // Build a haystack from sheet name + first ~5 non-empty rows of column A
+        let header = lname;
+        let rowsScanned = 0;
+        for (const r of sheetRows) {
+          if (rowsScanned >= 5) break;
+          const cell = r && r[0] ? String(r[0]).toLowerCase() : '';
+          if (cell) { header += ' ' + cell; rowsScanned++; }
+        }
+        // CF first — "cash flow" is most distinctive and contains the word "cash"
+        if (/\bcash\s*flow\b|\bflow\s+statement\b|\bcashflow\b/.test(header)) return 'cf';
+        if (/\bbalance\s*sheet\b|\bstatement\s+of\s+financial\s+position\b|\bassets\b.*\bliabilities\b/.test(header)) return 'bs';
+        if (/\bincome\s+statement\b|\bprofit\s+(?:and|&)\s+loss\b|\bp\s*&\s*l\b|\bstatement\s+of\s+(?:comprehensive\s+)?income\b|\bincome\s+&\s+expense\b/.test(header)) return 'is';
+        return 'unknown';
+      }
+      const sheets = wb.SheetNames.map(name => {
         const ws = wb.Sheets[name];
-        rows = rows.concat(XLSX.utils.sheet_to_json(ws, { header:1, defval:'' }));
+        const sheetRows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
+        return { name, rows: sheetRows, kind: classifySheet(name, sheetRows) };
       });
+
       // Word-boundary match: key must appear as a whole word/phrase in the label
       // Prevents false positives like "revaluation reserve" matching "revenue"
-      function keyMatches(label, key) {
+      // Supports two prefixes:
+      //   '^foo'  → must match at the START of the label (e.g. '^cash' won't match 'cash from operations')
+      //   '!foo'  → exclusion: if label contains 'foo' anywhere, the key DOES NOT match
+      // Multiple exclusions can be space-separated after the key, prefixed with '!'.
+      function keyMatches(label, keySpec) {
+        // Split spec into primary key + optional exclusions.
+        // Exclusion segments start with '!' — strip it before testing.
+        const parts = String(keySpec).split('|');
+        const primary = parts[0];
+        const exclusions = parts.slice(1)
+          .map(p => p.startsWith('!') ? p.slice(1) : p)
+          .filter(p => p.length > 0);
+        for (const ex of exclusions) {
+          if (label.includes(ex)) return false;
+        }
+        const anchorStart = primary.startsWith('^');
+        const key = anchorStart ? primary.slice(1) : primary;
         const esc = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        return new RegExp('(?:^|[\\s,/\\-])' + esc + '(?:[\\s,/\\-]|$)').test(label);
+        const pattern = anchorStart
+          ? '^' + esc + '(?:[\\s,/\\-]|$)'
+          : '(?:^|[\\s,/\\-])' + esc + '(?:[\\s,/\\-]|$)';
+        return new RegExp(pattern).test(label);
       }
-      // MAP: key → [fieldId, ...]. More specific keys first (checked in order).
+      // MAP: [key, [fieldId, ...], sheetMask]. More specific keys first.
+      // sheetMask = space-separated list of sheet types this entry applies to ('is' | 'bs' | 'cf').
+      // Sheets classified as 'unknown' (e.g. single-sheet workbooks with no recognisable header)
+      // run ALL entries — lenient default. Sheets classified as is/bs/cf only run their tagged entries,
+      // which prevents cross-statement collisions:
+      //   - "Cash from Operations" no longer overwrites BS cash
+      //   - "(Increase)/Decrease in Inventory" no longer overwrites BS inventory
+      // Keys may also use:
+      //   '^foo'           → must match at start of label only (kills 'pre-tax' → 'tax' bug)
+      //   'foo|!bar'       → match key 'foo' but exclude if label contains 'bar'
       // Covers EN + FR + DE + ES + IT IFRS labels.
       const MAP_ENTRIES = [
-        // ── Specific OpEx lines — MUST come before bare 'sales','revenue','research' etc. ──
-        // Individual lines accumulate additively into other_opex.
-        // 'total opex' only writes if nothing has been accumulated yet (avoids double-count).
-        ['sales and marketing',        ['other_opex']], ['sales & marketing',        ['other_opex']],
-        ['general and administrative', ['other_opex']], ['general & administrative', ['other_opex']],
-        ['research and development',   ['other_opex']], ['research & development',   ['other_opex']],
-        ['selling general and admin',  ['other_opex']], ['sg&a',                     ['other_opex']],
-        ['selling expenses',           ['other_opex']], ['administrative expenses',  ['other_opex']],
-        ['other operating expenses',   ['other_opex']], ['other opex',               ['other_opex']],
-        ['total opex',                 ['other_opex_total']], // sentinel — handled separately in write logic
-        // ── Revenue ──
-        ['operating revenue',       ['rev']], ['net revenue',          ['rev']],
-        ['net sales',               ['rev']], ['total revenue',        ['rev']],
-        ['total income',            ['rev']], ['gross revenue',        ['rev']],
-        ['turnover',                ['rev']], ['sales revenue',        ['rev']],
-        ['revenue',                 ['rev']], ['sales',                ['rev']],
-        // FR/DE/ES/IT
-        ["chiffre d'affaires",      ['rev']], ['umsatz',               ['rev']],
-        ['umsatzerlöse',            ['rev']], ['facturación',          ['rev']],
-        ['ingresos',                ['rev']], ['ricavi',               ['rev']],
-        ['produzione',              ['rev']],
-        // ── COGS ──
-        ['cost of goods sold',      ['cogs']], ['cost of sales',       ['cogs']],
-        ['cost of revenue',         ['cogs']], ['direct costs',        ['cogs']],
-        ['expenses for materials',  ['cogs']], ['materials and services',['cogs']],
-        ['purchases',               ['cogs']], ['materials',           ['cogs']],
-        ['cogs',                    ['cogs']],
-        // FR/DE/ES
-        ['charges externes',        ['cogs']], ['achats',              ['cogs']],
-        ['materialaufwand',         ['cogs']], ['coste de ventas',     ['cogs']],
-        ['costo de ventas',         ['cogs']], ['costi di produzione', ['cogs']],
-        // ── Personnel ──
-        ['staff costs',             ['personnel']], ['employee costs',  ['personnel']],
-        ['payroll',                 ['personnel']], ['wages and salaries',['personnel']],
-        ['salaries and wages',      ['personnel']], ['labour costs',    ['personnel']],
-        ['personnel expenses',      ['personnel']], ['personnel costs', ['personnel']],
-        ['personnel',               ['personnel']],
-        // FR/DE/ES
-        ['charges de personnel',    ['personnel']], ['frais de personnel',['personnel']],
-        ['personalaufwand',         ['personnel']], ['gastos de personal',['personnel']],
-        ['costi del personale',     ['personnel']],
-        // ── D&A ──
-        ['depreciation of ppe',     ['da_ppe']], ['depreciation of plant', ['da_ppe']],
-        ['depreciation',            ['da_ppe']],
-        ['amortisation of intangibles',['da_int']], ['amortization of intangibles',['da_int']],
-        ['amortisation',            ['da_int']], ['amortization',      ['da_int']],
-        ['dotations aux amortissements',['da_ppe']], ['abschreibungen', ['da_ppe']],
-        // ── EBIT / EBITDA ──
-        ['ebitda',                  []], // calc — skip writing
-        ['ebit',                    []], // calc — skip writing
-        // ── Financial items ──
-        ['interest expense',        ['fin_exp']], ['financial expenses', ['fin_exp']],
-        ['finance costs',           ['fin_exp']], ['borrowing costs',   ['fin_exp']],
-        ['interest costs',          ['fin_exp']], ['financial charges', ['fin_exp']],
-        ['charges financières',     ['fin_exp']], ['zinsaufwand',       ['fin_exp']],
-        ['financial income',        ['fin_inc']], ['interest income',   ['fin_inc']],
-        ['investment income',       ['fin_inc']], ['produits financiers',['fin_inc']],
-        // ── Tax ──
-        ['pre-tax income',          []], // skip — contains "tax" but is NOT a tax expense line
-        ['pre-tax profit',          []], // same
-        ['profit before tax',       []], // same (common IFRS label)
-        ['earnings before tax',     []], // same
-        ['deferred tax',            ['deferred_inc']], // must precede generic 'tax'
-        ['income tax expense',      ['tax']], ['corporation tax',      ['tax']],
-        ['income taxes',            ['tax']], ['income tax',           ['tax']],
-        ['taxes on income',         ['tax']], ['tax expense',          ['tax']],
-        ['taxes',                   ['tax']], ['tax',                  ['tax']],
-        ['impôts',                  ['tax']], ['ertragsteuern',        ['tax']],
-        ['impuestos',               ['tax']], ['imposte',              ['tax']],
-        // ── Net income ──
-        ['net income',              ['npat']], ['net profit',          ['npat']],
-        ['profit for the year',     ['npat']], ['profit after tax',    ['npat']],
-        ['résultat net',            ['npat']], ['jahresüberschuss',    ['npat']],
-        ['resultado neto',          ['npat']], ['utile netto',         ['npat']],
-        // ── Balance sheet: Assets ──
-        ['total assets',            ['assets']],
-        ['cash and cash equivalents',['cash']], ['cash and short-term', ['cash']],
-        ['cash equivalents',        ['cash']], ['cash',                ['cash']],
-        ['trésorerie',              ['cash']], ['kassenbestand',       ['cash']],
-        ['trade receivables',       ['receivables']], ['accounts receivable',['receivables']],
-        ['trade and other receivables',['receivables']], ['debtors',   ['receivables']],
-        ['clients',                 ['receivables']], ['forderungen',  ['receivables']],
-        ['common stock',            ['share_cap']], ['ordinary shares',  ['share_cap']],
-        ['inventories',             ['inventories']], ['inventory',    ['inventories']],
-        ['stock',                   ['inventories']], ['stocks',       ['inventories']],
-        ['vorräte',                 ['inventories']], ['existencias',  ['inventories']],
-        ['prepayments',             ['prepayments']], ['prepaid',      ['prepayments']],
-        ['accrued income',          ['prepayments']], ['accruals',     ['prepayments']],
-        ['financial assets',        ['fin_assets']],
-        ['long-term investments',   ['lt_invest']], ['longterm investments',['lt_invest']],
-        ['pp&e',                    ['ppe']], ['ppe, net',             ['ppe']],
-        ['plant and equipment',     ['ppe']], ['property plant',       ['ppe']],
-        ['tangible assets',         ['ppe']], ['sachanlagen',          ['ppe']],
-        ['property and buildings',  ['property']], ['real estate',     ['property']],
-        ['intangible assets',       ['intangibles']], ['intangibles',  ['intangibles']],
-        ['goodwill',                ['intangibles']],
-        // ── Balance sheet: Liabilities ──
-        ['total liabilities',       ['liabs']],
-        ['accounts payable',        ['acc_payable']], ['trade payables', ['acc_payable']],
-        ['creditors',               ['acc_payable']], ['fournisseurs',  ['acc_payable']],
-        ['accrued liabilities',     ['other_cl']], ['accrued expenses',  ['other_cl']],
-        ['short-term debt',         ['st_debt']], ['current portion',   ['st_debt']],
-        ['short-term borrowings',   ['st_debt']],
-        ['deferred income',         ['deferred_inc']], ['deferred revenue',['deferred_inc']],
-        ['long-term debt',          ['lt_debt']], ['long-term borrowings',['lt_debt']],
-        ['non-current borrowings',  ['lt_debt']],
-        ['provisions',              ['provisions']],
-        // ── Equity ──
-        ["shareholders' equity",    ['equity']], ['stockholders equity', ['equity']],
-        ['total equity',            ['equity']], ['equity',             ['equity']],
-        ['share capital',           ['share_cap']], ['share / equity capital',['share_cap']],
-        ['paid-in capital',         ['share_cap']], ['issued capital',  ['share_cap']],
-        ['retained earnings',       ['reserves']], ['retained profit',  ['reserves']],
-        ['reserves',                ['reserves']],
-        // ── Key inputs ──
-        ['financial debt',          ['debt']], ['total debt',          ['debt']],
-        ['total financial debt',    ['debt']], ['interest-bearing',    ['debt']],
-        ['capital expenditures',    ['capex']], ['capital expenditure', ['capex']],
-        ['capex',                   ['capex']],
-        ['additions to fixed',      ['capex']], ['purchase of ppe',    ['capex']],
-        ['change in working capital',['wcChange']], ['nwc change',     ['wcChange']],
-        ['changes in working capital',['wcChange']],
+        // ── Revenue (IS only) ──
+        ['operating revenue',       ['rev'], 'is'], ['net revenue',          ['rev'], 'is'],
+        ['net sales',               ['rev'], 'is'], ['total revenue',        ['rev'], 'is'],
+        ['total income',            ['rev'], 'is'], ['gross revenue',        ['rev'], 'is'],
+        ['turnover',                ['rev'], 'is'], ['sales revenue',        ['rev'], 'is'],
+        ['revenue',                 ['rev'], 'is'], ['sales',                ['rev'], 'is'],
+        ["chiffre d'affaires",      ['rev'], 'is'], ['umsatz',               ['rev'], 'is'],
+        ['umsatzerlöse',            ['rev'], 'is'], ['facturación',          ['rev'], 'is'],
+        ['ingresos',                ['rev'], 'is'], ['ricavi',               ['rev'], 'is'],
+        ['produzione',              ['rev'], 'is'],
+        // ── COGS (IS only) ──
+        ['cost of goods sold',      ['cogs'], 'is'], ['cost of sales',       ['cogs'], 'is'],
+        ['cost of revenue',         ['cogs'], 'is'], ['direct costs',        ['cogs'], 'is'],
+        ['expenses for materials',  ['cogs'], 'is'], ['materials and services',['cogs'], 'is'],
+        ['purchases',               ['cogs'], 'is'], ['materials',           ['cogs'], 'is'],
+        ['cogs',                    ['cogs'], 'is'],
+        ['charges externes',        ['cogs'], 'is'], ['achats',              ['cogs'], 'is'],
+        ['materialaufwand',         ['cogs'], 'is'], ['coste de ventas',     ['cogs'], 'is'],
+        ['costo de ventas',         ['cogs'], 'is'], ['costi di produzione', ['cogs'], 'is'],
+        // ── OpEx lines — MUST be before bare 'sales' / 'revenue' / 'research' keys ──
+        // These accumulate additively (S&M + G&A + R&D → other_opex).
+        // 'total opex' uses sentinel 'other_opex_total' to avoid double-counting.
+        ['sales and marketing',        ['other_opex'],       'is'], ['sales & marketing',        ['other_opex'],       'is'],
+        ['general and administrative', ['other_opex'],       'is'], ['general & administrative', ['other_opex'],       'is'],
+        ['research and development',   ['other_opex'],       'is'], ['research & development',   ['other_opex'],       'is'],
+        ['selling general and admin',  ['other_opex'],       'is'], ['sg&a',                     ['other_opex'],       'is'],
+        ['selling expenses',           ['other_opex'],       'is'], ['administrative expenses',  ['other_opex'],       'is'],
+        ['other operating expenses',   ['other_opex'],       'is'], ['other opex',               ['other_opex'],       'is'],
+        ['total opex',                 ['other_opex_total'], 'is'], // sentinel: only writes if no individual lines found
+        // ── Personnel (IS only) ──
+        ['staff costs',             ['personnel'], 'is'], ['employee costs',  ['personnel'], 'is'],
+        ['payroll',                 ['personnel'], 'is'], ['wages and salaries',['personnel'], 'is'],
+        ['salaries and wages',      ['personnel'], 'is'], ['labour costs',    ['personnel'], 'is'],
+        ['personnel expenses',      ['personnel'], 'is'], ['personnel costs', ['personnel'], 'is'],
+        ['personnel',               ['personnel'], 'is'],
+        ['charges de personnel',    ['personnel'], 'is'], ['frais de personnel',['personnel'], 'is'],
+        ['personalaufwand',         ['personnel'], 'is'], ['gastos de personal',['personnel'], 'is'],
+        ['costi del personale',     ['personnel'], 'is'],
+        // ── D&A (IS, also CF where add-back appears) ──
+        ['depreciation of ppe',     ['da_ppe'], 'is cf'], ['depreciation of plant', ['da_ppe'], 'is cf'],
+        ['depreciation',            ['da_ppe'], 'is cf'],
+        ['amortisation of intangibles',['da_int'], 'is cf'], ['amortization of intangibles',['da_int'], 'is cf'],
+        ['amortisation',            ['da_int'], 'is cf'], ['amortization',      ['da_int'], 'is cf'],
+        ['d&a',                     ['da_ppe'], 'is cf'], ['d & a',             ['da_ppe'], 'is cf'],
+        ['dotations aux amortissements',['da_ppe'], 'is cf'], ['abschreibungen', ['da_ppe'], 'is cf'],
+        // ── EBIT / EBITDA — calc rows; matched but not written ──
+        ['ebitda',                  [], 'is'],
+        ['ebit',                    [], 'is'],
+        // ── Financial items (IS only) ──
+        ['interest expense',        ['fin_exp'], 'is'], ['financial expenses', ['fin_exp'], 'is'],
+        ['finance costs',           ['fin_exp'], 'is'], ['borrowing costs',   ['fin_exp'], 'is'],
+        ['interest costs',          ['fin_exp'], 'is'], ['financial charges', ['fin_exp'], 'is'],
+        ['charges financières',     ['fin_exp'], 'is'], ['zinsaufwand',       ['fin_exp'], 'is'],
+        ['financial income',        ['fin_inc'], 'is'], ['interest income',   ['fin_inc'], 'is'],
+        ['investment income',       ['fin_inc'], 'is'], ['produits financiers',['fin_inc'], 'is'],
+        // ── Tax (IS, plus deferred tax which appears on BS) ──
+        // 'deferred tax' first so it claims rows before generic 'tax' fires.
+        ['deferred tax',            ['deferred_inc'], 'bs'],
+        ['income tax expense',      ['tax'], 'is'], ['corporation tax',      ['tax'], 'is'],
+        ['income taxes',            ['tax'], 'is'], ['income tax',           ['tax'], 'is'],
+        ['taxes on income',         ['tax'], 'is'], ['tax expense',          ['tax'], 'is'],
+        ['taxes',                   ['tax'], 'is'],
+        // FIX: bare 'tax' must NOT match 'pre-tax income' or 'tax rate'.
+        // Anchor at start of label, and exclude common false-positive phrases.
+        ['^tax|!pre-tax|!rate|!deferred', ['tax'], 'is'],
+        ['impôts',                  ['tax'], 'is'], ['ertragsteuern',        ['tax'], 'is'],
+        ['impuestos',               ['tax'], 'is'], ['imposte',              ['tax'], 'is'],
+        // ── Net income (IS native, also appears on CF as starting point) ──
+        ['net income',              ['npat'], 'is cf'], ['net profit',          ['npat'], 'is cf'],
+        ['profit for the year',     ['npat'], 'is cf'], ['profit after tax',    ['npat'], 'is cf'],
+        ['résultat net',            ['npat'], 'is cf'], ['jahresüberschuss',    ['npat'], 'is cf'],
+        ['resultado neto',          ['npat'], 'is cf'], ['utile netto',         ['npat'], 'is cf'],
+        // ── Balance sheet: Assets (BS only) ──
+        ['total assets',            ['assets'], 'bs'],
+        ['cash and cash equivalents',['cash'], 'bs'], ['cash and short-term', ['cash'], 'bs'],
+        ['cash equivalents',        ['cash'], 'bs'],
+        // FIX: bare 'cash' must NOT match CF lines like "Cash from Operations",
+        // "Net Change in Cash", "Beginning/Ending Cash Balance" — those would corrupt BS cash.
+        // Anchor at start, exclude obvious CF phrases.
+        ['^cash|!from |!flow|!change|!balance|!beginning|!ending', ['cash'], 'bs'],
+        ['trésorerie',              ['cash'], 'bs'], ['kassenbestand',       ['cash'], 'bs'],
+        ['trade receivables',       ['receivables'], 'bs'], ['accounts receivable',['receivables'], 'bs'],
+        ['trade and other receivables',['receivables'], 'bs'], ['debtors',   ['receivables'], 'bs'],
+        ['clients',                 ['receivables'], 'bs'], ['forderungen',  ['receivables'], 'bs'],
+        ['common stock',            ['share_cap'], 'bs'], ['ordinary shares',  ['share_cap'], 'bs'],
+        // FIX: 'inventory'/'inventories' must NOT match CF lines like
+        // "(Increase)/Decrease in Inventory" — those are working-capital deltas, not balances.
+        ['inventories|!increase|!decrease|!change',['inventories'], 'bs'],
+        ['inventory|!increase|!decrease|!change',  ['inventories'], 'bs'],
+        ['stock',                   ['inventories'], 'bs'], ['stocks',       ['inventories'], 'bs'],
+        ['vorräte',                 ['inventories'], 'bs'], ['existencias',  ['inventories'], 'bs'],
+        ['prepayments',             ['prepayments'], 'bs'], ['prepaid',      ['prepayments'], 'bs'],
+        ['accrued income',          ['prepayments'], 'bs'], ['accruals',     ['prepayments'], 'bs'],
+        ['other current assets',    ['other_ca'], 'bs'],
+        ['financial assets',        ['fin_assets'], 'bs'],
+        ['long-term investments',   ['lt_invest'], 'bs'], ['longterm investments',['lt_invest'], 'bs'],
+        ['pp&e',                    ['ppe'], 'bs'], ['ppe, net',             ['ppe'], 'bs'],
+        ['plant and equipment',     ['ppe'], 'bs'], ['property plant',       ['ppe'], 'bs'],
+        ['tangible assets',         ['ppe'], 'bs'], ['sachanlagen',          ['ppe'], 'bs'],
+        ['property and buildings',  ['property'], 'bs'], ['real estate',     ['property'], 'bs'],
+        ['intangible assets',       ['intangibles'], 'bs'], ['intangibles',  ['intangibles'], 'bs'],
+        ['goodwill',                ['intangibles'], 'bs'],
+        // ── Balance sheet: Liabilities (BS only) ──
+        ['total liabilities',       ['liabs'], 'bs'],
+        ['accounts payable',        ['acc_payable'], 'bs'], ['trade payables', ['acc_payable'], 'bs'],
+        ['creditors',               ['acc_payable'], 'bs'], ['fournisseurs',  ['acc_payable'], 'bs'],
+        ['accrued liabilities',     ['other_cl'], 'bs'], ['accrued expenses',  ['other_cl'], 'bs'],
+        ['short-term debt',         ['st_debt'], 'bs'], ['current portion',   ['st_debt'], 'bs'],
+        ['short-term borrowings',   ['st_debt'], 'bs'],
+        ['deferred income',         ['deferred_inc'], 'bs'], ['deferred revenue',['deferred_inc'], 'bs'],
+        ['long-term debt',          ['lt_debt'], 'bs'], ['long-term borrowings',['lt_debt'], 'bs'],
+        ['non-current borrowings',  ['lt_debt'], 'bs'],
+        ['provisions',              ['provisions'], 'bs'],
+        // ── Equity (BS only) ──
+        ["shareholders' equity",    ['equity'], 'bs'], ['stockholders equity', ['equity'], 'bs'],
+        ['total equity',            ['equity'], 'bs'], ['equity',             ['equity'], 'bs'],
+        ['share capital',           ['share_cap'], 'bs'], ['share / equity capital',['share_cap'], 'bs'],
+        ['paid-in capital',         ['share_cap'], 'bs'], ['issued capital',  ['share_cap'], 'bs'],
+        ['retained earnings',       ['reserves'], 'bs'], ['retained profit',  ['reserves'], 'bs'],
+        ['reserves',                ['reserves'], 'bs'],
+        // ── Key inputs (debt → BS, capex/wc → CF) ──
+        ['financial debt',          ['debt'], 'bs'], ['total debt',          ['debt'], 'bs'],
+        ['total financial debt',    ['debt'], 'bs'], ['interest-bearing',    ['debt'], 'bs'],
+        ['capital expenditures',    ['capex'], 'cf bs'], ['capital expenditure', ['capex'], 'cf bs'],
+        ['capex',                   ['capex'], 'cf bs'],
+        ['additions to fixed',      ['capex'], 'cf bs'], ['purchase of ppe',    ['capex'], 'cf bs'],
+        ['change in working capital',['wcChange'], 'cf'], ['nwc change',     ['wcChange'], 'cf'],
+        ['changes in working capital',['wcChange'], 'cf'],
       ];
-      // Pass 1: detect year column headers (handles "2022A", "FY2024", "2024E" etc.)
-      let colToYearIdx = {}; // raw column index → YEARS array index
-      for (const row of rows) {
-        const found = {};
-        row.forEach((cell, ci) => {
-          if (ci === 0) return;
-          const yr = String(cell).match(/(20\d{2})(?!\d)/)?.[1];
-          if (yr) { const yi = YEARS.indexOf(yr); if (yi >= 0) found[ci] = yi; }
-        });
-        if (Object.keys(found).length >= 1) { colToYearIdx = found; break; }
-      }
-      const hasYearCols = Object.keys(colToYearIdx).length > 0;
 
-      let _parsedUpload = {};
+      // Filter MAP entries by the current sheet kind. Unknown sheets get all entries.
+      function entriesForSheet(kind) {
+        if (kind === 'unknown') return MAP_ENTRIES;
+        return MAP_ENTRIES.filter(e => {
+          const mask = e[2] || '';
+          return mask.split(/\s+/).includes(kind);
+        });
+      }
+      // ── Per-sheet processing ──
+      // Each sheet detects its own year columns and runs only its tagged MAP entries.
+      // Also collect any "estimate" year mismatches (e.g. file has 2025E loaded into a 2025 actuals slot).
+      const ALWAYS_POSITIVE = ['capex'];
+      let _parsedUpload = {};                  // elId → value (first-write wins, across all sheets)
       let mapped = 0;
-      const unmappedRows = [];
-      rows.forEach(row => {
-        if (!row[0]) return;
-        const label = String(row[0]).toLowerCase().trim();
-        // Determine whether this row has any usable numeric data
-        const numCols = row.slice(1).filter(c => c !== '' && !isNaN(parseFloat(c)));
-        const hasData = hasYearCols
-          ? Object.keys(colToYearIdx).some(ci => { const v = row[+ci]; return v !== undefined && v !== '' && !isNaN(parseFloat(v)); })
-          : numCols.length > 0;
-        if (!hasData) return;
-        let matched = false;
-        for (const [key, fieldIds] of MAP_ENTRIES) {
-          if (!keyMatches(label, key)) continue;
-          matched = true;
-          if (!fieldIds.length) break; // calc cell — skip writing but don't flag as unmapped
-          fieldIds.forEach(fid => {
-            // Resolve sentinel: other_opex_total → other_opex only if no individual lines mapped yet
-            const resolvedFid = fid === 'other_opex_total' ? 'other_opex' : fid;
-            const isTotalSentinel = fid === 'other_opex_total';
-            // Fields where multiple rows should SUM (e.g. S&M + G&A + R&D → other_opex)
-            const ADDITIVE = ['other_opex'];
-            const ALWAYS_POSITIVE = ['capex'];
-            if (hasYearCols) {
-              Object.entries(colToYearIdx).forEach(([colIdxStr, yi]) => {
-                const val = row[+colIdxStr];
-                if (val === undefined || val === '' || isNaN(parseFloat(val))) return;
-                const elId = resolvedFid + '_' + YEARS[yi];
-                const el = document.getElementById(elId);
-                if (!el || el.classList.contains('calc-cell')) return;
-                const parsed = ALWAYS_POSITIVE.includes(resolvedFid) ? Math.abs(parseFloat(val)) : parseFloat(val);
-                if (isTotalSentinel) {
-                  // Total OpEx: only use if no individual lines were already accumulated
-                  if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
-                    _parsedUpload[elId] = parsed; mapped++;
-                  }
-                } else if (ADDITIVE.includes(resolvedFid)) {
-                  // Accumulate — so S&M + G&A + R&D sum to correct Total OpEx
-                  _parsedUpload[elId] = (parseFloat(_parsedUpload[elId]) || 0) + parsed;
-                  mapped++;
-                } else if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
-                  // First-write-wins for all other fields (prevents memo rows overwriting BS)
-                  _parsedUpload[elId] = parsed;
-                  mapped++;
-                }
-              });
-            } else {
-              // Positional fallback — no year headers found in file
-              YEARS.forEach((yr, yi) => {
-                const val = numCols[yi] !== undefined ? numCols[yi] : numCols[numCols.length-1];
-                const elId = resolvedFid + '_' + yr;
-                const el = document.getElementById(elId);
-                if (!el || el.classList.contains('calc-cell') || val === undefined || val === '') return;
-                const parsed = ALWAYS_POSITIVE.includes(resolvedFid) ? Math.abs(parseFloat(val)) : parseFloat(val);
-                if (isTotalSentinel) {
-                  if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
-                    _parsedUpload[elId] = parsed; mapped++;
-                  }
-                } else if (ADDITIVE.includes(resolvedFid)) {
-                  _parsedUpload[elId] = (parseFloat(_parsedUpload[elId]) || 0) + parsed;
-                  mapped++;
-                } else if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
-                  _parsedUpload[elId] = parsed;
-                  mapped++;
-                }
-              });
+      const unmappedRows = [];                 // rows that didn't match anything
+      const sheetSummary = [];                 // per-sheet diagnostics
+      const allFileYears = new Set();          // every 20xx number we saw in any header
+      const droppedYears = new Set();          // 20xx years present in file but outside YEARS window
+      const estimateYearsLoaded = new Set();   // years marked E/F/B in file that DID load into form
+
+      sheets.forEach(sheet => {
+        const sheetRows = sheet.rows;
+        const entries = entriesForSheet(sheet.kind);
+
+        // Detect year column headers for THIS sheet (handles "2022A", "FY2024", "2024E", "2024 E" etc.)
+        // Also remember for each column whether the year was tagged as an estimate (E/F/B suffix).
+        let colToYearIdx = {};
+        let colIsEstimate = {};
+        for (const row of sheetRows) {
+          const foundYears = {};
+          const foundEst = {};
+          row.forEach((cell, ci) => {
+            if (ci === 0) return;
+            const txt = String(cell);
+            const m = txt.match(/(20\d{2})(?!\d)\s*([AaEeFfBb]?)/);
+            if (m) {
+              const yr = m[1];
+              const suffix = (m[2] || '').toLowerCase();
+              allFileYears.add(yr);
+              const yi = YEARS.indexOf(yr);
+              if (yi >= 0) {
+                foundYears[ci] = yi;
+                foundEst[ci]   = suffix === 'e' || suffix === 'f' || suffix === 'b';
+              } else {
+                droppedYears.add(yr);
+              }
             }
           });
-          break; // first match wins
+          if (Object.keys(foundYears).length >= 1) {
+            colToYearIdx = foundYears;
+            colIsEstimate = foundEst;
+            break;
+          }
         }
-        if (!matched) unmappedRows.push(String(row[0]).trim());
+        const hasYearCols = Object.keys(colToYearIdx).length > 0;
+
+        let sheetMapped = 0;
+        const sheetUnmapped = [];
+
+        sheetRows.forEach(row => {
+          if (!row[0]) return;
+          const label = String(row[0]).toLowerCase().trim();
+          const numCols = row.slice(1).filter(c => c !== '' && !isNaN(parseFloat(c)));
+          const hasData = hasYearCols
+            ? Object.keys(colToYearIdx).some(ci => { const v = row[+ci]; return v !== undefined && v !== '' && !isNaN(parseFloat(v)); })
+            : numCols.length > 0;
+          if (!hasData) return;
+
+          let matched = false;
+          for (const entry of entries) {
+            const [key, fieldIds] = entry;
+            if (!keyMatches(label, key)) continue;
+            matched = true;
+            if (!fieldIds.length) break; // calc cell — matched but not written
+            fieldIds.forEach(fid => {
+              // Resolve sentinel: other_opex_total → other_opex only if no individual lines mapped yet
+              const isTotalSentinel = fid === 'other_opex_total';
+              const resolvedFid = isTotalSentinel ? 'other_opex' : fid;
+              // other_opex accumulates additively so S&M + G&A + R&D sum correctly
+              const ADDITIVE = ['other_opex'];
+              if (hasYearCols) {
+                Object.entries(colToYearIdx).forEach(([colIdxStr, yi]) => {
+                  const val = row[+colIdxStr];
+                  if (val === undefined || val === '' || isNaN(parseFloat(val))) return;
+                  const elId = resolvedFid + '_' + YEARS[yi];
+                  const el = document.getElementById(elId);
+                  if (!el || el.classList.contains('calc-cell')) return;
+                  const parsed = ALWAYS_POSITIVE.includes(resolvedFid) ? Math.abs(parseFloat(val)) : parseFloat(val);
+                  if (isTotalSentinel) {
+                    // Sentinel: only use total if no individual lines were accumulated yet
+                    if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
+                      _parsedUpload[elId] = parsed;
+                      if (colIsEstimate[colIdxStr]) estimateYearsLoaded.add(YEARS[yi]);
+                      mapped++; sheetMapped++;
+                    }
+                  } else if (ADDITIVE.includes(resolvedFid)) {
+                    // Accumulate: add to existing (handles split opex lines)
+                    _parsedUpload[elId] = (parseFloat(_parsedUpload[elId]) || 0) + parsed;
+                    if (colIsEstimate[colIdxStr]) estimateYearsLoaded.add(YEARS[yi]);
+                    mapped++; sheetMapped++;
+                  } else if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
+                    // First-write-wins for all other fields
+                    _parsedUpload[elId] = parsed;
+                    if (colIsEstimate[colIdxStr]) estimateYearsLoaded.add(YEARS[yi]);
+                    mapped++; sheetMapped++;
+                  }
+                });
+              } else {
+                YEARS.forEach((yr, yi) => {
+                  const val = numCols[yi] !== undefined ? numCols[yi] : numCols[numCols.length-1];
+                  const elId = resolvedFid + '_' + yr;
+                  const el = document.getElementById(elId);
+                  if (!el || el.classList.contains('calc-cell') || val === undefined || val === '') return;
+                  const parsed = ALWAYS_POSITIVE.includes(resolvedFid) ? Math.abs(parseFloat(val)) : parseFloat(val);
+                  if (isTotalSentinel) {
+                    if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
+                      _parsedUpload[elId] = parsed; mapped++; sheetMapped++;
+                    }
+                  } else if (ADDITIVE.includes(resolvedFid)) {
+                    _parsedUpload[elId] = (parseFloat(_parsedUpload[elId]) || 0) + parsed;
+                    mapped++; sheetMapped++;
+                  } else if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
+                    _parsedUpload[elId] = parsed; mapped++; sheetMapped++;
+                  }
+                });
+              }
+            });
+            break; // first match wins
+          }
+          if (!matched) {
+            sheetUnmapped.push(String(row[0]).trim());
+            unmappedRows.push(String(row[0]).trim());
+          }
+        });
+
+        sheetSummary.push({
+          name: sheet.name,
+          kind: sheet.kind,
+          mapped: sheetMapped,
+          unmapped: sheetUnmapped.length
+        });
       });
+
+      // ── Tax-expense synthesis fallback ──
+      // Some IS templates show "Pre-Tax Income" + "Tax Rate" but no explicit "Tax Expense" row,
+      // leaving the form's tax_YYYY fields empty (and breaking NPAT-dependent methods).
+      // If we have BOTH drivers AND the tax fields are still empty, synthesise: tax = EBT × rate.
+      // Only fills empty cells, never overwrites real data, and only fires when we recognised
+      // an Income Statement sheet (avoids running on ambiguous one-sheet workbooks).
+      const synthesisedTaxYears = [];
+      const isSheets = sheets.filter(s => s.kind === 'is');
+      if (isSheets.length > 0) {
+        // Collect Pre-Tax Income & Tax Rate per year by scanning recognised IS sheets directly.
+        const preTax = {};   // YYYY → number
+        const taxRate = {};  // YYYY → number (decimal, e.g. 0.25)
+        isSheets.forEach(sheet => {
+          // Reuse the same year-detection logic we ran above
+          let cyi = {};
+          for (const row of sheet.rows) {
+            const found = {};
+            row.forEach((cell, ci) => {
+              if (ci === 0) return;
+              const m = String(cell).match(/(20\d{2})(?!\d)\s*([AaEeFfBb]?)/);
+              if (m && YEARS.includes(m[1])) found[ci] = YEARS.indexOf(m[1]);
+            });
+            if (Object.keys(found).length) { cyi = found; break; }
+          }
+          if (!Object.keys(cyi).length) return;
+          sheet.rows.forEach(row => {
+            if (!row[0]) return;
+            const label = String(row[0]).toLowerCase().trim();
+            const isPreTax = /\bpre[\s\-]?tax\b/.test(label) && /\b(income|profit|earnings)\b/.test(label);
+            const isRate = /\btax\s+rate\b/.test(label);
+            if (!isPreTax && !isRate) return;
+            Object.entries(cyi).forEach(([colIdxStr, yi]) => {
+              const v = row[+colIdxStr];
+              if (v === undefined || v === '' || isNaN(parseFloat(v))) return;
+              const yr = YEARS[yi];
+              const num = parseFloat(v);
+              if (isPreTax && preTax[yr] === undefined) preTax[yr] = num;
+              if (isRate   && taxRate[yr] === undefined) taxRate[yr] = num;
+            });
+          });
+        });
+        // Tax rates are sometimes given as a percentage (25) instead of a decimal (0.25).
+        // Treat anything > 1 as a percentage and convert.
+        Object.keys(taxRate).forEach(yr => { if (taxRate[yr] > 1) taxRate[yr] = taxRate[yr] / 100; });
+        // Synthesise where both drivers exist AND the form's tax field is still empty
+        YEARS.forEach(yr => {
+          if (preTax[yr] === undefined || taxRate[yr] === undefined) return;
+          const elId = 'tax_' + yr;
+          const el = document.getElementById(elId);
+          if (!el || el.classList.contains('calc-cell')) return;
+          if (Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) return;
+          _parsedUpload[elId] = preTax[yr] * taxRate[yr];
+          synthesisedTaxYears.push({ year: yr, ebt: preTax[yr], rate: taxRate[yr], tax: preTax[yr] * taxRate[yr] });
+          mapped++;
+        });
+      }
+      // ── Notices ──
+      const SHEET_KIND_LABEL = { is:'Income Statement', bs:'Balance Sheet', cf:'Cash Flow Statement', unknown:'Unrecognised' };
+      const sheetNote = sheets.length > 1
+        ? `<div style="margin-top:8px;padding:6px 10px;background:rgba(13,31,45,.04);border:1px solid var(--border);border-radius:6px;font-size:11.5px;color:var(--text2)"><strong>Sheets detected:</strong> ${sheetSummary.map(s => `<span style="color:var(--navy)">${s.name}</span> → ${SHEET_KIND_LABEL[s.kind]} <span style="color:var(--text3)">(${s.mapped} fields)</span>`).join(' · ')}</div>`
+        : '';
+
+      // Year-mismatch warnings — these are the most damaging silent failures.
+      const yearWarnings = [];
+      if (droppedYears.size > 0) {
+        const dropped = Array.from(droppedYears).sort();
+        yearWarnings.push(`Years <strong>${dropped.join(', ')}</strong> in the file were ignored — the form only accepts ${YEARS.join(', ')}.`);
+      }
+      if (estimateYearsLoaded.size > 0) {
+        const est = Array.from(estimateYearsLoaded).sort();
+        yearWarnings.push(`<strong>${est.join(', ')}</strong> appears to be a forecast/estimate column (E/F/B suffix) but was loaded into an actuals slot — review carefully.`);
+      }
+      const yearNote = yearWarnings.length
+        ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(239,159,39,.10);border:1px solid rgba(239,159,39,.35);border-radius:6px;font-size:11.5px;color:#9a4f00">⚠ ${yearWarnings.join('<br>⚠ ')}</div>`
+        : '';
+
+      // Tax-synthesis notice — show explicitly when we derived Tax Expense from EBT × rate.
+      // Users need to know this happened so they can override if their tax line differs from the simple multiplication.
+      const synthNote = synthesisedTaxYears.length
+        ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.30);border-radius:6px;font-size:11.5px;color:#0d7a64"><strong>ℹ Synthesised Tax Expense</strong> — your IS shows Pre-Tax Income and Tax Rate but no explicit Tax Expense row. Computed as EBT × rate: ${synthesisedTaxYears.map(s => `${s.year}: ${s.ebt.toLocaleString()} × ${(s.rate*100).toFixed(1)}% = <strong>${s.tax.toLocaleString()}</strong>`).join(' · ')}. Override the tax cells if your effective rate differs.</div>`
+        : '';
+
       // Show scale prompt — do NOT write to form yet
       const unmappedNote = unmappedRows.length
         ? `<div style="margin-top:8px;padding:6px 10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:6px;font-size:11.5px;color:#b45309"><strong>${unmappedRows.length} row(s) not auto-mapped</strong> — review manually: ${unmappedRows.slice(0,5).map(r=>`<em>${r}</em>`).join(', ')}${unmappedRows.length>5?' …':''}</div>`
@@ -3208,6 +3473,9 @@ function parseExcel(file, status) {
           </select>
           <button onclick="applyUploadScale()" style="padding:6px 16px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600">Apply &amp; Load Values</button>
         </div>
+        ${sheetNote}
+        ${yearNote}
+        ${synthNote}
         ${unmappedNote}
       </div>`;
       window._parsedUpload = _parsedUpload;
@@ -4557,6 +4825,8 @@ window.addEventListener('DOMContentLoaded', () => {
   initConsentBanner();
   initAuth();
   buildForms();
+  // Load Argos quarterly history from Supabase — runs async so it doesn't block auth
+  loadArgosQuarterly();
 });
 
 // ── IN-APP MODAL (replaces native confirm dialogs) ──
