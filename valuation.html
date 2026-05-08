@@ -1072,8 +1072,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
     </div>
 
     <!-- Hidden legacy canvas kept for chartPeer variable / PDF compat -->
-    <canvas id="chartPeer" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" aria-hidden="true"></canvas>
-
+    <div style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none" aria-hidden="true"><canvas id="chartPeer" width="1" height="1"></canvas></div>
     <div class="disclaimer">
       <strong>Important Notice:</strong> This valuation is indicative and based exclusively on the information provided and standardised assumptions. It constitutes an automated, non-binding estimate for general information purposes only and shall not be construed as financial, legal, tax or investment advice.
     </div>
