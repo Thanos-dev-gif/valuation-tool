@@ -3107,7 +3107,8 @@ async function parsePDF(file, status) {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     const rows = [];
-    let allFileYears = new Set(); // all 20XX years found anywhere in the file
+    let allFileYears = new Set();
+    let hasXCols = false; // tracks whether any page found year columns by X position
 
     for (let p = 1; p <= pdf.numPages; p++) {
       const page = await pdf.getPage(p);
@@ -3149,7 +3150,8 @@ async function parsePDF(file, status) {
           break;
         }
       }
-      const hasXCols = yearXCols.length >= 1;
+      const hasXColsThisPage = yearXCols.length >= 1;
+      if (hasXColsThisPage) hasXCols = true;
 
       // ── Extract data rows ──
       const pageLines = [];
@@ -3194,7 +3196,7 @@ async function parsePDF(file, status) {
 
         if (!cur.label || !cur.numItems.length) continue;
 
-        if (hasXCols) {
+        if (hasXColsThisPage) {
           // Assign each number to nearest year column by X position
           const yearValues = new Array(YEARS.length).fill('');
           cur.numItems.forEach(numItem => {
@@ -3246,9 +3248,6 @@ async function parsePDF(file, status) {
     </div>`;
   }
 }
-
-// Keep hasXCols accessible to the synthetic header logic
-let _pdfHasXCols = false;
 
 // ── Shared keyword map and matcher (used by both parseExcel and parseRowsIntoForm) ──
 function keyMatchesGlobal(label, keySpec) {
