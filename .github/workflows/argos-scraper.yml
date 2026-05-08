@@ -12,7 +12,7 @@ jobs:
       - name: Fetch Argos page and extract EV/EBITDA
         id: scrape
         run: |
-          URL="https://www.argos-wityu.com/en/argos-index/"
+          URL=https://www.argos-wityu.com/en/argos-index/
           PAGE=$(curl -s -L -A "Mozilla/5.0" "$URL")
           echo "=== PAGE PREVIEW ==="
           echo "$PAGE" | head -c 3000
