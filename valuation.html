@@ -6,12 +6,28 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  // Consent Mode v2 — default denied until user opts in (GDPR/UK GDPR)
+  gtag('consent', 'default', {
+    analytics_storage:    'denied',
+    ad_storage:           'denied',
+    ad_user_data:         'denied',
+    ad_personalization:   'denied',
+    wait_for_update:      500
+  });
   gtag('js', new Date());
   gtag('config', 'G-YQVQV6BRE0', {
-    send_page_view: true,
+    send_page_view: false,   // deferred until consent granted
     cookie_flags: 'SameSite=None;Secure',
     stream_id: '14823451744'
   });
+  // Restore consent if user already accepted
+  (function() {
+    try {
+      if (localStorage.getItem('vbp_analytics_consent') === 'granted') {
+        gtag('consent', 'update', { analytics_storage: 'granted' });
+      }
+    } catch(e) {}
+  })();
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -160,6 +176,12 @@ select.form-input{cursor:pointer;appearance:none;background-image:url("data:imag
 .assumption-label{font-size:13px;color:var(--text2);flex:1}
 .assumption-input{width:100px;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--r4);background:var(--white);color:var(--text);font-size:13px;font-family:var(--font);text-align:right}
 .assumption-input:focus{outline:none;border-color:var(--mint)}
+/* Mandatory inputs — stronger visual emphasis. Gold-tinted background + thicker border.
+   Once the user types a value, the row dims back via :not(:placeholder-shown). */
+.required-input{background:rgba(201,162,39,.10);border:1.5px solid rgba(201,162,39,.55);box-shadow:inset 0 0 0 1px rgba(201,162,39,.10)}
+.required-input:focus{background:#fff;border-color:var(--mint);box-shadow:inset 0 0 0 1px rgba(0,201,167,.25)}
+.required-input:not(:placeholder-shown):not(:focus){background:#fff;border:1px solid var(--border2);box-shadow:none}
+.required-badge{display:inline-block;font-size:9px;font-weight:700;color:#9a7c1f;background:rgba(201,162,39,.16);border:1px solid rgba(201,162,39,.35);border-radius:3px;padding:1px 5px;margin-left:6px;letter-spacing:.06em;text-transform:uppercase;vertical-align:1px}
 .driver-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .driver-label{font-size:13px;color:var(--text2);width:200px;flex-shrink:0}
 .driver-bar-wrap{flex:1;background:var(--light);border-radius:3px;height:6px;overflow:hidden}
@@ -206,6 +228,29 @@ select.form-input{cursor:pointer;appearance:none;background-image:url("data:imag
   .app{grid-template-columns:1fr}
   .sidebar{display:none}
   .grid2,.grid3,.grid4{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .topbar{padding:0 14px;height:auto;min-height:56px;flex-wrap:wrap;gap:6px;padding-top:8px;padding-bottom:8px}
+  .topbar-subtitle{display:none}
+  .topbar-right{gap:6px;flex-wrap:wrap}
+  .topbar-right .btn{font-size:11px;padding:5px 10px}
+  .company-badge{display:none!important}
+  .content{padding:16px}
+  .page-header{margin-bottom:20px}
+  .page-header h2{font-size:22px}
+  .card{padding:16px}
+  .card-sm{padding:12px 14px}
+  /* Financial input tables — horizontal scroll so 4-col grid stays usable */
+  #incomeRows,#balanceRows,#cashflowRows,
+  .form-year-grid:has(input){overflow-x:auto}
+  .form-year-grid{grid-template-columns:160px 1fr 1fr 1fr;min-width:460px}
+  /* Wrap each financial section in a scroll container */
+  #tab-financials .card{overflow-x:auto}
+  .assumption-row{flex-wrap:wrap;gap:8px}
+  .assumption-input{width:80px!important}
+  .score-btn{font-size:11px;padding:6px 4px;min-width:36px}
+  .auth-panel{padding:24px 20px}
+  .disc-panel{padding:24px 20px}
 }
 .fade-in{animation:fadeIn .3s ease forwards}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -302,6 +347,20 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
 <body>
 
 <!-- ════ AUTH OVERLAY ════ -->
+<!-- ════ GDPR CONSENT BANNER ════ -->
+<div id="consentBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:10001;background:#0D1F2D;color:#fff;padding:16px 24px;box-shadow:0 -2px 12px rgba(0,0,0,.3)">
+  <div style="max-width:900px;margin:0 auto;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+    <div style="flex:1;min-width:220px;font-size:13px;color:rgba(255,255,255,.8);line-height:1.5">
+      <strong style="color:#fff">Cookie &amp; Analytics Notice</strong> — We use Google Analytics to understand how the tool is used. No personal financial data is included in analytics events. You can opt out at any time.
+      <a href="/privacy" target="_blank" style="color:rgba(201,162,39,.9);margin-left:6px;font-size:12px">Privacy Policy</a>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0">
+      <button onclick="setAnalyticsConsent('denied')" style="padding:8px 18px;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.7);font-size:13px;cursor:pointer;font-family:inherit">Decline</button>
+      <button onclick="setAnalyticsConsent('granted')" style="padding:8px 18px;border-radius:6px;border:none;background:#C9A227;color:#060f1c;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Accept Analytics</button>
+    </div>
+  </div>
+</div>
+
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-panel">
     <div class="auth-logo">
@@ -601,6 +660,10 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
     </div>
     <div class="topbar-right">
       <div class="company-badge" id="topbarBadge" style="display:none"></div>
+      <button class="btn btn-sm btn-ghost" onclick="confirmNewValuation()" title="Start a new valuation — clears all current data">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        New Valuation
+      </button>
       <button class="btn btn-sm btn-ghost" onclick="recalc()">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
         Recalculate
@@ -635,7 +698,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
           <div class="form-group"><label class="form-label">Company Name <span class="req">*</span></label><input class="form-input" id="companyName" placeholder="e.g. Acme Technologies Ltd" oninput="updateHeader()"></div>
           <div class="form-group"><label class="form-label">Valuation Date</label><input class="form-input" type="date" id="valDate" value="2025-12-31"></div>
           <div class="form-group"><label class="form-label">Currency</label>
-            <select class="form-input" id="currency" onchange="recalc()">
+            <select class="form-input" id="currency" onchange="refreshCurrencyLabels();recalc()">
               <option value="£">GBP (£)</option><option value="€">EUR (€)</option><option value="$">USD ($)</option><option value="CHF">CHF</option>
             </select>
           </div>
@@ -729,7 +792,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
     <div class="tab-content active" id="tab-manual">
       <div class="card">
         <div class="card-header">
-          <div><div class="card-title">Income Statement</div><div class="card-sub">All figures in thousands (<span id="currLabel">£</span>'000)</div></div>
+          <div><div class="card-title">Income Statement</div><div class="card-sub">All figures in thousands (<span class="currLabel">£</span>'000)</div></div>
         </div>
         <div class="form-year-grid">
           <div></div>
@@ -738,7 +801,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
         <div id="incomeRows"></div>
       </div>
       <div class="card" style="margin-top:16px">
-        <div class="card-header"><div class="card-title">Balance Sheet</div><div class="card-sub">Latest period snapshot</div></div>
+        <div class="card-header"><div class="card-title">Balance Sheet</div><div class="card-sub">Latest period snapshot — figures in thousands (<span class="currLabel">£</span>'000)</div></div>
         <div class="form-year-grid">
           <div></div>
           <div class="year-header">2022</div><div class="year-header">2023</div><div class="year-header">2024 (LTM)</div>
@@ -746,7 +809,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
         <div id="balanceRows"></div>
       </div>
       <div class="card" style="margin-top:16px">
-        <div class="card-header"><div class="card-title">Cash Flow Statement</div></div>
+        <div class="card-header"><div class="card-title">Cash Flow Statement</div><div class="card-sub">Figures in thousands (<span class="currLabel">£</span>'000)</div></div>
         <div class="form-year-grid">
           <div></div>
           <div class="year-header">2022</div><div class="year-header">2023</div><div class="year-header">2024 (LTM)</div>
@@ -759,9 +822,9 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
         <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
           <div class="upload-icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#4A6580" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
           <div class="upload-title">Upload Financial Statements</div>
-          <div class="upload-sub">Drag &amp; drop or click to browse — PDF, Excel, or image files</div>
-          <div class="upload-types"><span class="upload-type">PDF</span><span class="upload-type">XLSX</span><span class="upload-type">XLS</span><span class="upload-type">PNG / JPG</span></div>
-          <input type="file" id="fileInput" style="display:none" accept=".pdf,.xlsx,.xls,.png,.jpg,.jpeg" onchange="handleFileUpload(event)">
+          <div class="upload-sub">Drag &amp; drop or click to browse — Excel files</div>
+          <div class="upload-types"><span class="upload-type">XLSX</span><span class="upload-type">XLS</span></div>
+          <input type="file" id="fileInput" style="display:none" accept=".xlsx,.xls" onchange="handleFileUpload(event)">
         </div>
         <div id="uploadStatus" style="margin-top:16px;display:none"></div>
       </div>
@@ -818,23 +881,23 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       <div>
         <div class="assumption-group">
           <div class="assumption-group-title">DCF Assumptions</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 1)</span><input class="assumption-input" type="number" id="a_g1" value="" placeholder="15" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 2)</span><input class="assumption-input" type="number" id="a_g2" value="" placeholder="12" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 3)</span><input class="assumption-input" type="number" id="a_g3" value="" placeholder="10" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 4–5)</span><input class="assumption-input" type="number" id="a_g45" value="" placeholder="8" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Terminal Growth Rate</span><input class="assumption-input" type="number" id="a_tg" value="" placeholder="2.5" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">EBITDA Margin (forecast)</span><input class="assumption-input" type="number" id="a_margin" value="" placeholder="20" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">CapEx as % of Revenue</span><input class="assumption-input" type="number" id="a_capex" value="" placeholder="5" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Change in Working Capital %</span><input class="assumption-input" type="number" id="a_wc" value="" placeholder="2" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 1)</span><input class="assumption-input" type="number" id="a_g1" value="15" placeholder="15" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 2)</span><input class="assumption-input" type="number" id="a_g2" value="12" placeholder="12" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 3)</span><input class="assumption-input" type="number" id="a_g3" value="10" placeholder="10" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 4–5)</span><input class="assumption-input" type="number" id="a_g45" value="8" placeholder="8" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Terminal Growth Rate</span><input class="assumption-input" type="number" id="a_tg" value="2.5" placeholder="2.5" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">EBITDA Margin (forecast)</span><input class="assumption-input" type="number" id="a_margin" value="20" placeholder="20" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">CapEx as % of Revenue</span><input class="assumption-input" type="number" id="a_capex" value="5" placeholder="5" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Change in Working Capital %</span><input class="assumption-input" type="number" id="a_wc" value="2" placeholder="2" step="0.5" onchange="recalc()"> %</div>
         </div>
         <div class="assumption-group">
-          <div class="assumption-group-title">WACC Components</div>
-          <div class="assumption-row"><span class="assumption-label">Risk-Free Rate</span><input class="assumption-input" type="number" id="a_rf" value="" placeholder="4.5" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Equity Risk Premium</span><input class="assumption-input" type="number" id="a_erp" value="" placeholder="5.0" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Beta (levered)</span><input class="assumption-input" type="number" id="a_beta" value="" placeholder="1.1" step="0.05" onchange="recalc()"></div>
-          <div class="assumption-row"><span class="assumption-label">Cost of Debt (pre-tax)</span><input class="assumption-input" type="number" id="a_cod" value="" placeholder="6.0" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Tax Rate</span><input class="assumption-input" type="number" id="a_tax" value="" placeholder="25" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Debt / (Debt + Equity)</span><input class="assumption-input" type="number" id="a_leverage" value="" placeholder="30" step="1" onchange="recalc()"> %</div>
+          <div class="assumption-group-title">WACC Components <span class="required-badge">Required for DCF</span></div>
+          <div class="assumption-row"><span class="assumption-label">Risk-Free Rate</span><input class="assumption-input required-input" type="number" id="a_rf" value="4.5" placeholder="4.5" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Equity Risk Premium</span><input class="assumption-input required-input" type="number" id="a_erp" value="5.0" placeholder="5.0" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Beta (levered)</span><input class="assumption-input required-input" type="number" id="a_beta" value="1.1" placeholder="1.1" step="0.05" onchange="recalc()"></div>
+          <div class="assumption-row"><span class="assumption-label">Cost of Debt (pre-tax)</span><input class="assumption-input required-input" type="number" id="a_cod" value="6.0" placeholder="6.0" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Tax Rate</span><input class="assumption-input required-input" type="number" id="a_tax" value="25" placeholder="25" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Debt / (Debt + Equity)</span><input class="assumption-input required-input" type="number" id="a_leverage" value="30" placeholder="30" step="1" onchange="recalc()"> %</div>
           <div class="assumption-row"><span class="assumption-label"><strong>WACC (calculated)</strong></span><span id="waccDisplay" style="font-weight:600;color:var(--mint2)">—</span></div>
         </div>
         <div id="sanityWarnings" style="display:none;background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:12px 14px;margin-top:12px">
@@ -845,19 +908,19 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       </div>
       <div>
         <div class="assumption-group">
-          <div class="assumption-group-title">Multiples — Peer Group</div>
-          <div class="assumption-row"><span class="assumption-label">EBITDA Multiple (mid)</span><input class="assumption-input" type="number" id="a_ebitdaMult" value="" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">EBIT Multiple (mid)</span><input class="assumption-input" type="number" id="a_ebitMult" value="" placeholder="10" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Multiple (mid)</span><input class="assumption-input" type="number" id="a_revMult" value="" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">P/E Multiple (mid)</span><input class="assumption-input" type="number" id="a_peMult" value="" placeholder="15" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Market / Book Multiple</span><input class="assumption-input" type="number" id="a_mbMult" value="" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Terminal EV/EBITDA Multiple</span><input class="assumption-input" type="number" id="a_termMult" value="" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-group-title">Multiples — Peer Group <span class="required-badge">Required for multiples-based methods</span></div>
+          <div class="assumption-row"><span class="assumption-label">EBITDA Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_ebitdaMult" value="8" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">EBIT Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_ebitMult" value="10" placeholder="10" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">Revenue Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_revMult" value="2.0" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">P/E Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_peMult" value="15" placeholder="15" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">Market / Book Multiple</span><input class="assumption-input required-input" type="number" id="a_mbMult" value="2.0" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">Terminal EV/EBITDA Multiple</span><input class="assumption-input required-input" type="number" id="a_termMult" value="8" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
         </div>
         <div class="assumption-group">
-          <div class="assumption-group-title">Capitalised Earnings</div>
-          <div class="assumption-row"><span class="assumption-label">Capitalisation Rate</span><input class="assumption-input" type="number" id="a_capRate" value="" placeholder="20" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (low)</span><input class="assumption-input" type="number" id="a_practLo" value="" placeholder="2" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (high)</span><input class="assumption-input" type="number" id="a_practHi" value="" placeholder="4" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-group-title">Capitalised Earnings & Practitioner's <span class="required-badge">Required for those methods</span></div>
+          <div class="assumption-row"><span class="assumption-label">Capitalisation Rate</span><input class="assumption-input required-input" type="number" id="a_capRate" value="20" placeholder="20" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (low)</span><input class="assumption-input required-input" type="number" id="a_practLo" value="2" placeholder="2" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (high)</span><input class="assumption-input required-input" type="number" id="a_practHi" value="4" placeholder="4" step="0.5" onchange="recalc()"> ×</div>
         </div>
         <div class="card" style="margin-top:0">
           <div class="section-label">Method Weights for Blended EV</div>
@@ -1183,7 +1246,7 @@ const INCOME_ROWS = [
   {id:'non_op_inc', label:'Non-Operating Income'},
   {id:'extraordinary',label:'Extraordinary / Non-Recurring Items'},
   {id:'ebt',        label:'Earnings Before Taxes (EBT)',       calc:true, bold:true},
-  {id:'tax',        label:'Taxes'},
+  {id:'tax',        label:'Taxes',                                             req:true},
   {id:'npat',       label:'Net Income',                        calc:true, bold:true, color:'#00C9A7'},
 ];
 
@@ -1228,7 +1291,8 @@ const CF_ROWS = [
   {id:'fcf_calc',   label:'Free Cash Flow',                           calc:true, bold:true, color:'#00C9A7'},
 ];
 
-const YEARS = ['2022','2023','2024'];
+const _cy = new Date().getFullYear();
+const YEARS = [String(_cy-3), String(_cy-2), String(_cy-1)];
 
 let scores = {sc0:3,sc1:3,sc2:3,sc3:3,sc4:3,sc5:3,sc6:3};
 
@@ -1292,7 +1356,14 @@ function navigate(page) {
   if (['overview','methods','dcf','sensitivity','scorecard','assumptions'].includes(page)) {
     if (page === 'overview') {
       const missing = validateRequired();
-      if (missing.length > 0 && !confirm('Some required fields are empty.\n\nContinue anyway?')) return;
+      if (missing.length > 0) {
+        showAppModal(
+          '<strong>Some required fields are empty.</strong><br><br>Continue to results anyway?',
+          () => { requestAnimationFrame(() => { setTimeout(() => recalc(), 50); }); },
+          'Continue anyway', 'Go back'
+        );
+        return;
+      }
     }
     // FIX: Use requestAnimationFrame + timeout so the page is visible and canvases have size
     requestAnimationFrame(() => {
@@ -1347,12 +1418,12 @@ function buildForms() {
     if (row.section) {
       html += `<div style="background:var(--navy);color:rgba(255,255,255,.7);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:6px 8px;margin:6px 0 2px;border-radius:4px">${row.section}</div>`;
     }
-    const reqMark = row.req ? ' <span style="color:var(--red)">*</span>' : '';
+    const reqMark = row.req ? ' <span class="required-badge">required</span>' : '';
     const inputs = YEARS.map(y => {
       if (row.calc) {
         return `<div class="calc-cell" id="${row.id}_${y}" style="padding:8px 10px;text-align:right;font-size:12.5px;font-weight:${row.bold?'600':'400'};color:${row.color||'var(--text2)'};background:var(--lighter);border:1px solid var(--border);border-radius:6px">—</div>`;
       }
-      return `<input class="form-input" type="number" id="${row.id}_${y}" oninput="recalc()" style="text-align:right;font-size:13px;${row.bold?'font-weight:600':''}" placeholder="">`;
+      return `<input class="form-input${row.req?' required-input':''}" type="number" id="${row.id}_${y}" oninput="recalc()" style="text-align:right;font-size:13px;${row.bold?'font-weight:600':''}" placeholder=" ">`;
     }).join('');
     const labelStyle = row.bold ? 'font-weight:600;color:var(--navy);font-size:13px' : 'color:var(--text2);font-size:12.5px';
     html += `<div class="form-year-grid" style="margin-bottom:3px;align-items:center">
@@ -1370,25 +1441,43 @@ function buildForms() {
   document.getElementById('cashflowRows').innerHTML = CF_ROWS.map(r => makeRow(r)).join('');
 
   document.querySelectorAll('.year-header').forEach((el, i) => {
-    if (YEARS[i]) el.textContent = YEARS[i];
+    const yr = YEARS[i % YEARS.length];
+    const isLast = (i % YEARS.length) === YEARS.length - 1;
+    el.textContent = isLast ? yr + ' (LTM)' : yr;
   });
 
   buildScorecard();
 }
 
 function validateRequired() {
-  const reqFields = ['rev','cogs','assets','debt','capex'];
+  const ltmY = YEARS[YEARS.length-1];
+  // Full P&L for LTM period
+  const plFields = ['rev','cogs','tax'];
+  // Key balance sheet and cash flow inputs
+  const otherFields = ['debt','capex'];
   const missing = [];
-  reqFields.forEach(id => {
-    const y = YEARS[YEARS.length-1];
-    const el = document.getElementById(id+'_'+y);
+
+  [...plFields, ...otherFields].forEach(id => {
+    const el = document.getElementById(id+'_'+ltmY);
     if (el && !el.value && !el.classList.contains('calc-cell')) {
-      missing.push(id+' ('+y+')');
+      missing.push(id+' ('+ltmY+')');
       el.style.borderColor = 'var(--red)';
     } else if (el) {
-      el.style.borderColor = '';
+      el.style.borderColor = 'rgba(201,162,39,.45)'; // restore required indicator
     }
   });
+
+  // Require at least 2 of 3 historical years have revenue
+  const revFilled = YEARS.filter(y => { const el = document.getElementById('rev_'+y); return el && el.value; });
+  if (revFilled.length < 2) missing.push('Revenue for at least 2 of ' + YEARS.length + ' historical years');
+
+  // Balance sheet equality check (warn if Assets ≠ Liabilities + Equity by >5%)
+  const totalAssets = v('assets_'+ltmY);
+  const totalLE = v('liabs_'+ltmY) + v('equity_'+ltmY);
+  if (totalAssets > 0 && totalLE > 0 && Math.abs(totalAssets - totalLE) > totalAssets * 0.05) {
+    missing.push('Balance sheet does not balance: Assets ≠ Liabilities + Equity ('+ltmY+')');
+  }
+
   return missing;
 }
 
@@ -1423,6 +1512,30 @@ function setScore(id, val) {
 // ═══ HELPERS ═══
 function v(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
 function getCurr() { return document.getElementById('currency')?.value || '£'; }
+function refreshCurrencyLabels() {
+  const sym = getCurr();
+  document.querySelectorAll('.currLabel').forEach(el => { el.textContent = sym; });
+}
+
+// ── GDPR Analytics Consent ──
+function initConsentBanner() {
+  try {
+    const stored = localStorage.getItem('vbp_analytics_consent');
+    if (!stored) {
+      document.getElementById('consentBanner').style.display = 'block';
+    }
+  } catch(e) {}
+}
+function setAnalyticsConsent(decision) {
+  try { localStorage.setItem('vbp_analytics_consent', decision); } catch(e) {}
+  document.getElementById('consentBanner').style.display = 'none';
+  if (typeof gtag !== 'undefined') {
+    gtag('consent', 'update', { analytics_storage: decision });
+    if (decision === 'granted') {
+      gtag('event', 'page_view', { send_to: 'G-YQVQV6BRE0' });
+    }
+  }
+}
 function fmt(n, decimals=0) {
   if (!isFinite(n) || isNaN(n)) return '—';
   const c = getCurr(), neg = n < 0, a = Math.abs(n);
@@ -1714,20 +1827,40 @@ function gatherData() {
   const iProfile = INDUSTRY_PROFILES[sec] || INDUSTRY_PROFILES.tech;
   const W = iProfile.w;
 
-  // Each method: native value, EV-native flag, and an "active" flag. Methods become inactive
+  // Each method: native value, EV-native flag, an "active" flag, and (when inactive) a 'reason'
+  // pointing the user to the specific input that's missing or unworkable. Methods become inactive
   // when their driver is missing or when they would produce a nonsensical negative EV
   // (e.g. applying a multiple to negative earnings). Inactive methods are dropped from the
   // blend and the remaining weights are renormalised so the weights always sum to 100%.
+  // Diagnostic helpers — each returns a short, action-oriented string when its check fails.
+  const _missingRev = baseRev <= 0 ? 'enter Operating Revenue (latest year) on the Financial Statements page' : null;
+  const _missingWacc = wacc <= 0 ? 'fill all WACC components (Risk-Free Rate, ERP, Beta, Cost of Debt, Tax Rate, Leverage)' : null;
+  const _missingEBITDA = adjEBITDA <= 0 ? 'check that Revenue minus operating costs yields positive EBITDA in the latest year' : null;
+  const _missingEBIT = adjEBIT <= 0 ? 'EBIT (after D&A) is not positive in the latest year' : null;
+  const _missingNPAT = (npat_arr[2]||0) <= 0 ? 'Net Income (latest year) is not positive — check tax & finance items' : null;
+  const _missingNAV = nav <= 0 ? 'enter Total Assets and Total Liabilities so equity NAV becomes positive' : null;
+  const _missingBV = bvEquity <= 0 ? 'book equity (Share Capital + Reserves) is zero or negative — check the balance sheet' : null;
+  const _firstReason = (...reasons) => reasons.filter(Boolean)[0] || 'an input is missing';
+
   const methods = [
-    {name:'DCF Method',               native:evDCF,    w:W.dcf,    isEV:true,  active: baseRev > 0 && wacc > 0},
-    {name:"Practitioner's Value",     native:evPract,  w:W.pract,  isEV:true,  active: adjEBITDA > 0 && (practLo+practHi) > 0},
-    {name:'Capitalised Earnings',     native:evCap,    w:W.cap,    isEV:true,  active: adjEBITDA > 0 && capRate > 0},
-    {name:'Net Asset Value (Equity)', native:eqNAV,    w:W.nav,    isEV:false, active: nav > 0},
-    {name:'Sales / Revenue Multiple', native:evRev,    w:W.rev,    isEV:true,  active: baseRev > 0 && effRevMult > 0},
-    {name:'EBITDA Multiple',          native:evEBITDA, w:W.ebitda, isEV:true,  active: adjEBITDA > 0 && effMult > 0},
-    {name:'EBIT Multiple',            native:evEBIT,   w:W.ebit,   isEV:true,  active: adjEBIT > 0 && effEbitMult > 0},
-    {name:'P/E Multiple',             native:eqPE,     w:W.pe,     isEV:false, active: (npat_arr[2]||0) > 0 && effPeMult > 0},
-    {name:'Market / Book Multiple',   native:eqMB,     w:W.mb,     isEV:false, active: bvEquity > 0 && mbMult > 0},
+    {name:'DCF Method',               native:evDCF,    w:W.dcf,    isEV:true,  active: baseRev > 0 && wacc > 0,
+     reason: !(baseRev > 0 && wacc > 0) ? _firstReason(_missingRev, _missingWacc) : null},
+    {name:"Practitioner's Value",     native:evPract,  w:W.pract,  isEV:true,  active: adjEBITDA > 0 && (practLo+practHi) > 0,
+     reason: !(adjEBITDA > 0 && (practLo+practHi) > 0) ? _firstReason(_missingEBITDA, (practLo+practHi)<=0 ? "set Practitioner's multipliers (low and high)" : null) : null},
+    {name:'Capitalised Earnings',     native:evCap,    w:W.cap,    isEV:true,  active: adjEBITDA > 0 && capRate > 0,
+     reason: !(adjEBITDA > 0 && capRate > 0) ? _firstReason(_missingEBITDA, capRate<=0 ? 'set the Capitalisation Rate' : null) : null},
+    {name:'Net Asset Value (Equity)', native:eqNAV,    w:W.nav,    isEV:false, active: nav > 0,
+     reason: nav <= 0 ? _missingNAV : null},
+    {name:'Sales / Revenue Multiple', native:evRev,    w:W.rev,    isEV:true,  active: baseRev > 0 && effRevMult > 0,
+     reason: !(baseRev > 0 && effRevMult > 0) ? _firstReason(_missingRev, effRevMult<=0 ? 'set the Revenue Multiple (mid)' : null) : null},
+    {name:'EBITDA Multiple',          native:evEBITDA, w:W.ebitda, isEV:true,  active: adjEBITDA > 0 && effMult > 0,
+     reason: !(adjEBITDA > 0 && effMult > 0) ? _firstReason(_missingEBITDA, effMult<=0 ? 'set the EBITDA Multiple (mid)' : null) : null},
+    {name:'EBIT Multiple',            native:evEBIT,   w:W.ebit,   isEV:true,  active: adjEBIT > 0 && effEbitMult > 0,
+     reason: !(adjEBIT > 0 && effEbitMult > 0) ? _firstReason(_missingEBIT, effEbitMult<=0 ? 'set the EBIT Multiple (mid)' : null) : null},
+    {name:'P/E Multiple',             native:eqPE,     w:W.pe,     isEV:false, active: (npat_arr[2]||0) > 0 && effPeMult > 0,
+     reason: !((npat_arr[2]||0) > 0 && effPeMult > 0) ? _firstReason(_missingNPAT, effPeMult<=0 ? 'set the P/E Multiple (mid)' : null) : null},
+    {name:'Market / Book Multiple',   native:eqMB,     w:W.mb,     isEV:false, active: bvEquity > 0 && mbMult > 0,
+     reason: !(bvEquity > 0 && mbMult > 0) ? _firstReason(_missingBV, mbMult<=0 ? 'set the Market / Book Multiple' : null) : null},
   ];
 
   // Gross-up equity-native methods to EV so everything blends on the same basis.
@@ -1744,7 +1877,7 @@ function gatherData() {
   // Preserve legacy key 'allMethods' with 'ev' so existing UI code keeps working.
   // Each row now carries: ev (grossed-up), w (original), wEff (renormalised), active, isEV.
   const allMethods = methods;
-  const excludedMethods = methods.filter(m => !m.active).map(m => m.name);
+  const excludedMethods = methods.filter(m => !m.active).map(m => ({name:m.name, reason:m.reason || 'an input is missing'}));
 
   const blendedEV    = allMethods.reduce((s,m) => s + m.ev * m.wEff, 0);
   const equityValue  = blendedEV - debt + cash;
@@ -1789,8 +1922,8 @@ function runSanityChecks(D) {
   const kd = D.kd * 100;
   const margin = D.rev[2] > 0 ? D.adjEBITDA / D.rev[2] * 100 : 0;
   const beta = v('a_beta');
-  const totalAssets = v('assets_2024') || (v('cash_2024')+v('receivables_2024')+v('other_ca_2024')+v('inventories_2024')+v('prepayments_2024')+v('fin_assets_2024')+v('lt_invest_2024')+v('ppe_2024')+v('property_2024')+v('intangibles_2024'));
-  const totalLE = (v('acc_payable_2024')+v('st_debt_2024')+v('other_cl_2024')+v('deferred_inc_2024')+v('lt_debt_2024')+v('other_ll_2024')+v('provisions_2024')+v('share_cap_2024')+v('reserves_2024')+v('net_inc_bs_2024'));
+  const totalAssets = v('assets_'+YEARS[YEARS.length-1]) || (v('cash_'+YEARS[YEARS.length-1])+v('receivables_'+YEARS[YEARS.length-1])+v('other_ca_'+YEARS[YEARS.length-1])+v('inventories_'+YEARS[YEARS.length-1])+v('prepayments_'+YEARS[YEARS.length-1])+v('fin_assets_'+YEARS[YEARS.length-1])+v('lt_invest_'+YEARS[YEARS.length-1])+v('ppe_'+YEARS[YEARS.length-1])+v('property_'+YEARS[YEARS.length-1])+v('intangibles_'+YEARS[YEARS.length-1]));
+  const totalLE = (v('acc_payable_'+YEARS[YEARS.length-1])+v('st_debt_'+YEARS[YEARS.length-1])+v('other_cl_'+YEARS[YEARS.length-1])+v('deferred_inc_'+YEARS[YEARS.length-1])+v('lt_debt_'+YEARS[YEARS.length-1])+v('other_ll_'+YEARS[YEARS.length-1])+v('provisions_'+YEARS[YEARS.length-1])+v('share_cap_'+YEARS[YEARS.length-1])+v('reserves_'+YEARS[YEARS.length-1])+v('net_inc_bs_'+YEARS[YEARS.length-1]));
   const weightSum = D.allMethods.reduce((s,m) => s+m.w, 0);
   const activeWeightSum = D.allMethods.reduce((s,m) => s + (m.active?m.w:0), 0);
   const tvShare = D.dcfEV > 0 ? (D.termVal / D.dcfEV * 100) : 0;
@@ -1804,7 +1937,20 @@ function runSanityChecks(D) {
   if (beta > 2.5) warnings.push('⚠️ Beta of ' + beta + ' is very high. Typical range is 0.5–2.0.');
   if (totalAssets > 0 && totalLE > 0 && Math.abs(totalAssets - totalLE) > totalAssets * 0.05) warnings.push('⚠️ Balance sheet does not balance: Assets ≠ Liabilities + Equity (difference: ' + fmt(Math.abs(totalAssets - totalLE)) + '). Check your entries.');
   if (Math.abs(weightSum - 1) > 0.01) warnings.push('⚠️ Method weights sum to ' + (weightSum*100).toFixed(0) + '%, not 100%. Results may be skewed.');
-  if (D.excludedMethods && D.excludedMethods.length > 0) warnings.push('ℹ️ Method(s) excluded from blend because their inputs are missing or would produce negative values: ' + D.excludedMethods.join(', ') + '. Remaining weights renormalised to 100%.');
+  if (D.excludedMethods && D.excludedMethods.length > 0) {
+    // Group methods by reason so identical fixes (e.g. "fill all WACC components") collapse into one line.
+    const byReason = {};
+    D.excludedMethods.forEach(m => {
+      const r = m.reason || 'an input is missing';
+      (byReason[r] = byReason[r] || []).push(m.name);
+    });
+    const lines = Object.keys(byReason).map(reason =>
+      `<div style="padding:4px 0;font-size:12px;color:#9a4f00"><strong>${byReason[reason].join(', ')}:</strong> ${reason}.</div>`
+    );
+    warnings.push('__html__<div style="padding:4px 0;font-size:12.5px;color:#b45309;font-weight:600;margin-bottom:4px">ℹ️ ' + D.excludedMethods.length + ' method(s) excluded from the blend — fix the inputs below to activate them:</div>'
+      + lines.join('')
+      + '<div style="padding:4px 0;font-size:11px;color:#b45309;font-style:italic;margin-top:2px">Remaining weights renormalised to 100%.</div>');
+  }
   if (activeWeightSum > 0 && activeWeightSum < 0.5) warnings.push('⚠️ Only ' + (activeWeightSum*100).toFixed(0) + '% of the industry weighting is active. The blend relies on few methods — treat results cautiously.');
 
   const container = document.getElementById('sanityWarnings');
@@ -1814,7 +1960,14 @@ function runSanityChecks(D) {
     container.innerHTML = '';
   } else {
     container.style.display = 'block';
-    container.innerHTML = warnings.map(w => `<div style="padding:6px 0;border-bottom:1px solid rgba(226,75,74,.2);font-size:12px;color:#f09595">${w}</div>`).join('');
+    container.innerHTML = warnings.map(w => {
+      // Warnings that begin with __html__ are pre-rendered HTML blocks (used for the
+      // structured "methods excluded" message that lists per-method fixes).
+      if (w.startsWith('__html__')) {
+        return `<div style="padding:8px 0;border-bottom:1px solid rgba(226,75,74,.2)">${w.slice(8)}</div>`;
+      }
+      return `<div style="padding:6px 0;border-bottom:1px solid rgba(226,75,74,.2);font-size:12px;color:#f09595">${w}</div>`;
+    }).join('');
   }
 }
 
@@ -2833,6 +2986,10 @@ function handleFileUpload(event) {
   if (!file) return;
   const status = document.getElementById('uploadStatus');
   status.style.display = 'block';
+  if (file.size > 10 * 1024 * 1024) {
+    status.innerHTML = `<div class="card card-sm" style="background:#fef2f2;border-color:#fca5a5"><div style="font-weight:500;color:var(--red)">File too large: ${(file.size/1024/1024).toFixed(1)} MB. Please upload a file under 10 MB.</div></div>`;
+    return;
+  }
   status.innerHTML = `<div class="card card-sm" style="background:var(--light)"><div style="color:var(--text2);font-size:13px">Reading file...</div></div>`;
   const ext = file.name.split('.').pop().toLowerCase();
   if (ext === 'xlsx' || ext === 'xls') {
@@ -2859,48 +3016,408 @@ function parseExcel(file, status) {
     try {
       const data = new Uint8Array(e.target.result);
       const wb = XLSX.read(data, { type:'array' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
-      const MAP = {
-        'revenue':['rev'],'sales':['rev'],'turnover':['rev'],
-        'cost of goods':['cogs'],'materials':['cogs'],'cogs':['cogs'],
-        'personnel':['personnel'],'staff costs':['personnel'],
-        'ebitda':['ebitda'],'depreciation':['da_ppe'],'amortisation':['da_int'],
-        'ebit':['ebit'],'interest expense':['fin_exp'],'financial expenses':['fin_exp'],
-        'tax':['tax'],'taxes':['tax'],'net income':['npat'],'net profit':['npat'],
-        'total assets':['assets'],'total liabilities':['liabs'],
-        'equity':['equity'],'cash':['cash'],
-        'financial debt':['debt'],'total debt':['debt'],
-        'capex':['capex'],'capital expenditure':['capex'],
-      };
-      let mapped = 0;
-      rows.forEach(row => {
-        if (!row[0]) return;
-        const label = String(row[0]).toLowerCase().trim();
-        let fieldIds = null;
-        for (const [key,ids] of Object.entries(MAP)) {
-          if (label.includes(key)) { fieldIds = ids; break; }
+
+      // ── Read each sheet separately and classify its type (IS / BS / CF) ──
+      // Routing each sheet's rows through only the relevant MAP entries prevents
+      // cross-sheet collisions like "Cash from Operations" overwriting BS cash,
+      // or "(Increase)/Decrease in Inventory" overwriting BS inventory.
+      function classifySheet(name, sheetRows) {
+        const lname = String(name || '').toLowerCase();
+        // Build a haystack from sheet name + first ~5 non-empty rows of column A
+        let header = lname;
+        let rowsScanned = 0;
+        for (const r of sheetRows) {
+          if (rowsScanned >= 5) break;
+          const cell = r && r[0] ? String(r[0]).toLowerCase() : '';
+          if (cell) { header += ' ' + cell; rowsScanned++; }
         }
-        if (!fieldIds) return;
-        const numCols = row.slice(1).filter(c => c !== '' && !isNaN(parseFloat(c)));
-        if (!numCols.length) return;
-        fieldIds.forEach(fid => {
-          YEARS.forEach((yr,yi) => {
-            const val = numCols[yi] || numCols[numCols.length-1];
-            const el = document.getElementById(fid+'_'+yr);
-            if (el && !el.classList.contains('calc-cell') && val !== undefined && val !== '') {
-              el.value = parseFloat(val) < 0 ? Math.abs(parseFloat(val)) : parseFloat(val);
-              el.style.borderColor = 'rgba(0,201,167,.5)';
-              mapped++;
+        // CF first — "cash flow" is most distinctive and contains the word "cash"
+        if (/\bcash\s*flow\b|\bflow\s+statement\b|\bcashflow\b/.test(header)) return 'cf';
+        if (/\bbalance\s*sheet\b|\bstatement\s+of\s+financial\s+position\b|\bassets\b.*\bliabilities\b/.test(header)) return 'bs';
+        if (/\bincome\s+statement\b|\bprofit\s+(?:and|&)\s+loss\b|\bp\s*&\s*l\b|\bstatement\s+of\s+(?:comprehensive\s+)?income\b|\bincome\s+&\s+expense\b/.test(header)) return 'is';
+        return 'unknown';
+      }
+      const sheets = wb.SheetNames.map(name => {
+        const ws = wb.Sheets[name];
+        const sheetRows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
+        return { name, rows: sheetRows, kind: classifySheet(name, sheetRows) };
+      });
+
+      // Word-boundary match: key must appear as a whole word/phrase in the label
+      // Prevents false positives like "revaluation reserve" matching "revenue"
+      // Supports two prefixes:
+      //   '^foo'  → must match at the START of the label (e.g. '^cash' won't match 'cash from operations')
+      //   '!foo'  → exclusion: if label contains 'foo' anywhere, the key DOES NOT match
+      // Multiple exclusions can be space-separated after the key, prefixed with '!'.
+      function keyMatches(label, keySpec) {
+        // Split spec into primary key + optional exclusions.
+        // Exclusion segments start with '!' — strip it before testing.
+        const parts = String(keySpec).split('|');
+        const primary = parts[0];
+        const exclusions = parts.slice(1)
+          .map(p => p.startsWith('!') ? p.slice(1) : p)
+          .filter(p => p.length > 0);
+        for (const ex of exclusions) {
+          if (label.includes(ex)) return false;
+        }
+        const anchorStart = primary.startsWith('^');
+        const key = anchorStart ? primary.slice(1) : primary;
+        const esc = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const pattern = anchorStart
+          ? '^' + esc + '(?:[\\s,/\\-]|$)'
+          : '(?:^|[\\s,/\\-])' + esc + '(?:[\\s,/\\-]|$)';
+        return new RegExp(pattern).test(label);
+      }
+      // MAP: [key, [fieldId, ...], sheetMask]. More specific keys first.
+      // sheetMask = space-separated list of sheet types this entry applies to ('is' | 'bs' | 'cf').
+      // Sheets classified as 'unknown' (e.g. single-sheet workbooks with no recognisable header)
+      // run ALL entries — lenient default. Sheets classified as is/bs/cf only run their tagged entries,
+      // which prevents cross-statement collisions:
+      //   - "Cash from Operations" no longer overwrites BS cash
+      //   - "(Increase)/Decrease in Inventory" no longer overwrites BS inventory
+      // Keys may also use:
+      //   '^foo'           → must match at start of label only (kills 'pre-tax' → 'tax' bug)
+      //   'foo|!bar'       → match key 'foo' but exclude if label contains 'bar'
+      // Covers EN + FR + DE + ES + IT IFRS labels.
+      const MAP_ENTRIES = [
+        // ── Revenue (IS only) ──
+        ['operating revenue',       ['rev'], 'is'], ['net revenue',          ['rev'], 'is'],
+        ['net sales',               ['rev'], 'is'], ['total revenue',        ['rev'], 'is'],
+        ['total income',            ['rev'], 'is'], ['gross revenue',        ['rev'], 'is'],
+        ['turnover',                ['rev'], 'is'], ['sales revenue',        ['rev'], 'is'],
+        ['revenue',                 ['rev'], 'is'], ['sales',                ['rev'], 'is'],
+        ["chiffre d'affaires",      ['rev'], 'is'], ['umsatz',               ['rev'], 'is'],
+        ['umsatzerlöse',            ['rev'], 'is'], ['facturación',          ['rev'], 'is'],
+        ['ingresos',                ['rev'], 'is'], ['ricavi',               ['rev'], 'is'],
+        ['produzione',              ['rev'], 'is'],
+        // ── COGS (IS only) ──
+        ['cost of goods sold',      ['cogs'], 'is'], ['cost of sales',       ['cogs'], 'is'],
+        ['cost of revenue',         ['cogs'], 'is'], ['direct costs',        ['cogs'], 'is'],
+        ['expenses for materials',  ['cogs'], 'is'], ['materials and services',['cogs'], 'is'],
+        ['purchases',               ['cogs'], 'is'], ['materials',           ['cogs'], 'is'],
+        ['cogs',                    ['cogs'], 'is'],
+        ['charges externes',        ['cogs'], 'is'], ['achats',              ['cogs'], 'is'],
+        ['materialaufwand',         ['cogs'], 'is'], ['coste de ventas',     ['cogs'], 'is'],
+        ['costo de ventas',         ['cogs'], 'is'], ['costi di produzione', ['cogs'], 'is'],
+        // ── Personnel (IS only) ──
+        ['staff costs',             ['personnel'], 'is'], ['employee costs',  ['personnel'], 'is'],
+        ['payroll',                 ['personnel'], 'is'], ['wages and salaries',['personnel'], 'is'],
+        ['salaries and wages',      ['personnel'], 'is'], ['labour costs',    ['personnel'], 'is'],
+        ['personnel expenses',      ['personnel'], 'is'], ['personnel costs', ['personnel'], 'is'],
+        ['personnel',               ['personnel'], 'is'],
+        ['charges de personnel',    ['personnel'], 'is'], ['frais de personnel',['personnel'], 'is'],
+        ['personalaufwand',         ['personnel'], 'is'], ['gastos de personal',['personnel'], 'is'],
+        ['costi del personale',     ['personnel'], 'is'],
+        // ── D&A (IS, also CF where add-back appears) ──
+        ['depreciation of ppe',     ['da_ppe'], 'is cf'], ['depreciation of plant', ['da_ppe'], 'is cf'],
+        ['depreciation',            ['da_ppe'], 'is cf'],
+        ['amortisation of intangibles',['da_int'], 'is cf'], ['amortization of intangibles',['da_int'], 'is cf'],
+        ['amortisation',            ['da_int'], 'is cf'], ['amortization',      ['da_int'], 'is cf'],
+        ['d&a',                     ['da_ppe'], 'is cf'], ['d & a',             ['da_ppe'], 'is cf'],
+        ['dotations aux amortissements',['da_ppe'], 'is cf'], ['abschreibungen', ['da_ppe'], 'is cf'],
+        // ── EBIT / EBITDA — calc rows; matched but not written ──
+        ['ebitda',                  [], 'is'],
+        ['ebit',                    [], 'is'],
+        // ── Financial items (IS only) ──
+        ['interest expense',        ['fin_exp'], 'is'], ['financial expenses', ['fin_exp'], 'is'],
+        ['finance costs',           ['fin_exp'], 'is'], ['borrowing costs',   ['fin_exp'], 'is'],
+        ['interest costs',          ['fin_exp'], 'is'], ['financial charges', ['fin_exp'], 'is'],
+        ['charges financières',     ['fin_exp'], 'is'], ['zinsaufwand',       ['fin_exp'], 'is'],
+        ['financial income',        ['fin_inc'], 'is'], ['interest income',   ['fin_inc'], 'is'],
+        ['investment income',       ['fin_inc'], 'is'], ['produits financiers',['fin_inc'], 'is'],
+        // ── Tax (IS, plus deferred tax which appears on BS) ──
+        // 'deferred tax' first so it claims rows before generic 'tax' fires.
+        ['deferred tax',            ['deferred_inc'], 'bs'],
+        ['income tax expense',      ['tax'], 'is'], ['corporation tax',      ['tax'], 'is'],
+        ['income taxes',            ['tax'], 'is'], ['income tax',           ['tax'], 'is'],
+        ['taxes on income',         ['tax'], 'is'], ['tax expense',          ['tax'], 'is'],
+        ['taxes',                   ['tax'], 'is'],
+        // FIX: bare 'tax' must NOT match 'pre-tax income' or 'tax rate'.
+        // Anchor at start of label, and exclude common false-positive phrases.
+        ['^tax|!pre-tax|!rate|!deferred', ['tax'], 'is'],
+        ['impôts',                  ['tax'], 'is'], ['ertragsteuern',        ['tax'], 'is'],
+        ['impuestos',               ['tax'], 'is'], ['imposte',              ['tax'], 'is'],
+        // ── Net income (IS native, also appears on CF as starting point) ──
+        ['net income',              ['npat'], 'is cf'], ['net profit',          ['npat'], 'is cf'],
+        ['profit for the year',     ['npat'], 'is cf'], ['profit after tax',    ['npat'], 'is cf'],
+        ['résultat net',            ['npat'], 'is cf'], ['jahresüberschuss',    ['npat'], 'is cf'],
+        ['resultado neto',          ['npat'], 'is cf'], ['utile netto',         ['npat'], 'is cf'],
+        // ── Balance sheet: Assets (BS only) ──
+        ['total assets',            ['assets'], 'bs'],
+        ['cash and cash equivalents',['cash'], 'bs'], ['cash and short-term', ['cash'], 'bs'],
+        ['cash equivalents',        ['cash'], 'bs'],
+        // FIX: bare 'cash' must NOT match CF lines like "Cash from Operations",
+        // "Net Change in Cash", "Beginning/Ending Cash Balance" — those would corrupt BS cash.
+        // Anchor at start, exclude obvious CF phrases.
+        ['^cash|!from |!flow|!change|!balance|!beginning|!ending', ['cash'], 'bs'],
+        ['trésorerie',              ['cash'], 'bs'], ['kassenbestand',       ['cash'], 'bs'],
+        ['trade receivables',       ['receivables'], 'bs'], ['accounts receivable',['receivables'], 'bs'],
+        ['trade and other receivables',['receivables'], 'bs'], ['debtors',   ['receivables'], 'bs'],
+        ['clients',                 ['receivables'], 'bs'], ['forderungen',  ['receivables'], 'bs'],
+        ['common stock',            ['share_cap'], 'bs'], ['ordinary shares',  ['share_cap'], 'bs'],
+        // FIX: 'inventory'/'inventories' must NOT match CF lines like
+        // "(Increase)/Decrease in Inventory" — those are working-capital deltas, not balances.
+        ['inventories|!increase|!decrease|!change',['inventories'], 'bs'],
+        ['inventory|!increase|!decrease|!change',  ['inventories'], 'bs'],
+        ['stock',                   ['inventories'], 'bs'], ['stocks',       ['inventories'], 'bs'],
+        ['vorräte',                 ['inventories'], 'bs'], ['existencias',  ['inventories'], 'bs'],
+        ['prepayments',             ['prepayments'], 'bs'], ['prepaid',      ['prepayments'], 'bs'],
+        ['accrued income',          ['prepayments'], 'bs'], ['accruals',     ['prepayments'], 'bs'],
+        ['other current assets',    ['other_ca'], 'bs'],
+        ['financial assets',        ['fin_assets'], 'bs'],
+        ['long-term investments',   ['lt_invest'], 'bs'], ['longterm investments',['lt_invest'], 'bs'],
+        ['pp&e',                    ['ppe'], 'bs'], ['ppe, net',             ['ppe'], 'bs'],
+        ['plant and equipment',     ['ppe'], 'bs'], ['property plant',       ['ppe'], 'bs'],
+        ['tangible assets',         ['ppe'], 'bs'], ['sachanlagen',          ['ppe'], 'bs'],
+        ['property and buildings',  ['property'], 'bs'], ['real estate',     ['property'], 'bs'],
+        ['intangible assets',       ['intangibles'], 'bs'], ['intangibles',  ['intangibles'], 'bs'],
+        ['goodwill',                ['intangibles'], 'bs'],
+        // ── Balance sheet: Liabilities (BS only) ──
+        ['total liabilities',       ['liabs'], 'bs'],
+        ['accounts payable',        ['acc_payable'], 'bs'], ['trade payables', ['acc_payable'], 'bs'],
+        ['creditors',               ['acc_payable'], 'bs'], ['fournisseurs',  ['acc_payable'], 'bs'],
+        ['accrued liabilities',     ['other_cl'], 'bs'], ['accrued expenses',  ['other_cl'], 'bs'],
+        ['short-term debt',         ['st_debt'], 'bs'], ['current portion',   ['st_debt'], 'bs'],
+        ['short-term borrowings',   ['st_debt'], 'bs'],
+        ['deferred income',         ['deferred_inc'], 'bs'], ['deferred revenue',['deferred_inc'], 'bs'],
+        ['long-term debt',          ['lt_debt'], 'bs'], ['long-term borrowings',['lt_debt'], 'bs'],
+        ['non-current borrowings',  ['lt_debt'], 'bs'],
+        ['provisions',              ['provisions'], 'bs'],
+        // ── Equity (BS only) ──
+        ["shareholders' equity",    ['equity'], 'bs'], ['stockholders equity', ['equity'], 'bs'],
+        ['total equity',            ['equity'], 'bs'], ['equity',             ['equity'], 'bs'],
+        ['share capital',           ['share_cap'], 'bs'], ['share / equity capital',['share_cap'], 'bs'],
+        ['paid-in capital',         ['share_cap'], 'bs'], ['issued capital',  ['share_cap'], 'bs'],
+        ['retained earnings',       ['reserves'], 'bs'], ['retained profit',  ['reserves'], 'bs'],
+        ['reserves',                ['reserves'], 'bs'],
+        // ── Key inputs (debt → BS, capex/wc → CF) ──
+        ['financial debt',          ['debt'], 'bs'], ['total debt',          ['debt'], 'bs'],
+        ['total financial debt',    ['debt'], 'bs'], ['interest-bearing',    ['debt'], 'bs'],
+        ['capital expenditures',    ['capex'], 'cf bs'], ['capital expenditure', ['capex'], 'cf bs'],
+        ['capex',                   ['capex'], 'cf bs'],
+        ['additions to fixed',      ['capex'], 'cf bs'], ['purchase of ppe',    ['capex'], 'cf bs'],
+        ['change in working capital',['wcChange'], 'cf'], ['nwc change',     ['wcChange'], 'cf'],
+        ['changes in working capital',['wcChange'], 'cf'],
+      ];
+
+      // Filter MAP entries by the current sheet kind. Unknown sheets get all entries.
+      function entriesForSheet(kind) {
+        if (kind === 'unknown') return MAP_ENTRIES;
+        return MAP_ENTRIES.filter(e => {
+          const mask = e[2] || '';
+          return mask.split(/\s+/).includes(kind);
+        });
+      }
+      // ── Per-sheet processing ──
+      // Each sheet detects its own year columns and runs only its tagged MAP entries.
+      // Also collect any "estimate" year mismatches (e.g. file has 2025E loaded into a 2025 actuals slot).
+      const ALWAYS_POSITIVE = ['capex'];
+      let _parsedUpload = {};                  // elId → value (first-write wins, across all sheets)
+      let mapped = 0;
+      const unmappedRows = [];                 // rows that didn't match anything
+      const sheetSummary = [];                 // per-sheet diagnostics
+      const allFileYears = new Set();          // every 20xx number we saw in any header
+      const droppedYears = new Set();          // 20xx years present in file but outside YEARS window
+      const estimateYearsLoaded = new Set();   // years marked E/F/B in file that DID load into form
+
+      sheets.forEach(sheet => {
+        const sheetRows = sheet.rows;
+        const entries = entriesForSheet(sheet.kind);
+
+        // Detect year column headers for THIS sheet (handles "2022A", "FY2024", "2024E", "2024 E" etc.)
+        // Also remember for each column whether the year was tagged as an estimate (E/F/B suffix).
+        let colToYearIdx = {};
+        let colIsEstimate = {};
+        for (const row of sheetRows) {
+          const foundYears = {};
+          const foundEst = {};
+          row.forEach((cell, ci) => {
+            if (ci === 0) return;
+            const txt = String(cell);
+            const m = txt.match(/(20\d{2})(?!\d)\s*([AaEeFfBb]?)/);
+            if (m) {
+              const yr = m[1];
+              const suffix = (m[2] || '').toLowerCase();
+              allFileYears.add(yr);
+              const yi = YEARS.indexOf(yr);
+              if (yi >= 0) {
+                foundYears[ci] = yi;
+                foundEst[ci]   = suffix === 'e' || suffix === 'f' || suffix === 'b';
+              } else {
+                droppedYears.add(yr);
+              }
             }
           });
+          if (Object.keys(foundYears).length >= 1) {
+            colToYearIdx = foundYears;
+            colIsEstimate = foundEst;
+            break;
+          }
+        }
+        const hasYearCols = Object.keys(colToYearIdx).length > 0;
+
+        let sheetMapped = 0;
+        const sheetUnmapped = [];
+
+        sheetRows.forEach(row => {
+          if (!row[0]) return;
+          const label = String(row[0]).toLowerCase().trim();
+          const numCols = row.slice(1).filter(c => c !== '' && !isNaN(parseFloat(c)));
+          const hasData = hasYearCols
+            ? Object.keys(colToYearIdx).some(ci => { const v = row[+ci]; return v !== undefined && v !== '' && !isNaN(parseFloat(v)); })
+            : numCols.length > 0;
+          if (!hasData) return;
+
+          let matched = false;
+          for (const entry of entries) {
+            const [key, fieldIds] = entry;
+            if (!keyMatches(label, key)) continue;
+            matched = true;
+            if (!fieldIds.length) break; // calc cell — matched but not written
+            fieldIds.forEach(fid => {
+              if (hasYearCols) {
+                Object.entries(colToYearIdx).forEach(([colIdxStr, yi]) => {
+                  const val = row[+colIdxStr];
+                  if (val === undefined || val === '' || isNaN(parseFloat(val))) return;
+                  const elId = fid + '_' + YEARS[yi];
+                  const el = document.getElementById(elId);
+                  if (el && !el.classList.contains('calc-cell') && !Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
+                    _parsedUpload[elId] = ALWAYS_POSITIVE.includes(fid) ? Math.abs(parseFloat(val)) : parseFloat(val);
+                    if (colIsEstimate[colIdxStr]) estimateYearsLoaded.add(YEARS[yi]);
+                    mapped++; sheetMapped++;
+                  }
+                });
+              } else {
+                YEARS.forEach((yr, yi) => {
+                  const val = numCols[yi] !== undefined ? numCols[yi] : numCols[numCols.length-1];
+                  const elId = fid + '_' + yr;
+                  const el = document.getElementById(elId);
+                  if (el && !el.classList.contains('calc-cell') && val !== undefined && val !== '' && !Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
+                    _parsedUpload[elId] = ALWAYS_POSITIVE.includes(fid) ? Math.abs(parseFloat(val)) : parseFloat(val);
+                    mapped++; sheetMapped++;
+                  }
+                });
+              }
+            });
+            break; // first match wins
+          }
+          if (!matched) {
+            sheetUnmapped.push(String(row[0]).trim());
+            unmappedRows.push(String(row[0]).trim());
+          }
+        });
+
+        sheetSummary.push({
+          name: sheet.name,
+          kind: sheet.kind,
+          mapped: sheetMapped,
+          unmapped: sheetUnmapped.length
         });
       });
-      recalc();
+
+      // ── Tax-expense synthesis fallback ──
+      // Some IS templates show "Pre-Tax Income" + "Tax Rate" but no explicit "Tax Expense" row,
+      // leaving the form's tax_YYYY fields empty (and breaking NPAT-dependent methods).
+      // If we have BOTH drivers AND the tax fields are still empty, synthesise: tax = EBT × rate.
+      // Only fills empty cells, never overwrites real data, and only fires when we recognised
+      // an Income Statement sheet (avoids running on ambiguous one-sheet workbooks).
+      const synthesisedTaxYears = [];
+      const isSheets = sheets.filter(s => s.kind === 'is');
+      if (isSheets.length > 0) {
+        // Collect Pre-Tax Income & Tax Rate per year by scanning recognised IS sheets directly.
+        const preTax = {};   // YYYY → number
+        const taxRate = {};  // YYYY → number (decimal, e.g. 0.25)
+        isSheets.forEach(sheet => {
+          // Reuse the same year-detection logic we ran above
+          let cyi = {};
+          for (const row of sheet.rows) {
+            const found = {};
+            row.forEach((cell, ci) => {
+              if (ci === 0) return;
+              const m = String(cell).match(/(20\d{2})(?!\d)\s*([AaEeFfBb]?)/);
+              if (m && YEARS.includes(m[1])) found[ci] = YEARS.indexOf(m[1]);
+            });
+            if (Object.keys(found).length) { cyi = found; break; }
+          }
+          if (!Object.keys(cyi).length) return;
+          sheet.rows.forEach(row => {
+            if (!row[0]) return;
+            const label = String(row[0]).toLowerCase().trim();
+            const isPreTax = /\bpre[\s\-]?tax\b/.test(label) && /\b(income|profit|earnings)\b/.test(label);
+            const isRate = /\btax\s+rate\b/.test(label);
+            if (!isPreTax && !isRate) return;
+            Object.entries(cyi).forEach(([colIdxStr, yi]) => {
+              const v = row[+colIdxStr];
+              if (v === undefined || v === '' || isNaN(parseFloat(v))) return;
+              const yr = YEARS[yi];
+              const num = parseFloat(v);
+              if (isPreTax && preTax[yr] === undefined) preTax[yr] = num;
+              if (isRate   && taxRate[yr] === undefined) taxRate[yr] = num;
+            });
+          });
+        });
+        // Tax rates are sometimes given as a percentage (25) instead of a decimal (0.25).
+        // Treat anything > 1 as a percentage and convert.
+        Object.keys(taxRate).forEach(yr => { if (taxRate[yr] > 1) taxRate[yr] = taxRate[yr] / 100; });
+        // Synthesise where both drivers exist AND the form's tax field is still empty
+        YEARS.forEach(yr => {
+          if (preTax[yr] === undefined || taxRate[yr] === undefined) return;
+          const elId = 'tax_' + yr;
+          const el = document.getElementById(elId);
+          if (!el || el.classList.contains('calc-cell')) return;
+          if (Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) return;
+          _parsedUpload[elId] = preTax[yr] * taxRate[yr];
+          synthesisedTaxYears.push({ year: yr, ebt: preTax[yr], rate: taxRate[yr], tax: preTax[yr] * taxRate[yr] });
+          mapped++;
+        });
+      }
+      // ── Notices ──
+      const SHEET_KIND_LABEL = { is:'Income Statement', bs:'Balance Sheet', cf:'Cash Flow Statement', unknown:'Unrecognised' };
+      const sheetNote = sheets.length > 1
+        ? `<div style="margin-top:8px;padding:6px 10px;background:rgba(13,31,45,.04);border:1px solid var(--border);border-radius:6px;font-size:11.5px;color:var(--text2)"><strong>Sheets detected:</strong> ${sheetSummary.map(s => `<span style="color:var(--navy)">${s.name}</span> → ${SHEET_KIND_LABEL[s.kind]} <span style="color:var(--text3)">(${s.mapped} fields)</span>`).join(' · ')}</div>`
+        : '';
+
+      // Year-mismatch warnings — these are the most damaging silent failures.
+      const yearWarnings = [];
+      if (droppedYears.size > 0) {
+        const dropped = Array.from(droppedYears).sort();
+        yearWarnings.push(`Years <strong>${dropped.join(', ')}</strong> in the file were ignored — the form only accepts ${YEARS.join(', ')}.`);
+      }
+      if (estimateYearsLoaded.size > 0) {
+        const est = Array.from(estimateYearsLoaded).sort();
+        yearWarnings.push(`<strong>${est.join(', ')}</strong> appears to be a forecast/estimate column (E/F/B suffix) but was loaded into an actuals slot — review carefully.`);
+      }
+      const yearNote = yearWarnings.length
+        ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(239,159,39,.10);border:1px solid rgba(239,159,39,.35);border-radius:6px;font-size:11.5px;color:#9a4f00">⚠ ${yearWarnings.join('<br>⚠ ')}</div>`
+        : '';
+
+      // Tax-synthesis notice — show explicitly when we derived Tax Expense from EBT × rate.
+      // Users need to know this happened so they can override if their tax line differs from the simple multiplication.
+      const synthNote = synthesisedTaxYears.length
+        ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.30);border-radius:6px;font-size:11.5px;color:#0d7a64"><strong>ℹ Synthesised Tax Expense</strong> — your IS shows Pre-Tax Income and Tax Rate but no explicit Tax Expense row. Computed as EBT × rate: ${synthesisedTaxYears.map(s => `${s.year}: ${s.ebt.toLocaleString()} × ${(s.rate*100).toFixed(1)}% = <strong>${s.tax.toLocaleString()}</strong>`).join(' · ')}. Override the tax cells if your effective rate differs.</div>`
+        : '';
+
+      // Show scale prompt — do NOT write to form yet
+      const unmappedNote = unmappedRows.length
+        ? `<div style="margin-top:8px;padding:6px 10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:6px;font-size:11.5px;color:#b45309"><strong>${unmappedRows.length} row(s) not auto-mapped</strong> — review manually: ${unmappedRows.slice(0,5).map(r=>`<em>${r}</em>`).join(', ')}${unmappedRows.length>5?' …':''}</div>`
+        : '';
       status.innerHTML = `<div class="card card-sm" style="background:var(--mint-faint);border-color:rgba(0,201,167,.3)">
-        <div style="font-weight:500;color:var(--mint2);margin-bottom:6px">✓ Excel file parsed: ${file.name}</div>
-        <div style="font-size:12px;color:var(--text2)"><strong>${mapped}</strong> fields mapped automatically. Please review all values.</div>
+        <div style="font-weight:500;color:var(--mint2);margin-bottom:8px">✓ Excel parsed: ${file.name} — <strong>${mapped}</strong> fields detected</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Are the figures in your Excel in <strong>units</strong>, <strong>thousands</strong> or <strong>millions</strong>? The form expects thousands (£/€/$'000).</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <select id="uploadScaleSelect" style="padding:6px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--lighter);font-size:12px;color:var(--navy)">
+            <option value="1000">Units — divide by 1,000 (e.g. 1,500,000 → 1,500)</option>
+            <option value="1" selected>Thousands — no scaling needed (e.g. 1,500 → 1,500)</option>
+            <option value="0.001">Millions — multiply by 1,000 (e.g. 1.5 → 1,500)</option>
+          </select>
+          <button onclick="applyUploadScale()" style="padding:6px 16px;background:var(--navy);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600">Apply &amp; Load Values</button>
+        </div>
+        ${sheetNote}
+        ${yearNote}
+        ${synthNote}
+        ${unmappedNote}
       </div>`;
+      window._parsedUpload = _parsedUpload;
     } catch(err) {
       status.innerHTML = `<div class="card card-sm" style="background:#fef2f2;border-color:#fca5a5">
         <div style="font-weight:500;color:var(--red)">Error: ${err.message}</div>
@@ -2917,10 +3434,41 @@ function handleDrop(event) {
   if (file) { const dt = new DataTransfer(); dt.items.add(file); document.getElementById('fileInput').files = dt.files; handleFileUpload({target:{files:dt.files}}); }
 }
 
+function applyUploadScale() {
+  const factor = parseFloat(document.getElementById('uploadScaleSelect')?.value) || 1;
+  const parsed = window._parsedUpload || {};
+  let applied = 0;
+  Object.entries(parsed).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && !el.classList.contains('calc-cell')) {
+      el.value = val / factor;
+      el.style.borderColor = 'rgba(0,201,167,.5)';
+      applied++;
+    }
+  });
+  window._parsedUpload = {};
+  recalc();
+  const scaleLabel = factor === 1000 ? 'units ÷ 1,000' : factor === 1 ? 'thousands (no scaling)' : 'millions × 1,000';
+  document.getElementById('uploadStatus').innerHTML = `<div class="card card-sm" style="background:var(--mint-faint);border-color:rgba(0,201,167,.3)">
+    <div style="font-weight:500;color:var(--mint2);margin-bottom:4px">✓ ${applied} values loaded (scale: ${scaleLabel})</div>
+    <div style="font-size:12px;color:var(--text2)">Please review all populated fields before proceeding.</div>
+  </div>`;
+}
+
 // ═══ PDF EXPORT ═══
 function runExport() {
   const missing = validateRequired();
-  if (missing.length > 0 && !confirm('Some required fields (*) are empty:\n' + missing.slice(0,5).join('\n') + '\n\nGenerate PDF anyway?')) return;
+  if (missing.length > 0) {
+    showAppModal(
+      '<strong>Some required fields are empty:</strong><br><br>' +
+      missing.slice(0,5).map(m => '· ' + m).join('<br>') +
+      (missing.length > 5 ? '<br>…and ' + (missing.length-5) + ' more' : '') +
+      '<br><br>Generate PDF anyway?',
+      () => { recalc(); exportPDF(); },
+      'Generate PDF', 'Cancel'
+    );
+    return;
+  }
   recalc();
   exportPDF();
 }
@@ -3564,22 +4112,38 @@ function showAuthOverlay() {
   document.getElementById('authOverlay').style.display = 'flex';
   document.getElementById('discOverlay').style.display = 'none';
   document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('mainApp').setAttribute('inert', '');
 }
-function hideAuthOverlay() { document.getElementById('authOverlay').style.display = 'none'; }
+function hideAuthOverlay() {
+  document.getElementById('authOverlay').style.display = 'none';
+  document.getElementById('mainApp').removeAttribute('inert');
+}
 
 function showDisclaimer() {
   document.getElementById('discOverlay').style.display = 'flex';
   document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('mainApp').setAttribute('inert', '');
   const cb = document.getElementById('discCheckbox');
   const btn = document.getElementById('discProceedBtn');
   if (cb) cb.checked = false;
   if (btn) btn.disabled = true;
 }
-function hideDisclaimer() { document.getElementById('discOverlay').style.display = 'none'; }
+function hideDisclaimer() {
+  document.getElementById('discOverlay').style.display = 'none';
+  document.getElementById('mainApp').removeAttribute('inert');
+}
 
 function showMainApp(user) {
+  // Enforce disclaimer acceptance on every login (not just first signup)
+  const metaAccepted = user.user_metadata?.disclaimer_accepted;
+  if (!AUTH.disclaimerAccepted && !metaAccepted) {
+    window._pendingUser = user;
+    showDisclaimer();
+    return;
+  }
   const mainApp = document.getElementById('mainApp');
   const alreadyInit = mainApp.dataset.init === '1';
+  mainApp.removeAttribute('inert');
   mainApp.style.display = 'grid';
   mainApp.dataset.init = '1';
   const meta    = user.user_metadata || {};
@@ -3872,7 +4436,28 @@ async function authLogout() {
   showSignIn();
 }
 
-// ── DISCLAIMER ──
+// ── NEW VALUATION — clear all form inputs and localStorage ──
+async function confirmNewValuation() {
+  showAppModal(
+    '<strong>Start a new valuation?</strong><br><br>This will clear all current inputs. Your account and settings will be kept.',
+    async () => {
+      document.querySelectorAll('.form-input[type="number"], input[type="number"]').forEach(el => { el.value = ''; el.style.borderColor = ''; });
+      document.getElementById('companyName').value = '';
+      document.getElementById('topbarTitle').textContent = 'New Valuation';
+      document.getElementById('topbarSub').textContent = 'Enter company details to begin';
+      ['ab_disc','ab_sal','ab_one','ab_oth'].forEach(id => { const el = document.getElementById(id); if (el) el.value = '0'; });
+      const us = document.getElementById('uploadStatus'); if (us) { us.style.display = 'none'; us.innerHTML = ''; }
+      window._parsedUpload = {};
+      const { data: { session } } = await _supa.auth.getSession();
+      if (session) clearInputs(session.user);
+      recalc();
+      navigate('company');
+    },
+    'Clear &amp; Start New', 'Cancel'
+  );
+}
+
+
 function toggleDiscBtn() {
   const cb  = document.getElementById('discCheckbox');
   const btn = document.getElementById('discProceedBtn');
@@ -4140,14 +4725,15 @@ function clearErrors() {
 
 // ── INPUT PERSISTENCE ──────────────────────────────────────────
 const VBP_KEY = 'vbp_inputs_v2';
-const _VBP_YR  = ['rev_2022','rev_2023','rev_2024','cogs_2022','cogs_2023','cogs_2024','personnel_2022','personnel_2023','personnel_2024','other_opex_2022','other_opex_2023','other_opex_2024','other_opinc_2022','other_opinc_2023','other_opinc_2024','da_fa_2022','da_fa_2023','da_fa_2024','da_lt_2022','da_lt_2023','da_lt_2024','da_ppe_2022','da_ppe_2023','da_ppe_2024','da_prop_2022','da_prop_2023','da_prop_2024','da_int_2022','da_int_2023','da_int_2024','fin_exp_2022','fin_exp_2023','fin_exp_2024','fin_inc_2022','fin_inc_2023','fin_inc_2024','non_op_inc_2022','non_op_inc_2023','non_op_inc_2024','extraordinary_2022','extraordinary_2023','extraordinary_2024','tax_2022','tax_2023','tax_2024','cash_2022','cash_2023','cash_2024','receivables_2022','receivables_2023','receivables_2024','other_ca_2022','other_ca_2023','other_ca_2024','inventories_2022','inventories_2023','inventories_2024','prepayments_2022','prepayments_2023','prepayments_2024','fin_assets_2022','fin_assets_2023','fin_assets_2024','lt_invest_2022','lt_invest_2023','lt_invest_2024','ppe_2022','ppe_2023','ppe_2024','property_2022','property_2023','property_2024','intangibles_2022','intangibles_2023','intangibles_2024','acc_payable_2022','acc_payable_2023','acc_payable_2024','st_debt_2022','st_debt_2023','st_debt_2024','other_cl_2022','other_cl_2023','other_cl_2024','deferred_inc_2022','deferred_inc_2023','deferred_inc_2024','lt_debt_2022','lt_debt_2023','lt_debt_2024','other_ll_2022','other_ll_2023','other_ll_2024','provisions_2022','provisions_2023','provisions_2024','share_cap_2022','share_cap_2023','share_cap_2024','reserves_2022','reserves_2023','reserves_2024','net_inc_bs_2022','net_inc_bs_2023','net_inc_bs_2024','debt_2022','debt_2023','debt_2024','shares_2022','shares_2023','shares_2024','capex_2022','capex_2023','capex_2024','wcChange_2022','wcChange_2023','wcChange_2024','lt_liab_chg_2022','lt_liab_chg_2023','lt_liab_chg_2024'];
+const _VBP_YR_BASES = ['rev','cogs','personnel','other_opex','other_opinc','da_fa','da_lt','da_ppe','da_prop','da_int','fin_exp','fin_inc','non_op_inc','extraordinary','tax','cash','receivables','other_ca','inventories','prepayments','fin_assets','lt_invest','ppe','property','intangibles','acc_payable','st_debt','other_cl','deferred_inc','lt_debt','other_ll','provisions','share_cap','reserves','net_inc_bs','debt','shares','capex','wcChange','lt_liab_chg'];
+const _VBP_YR = _VBP_YR_BASES.flatMap(b => YEARS.map(y => b+'_'+y));
 const _VBP_SGL = ['valDate','currency','industry','bizModel','revenueType','market','competitive','employees','yearsInBusiness','mgmtTenure','custConcentration','contractDuration','sharesOut','ab_disc','ab_sal','ab_one','ab_oth','a_g1','a_g2','a_g3','a_g45','a_tg','a_margin','a_capex','a_wc','a_rf','a_erp','a_beta','a_cod','a_tax','a_leverage','a_ebitdaMult','a_ebitMult','a_revMult','a_peMult','a_mbMult','a_termMult','a_capRate','a_practLo','a_practHi'];
 function _storageKey(user) {
   return VBP_KEY + '_' + (user?.email || 'guest').replace(/[^a-z0-9]/gi,'_');
 }
 function saveInputs(user) {
   const d = {};
-  _VBP_YR.forEach(id  => { const el = document.getElementById(id);  if (el && el.value !== '') d[id] = el.value; });
+  _VBP_YR.forEach(id  => { const el = document.getElementById(id);  if (el && el.value !== '') d[id] = String(parseFloat(el.value) || 0); });
   _VBP_SGL.forEach(id => { const el = document.getElementById(id);  if (el && el.value != null && el.value !== '') d[id] = el.value; });
   try { localStorage.setItem(_storageKey(user), JSON.stringify(d)); } catch(e) {}
 }
@@ -4161,16 +4747,55 @@ function restoreInputs(user) {
     if (el && !el.classList.contains('calc-cell') && val !== '') el.value = val;
   });
 }
-function clearInputs(user) { try { localStorage.removeItem(_storageKey(user)); } catch(e) {} }
+function clearInputs(user) {
+  try {
+    // Remove the current user's key
+    localStorage.removeItem(_storageKey(user));
+    // Also sweep any other vbp_inputs_v2_* keys left by previous users (shared device safety)
+    Object.keys(localStorage).filter(k => k.startsWith(VBP_KEY + '_')).forEach(k => localStorage.removeItem(k));
+  } catch(e) {}
+}
 let _saveTimer = null;
 function _schedSave(user) { clearTimeout(_saveTimer); _saveTimer = setTimeout(() => saveInputs(user), 500); }
 // ───────────────────────────────────────────────────────────────
 
 // ── INIT ──
 window.addEventListener('DOMContentLoaded', () => {
+  initConsentBanner();
   initAuth();
   buildForms();
 });
+
+// ── IN-APP MODAL (replaces native confirm dialogs) ──
+let _appModalCb = null;
+function showAppModal(msg, onConfirm, confirmLabel, cancelLabel) {
+  document.getElementById('appModalMsg').innerHTML = msg;
+  document.getElementById('appModalConfirmBtn').textContent = confirmLabel || 'Confirm';
+  document.getElementById('appModalCancelBtn').textContent  = cancelLabel  || 'Cancel';
+  const modal = document.getElementById('appModal');
+  modal.style.display = 'flex';
+  _appModalCb = onConfirm;
+}
+function appModalConfirm() {
+  document.getElementById('appModal').style.display = 'none';
+  const cb = _appModalCb; _appModalCb = null;
+  if (cb) cb();
+}
+function appModalCancel() {
+  document.getElementById('appModal').style.display = 'none';
+  _appModalCb = null;
+}
 </script>
+
+<!-- ════ IN-APP CONFIRMATION MODAL ════ -->
+<div id="appModal" style="display:none;position:fixed;inset:0;background:rgba(6,14,26,.65);z-index:10002;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;padding:28px 32px;max-width:440px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.22)">
+    <div id="appModalMsg" style="font-size:14px;color:var(--navy);line-height:1.6;margin-bottom:22px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button id="appModalCancelBtn" onclick="appModalCancel()" style="padding:8px 20px;border-radius:7px;border:1px solid var(--border2);background:var(--white);color:var(--navy);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">Cancel</button>
+      <button id="appModalConfirmBtn" onclick="appModalConfirm()" style="padding:8px 20px;border-radius:7px;border:none;background:var(--navy);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Confirm</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
