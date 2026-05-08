@@ -12,8 +12,8 @@ jobs:
       - name: Fetch Argos page via Scrape.do
         id: scrape
         run: |
-          PAGE=$(curl -s "http://api.scrape.do?token=${{ secrets.SCRAPE_DO_TOKEN }}&url=https%3A%2F%2Fwww.argos-wityu.com%2Fen%2Fargos-index%2F")
-          
+          PAGE=$(curl -s "http://api.scrape.do?token=${{ secrets.SCRAPE_DO_TOKEN }}&url=https%3A%2F%2Fwww.argos-wityu.com%2Fen%2Fargos-index%2F&render=true")
+          echo "$PAGE" | head -c 2000
           echo "=== SEARCHING FOR NUMBERS ==="
           echo "$PAGE" | grep -oi '[0-9][0-9]*\.[0-9]x' | head -20
           echo "=== END NUMBERS ==="
