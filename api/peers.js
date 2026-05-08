@@ -7,22 +7,20 @@ const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 const cache = new Map(); // ticker -> { ts, data }
 
 async function fetchOne(ticker, apiKey) {
-  // ratios-ttm endpoint returns trailing-twelve-month ratios incl. EV/EBITDA, EV/Sales, P/E, P/B
-  const url = `https://financialmodelingprep.com/api/v3/ratios-ttm/${encodeURIComponent(ticker)}?apikey=${apiKey}`;
+  // Use FMP's stable key-metrics-ttm endpoint — confirmed available on the free tier.
+  // Returns enterpriseValueTTM, marketCapTTM, evToSalesTTM, evToEbitdaTTM, peRatioTTM, pbRatioTTM.
+  const url = `https://financialmodelingprep.com/stable/key-metrics-ttm?symbol=${encodeURIComponent(ticker)}&apikey=${apiKey}`;
   const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
   if (!res.ok) throw new Error(`FMP ${res.status}`);
   const arr = await res.json();
   if (!Array.isArray(arr) || !arr.length) throw new Error('empty response');
   const r = arr[0];
-  // FMP returns enterpriseValueMultipleTTM (EV/EBITDA), priceToSalesRatioTTM, peRatioTTM, priceToBookRatioTTM
-  // We approximate EV/Revenue via priceToSalesRatio for simplicity (close enough for peer comparison);
-  // for a stricter EV/Revenue you'd combine market cap + debt - cash / revenue, which needs another endpoint.
   return {
     ticker,
-    ebitda: r.enterpriseValueMultipleTTM ?? null,
-    rev:    r.priceToSalesRatioTTM ?? null,
+    ebitda: r.evToEBITDATTM ?? r.evToEbitdaTTM ?? null,
+    rev:    r.evToSalesTTM ?? null,
     pe:     r.peRatioTTM ?? null,
-    pb:     r.priceToBookRatioTTM ?? null,
+    pb:     r.pbRatioTTM ?? r.priceToBookRatioTTM ?? null,
     fetchedAt: Date.now(),
   };
 }
