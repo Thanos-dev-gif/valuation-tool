@@ -31,6 +31,6 @@ jobs:
           PAGE=$(curl -s -L -A "Mozilla/5.0" "$URL")
 
           # If not found, go one quarter further back
-          if echo "$PAGE" | grep -q "Page non trouvée\|not found\|404"; then
+          if echo "$PAGE" | grep -qE "Page non trouvée|not found|404|noindex"; then
             echo "Not published yet, trying one quarter back"
             Q=$((Q - 1))
