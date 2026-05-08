@@ -972,7 +972,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
           <div style="font-size:12px;color:var(--text2);margin-top:2px">Sector: <span id="peerSectorLabel" style="color:var(--mint2);font-weight:600"></span></div>
         </div>
         <div class="argos-meta">
-          <span class="argos-source-pill">Argos Index / Public Markets</span>
+          <span class="argos-source-pill" id="argosSourcePill">Listed Peers — Public Markets</span>
           <span class="argos-timestamp" id="argosTimestamp">—</span>
           <button class="argos-refresh-btn" id="argosRefreshBtn" onclick="argosRefresh(true)">
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
@@ -2126,31 +2126,34 @@ function argosSetCache(data) {
 // ── Fetch live peer multiples from Yahoo Finance via allorigins CORS proxy ──
 // This gives REAL current EV/EBITDA and P/S for listed peers
 async function fetchYahooPeerData(tickers) {
+  // Calls our own /api/peers serverless function (which proxies Financial Modeling Prep
+  // server-side using a hidden API key). Replaces the previous allorigins.win + Yahoo path.
   const results = {};
-  // We fetch in parallel, max 5 tickers
-  const toFetch = tickers.slice(0, 5);
-  await Promise.allSettled(toFetch.map(async ([name, ticker, ccy]) => {
-    try {
-      const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=defaultKeyStatistics,financialData`;
-      const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-      const res = await fetch(proxy, { signal: AbortSignal.timeout(5000) });
-      if (!res.ok) throw new Error('proxy error');
-      const json = await res.json();
-      const body = JSON.parse(json.contents);
-      const ks = body?.quoteSummary?.result?.[0]?.defaultKeyStatistics;
-      const fd = body?.quoteSummary?.result?.[0]?.financialData;
-      if (ks && fd) {
-        const ev   = ks.enterpriseValue?.raw;
-        const ebitda = ks.enterpriseToEbitda?.raw;
-        const rev    = ks.enterpriseToRevenue?.raw;
-        if (ev && ebitda && rev) {
-          results[name] = { ebitda: parseFloat(ebitda.toFixed(1)), rev: parseFloat(rev.toFixed(2)), live: true, ccy };
-        }
+  const toFetch = tickers.slice(0, 10);
+  if (!toFetch.length) return results;
+
+  // toFetch is [[name, ticker, ccy], ...] — pass tickers, keep names for mapping back
+  const tickerList = toFetch.map(([, ticker]) => ticker).join(',');
+  try {
+    const res = await fetch(`/api/peers?tickers=${encodeURIComponent(tickerList)}`, {
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) throw new Error('peers api ' + res.status);
+    const json = await res.json();
+    toFetch.forEach(([name, ticker, ccy]) => {
+      const row = json.results?.[ticker];
+      if (row && !row.error && row.ebitda > 0 && row.rev > 0) {
+        results[name] = {
+          ebitda: parseFloat(row.ebitda.toFixed(1)),
+          rev:    parseFloat(row.rev.toFixed(2)),
+          live: true,
+          ccy,
+        };
       }
-    } catch(e) {
-      // silently skip — use baseline fallback
-    }
-  }));
+    });
+  } catch (e) {
+    // Silent fallback to baseline — same behaviour as before
+  }
   return results;
 }
 
@@ -2331,6 +2334,15 @@ function argosSetTimestamp() {
     const el = document.getElementById(id);
     if (el) el.textContent = 'Updated ' + ts + suffix;
   });
+  // Update the source pill so users see "Live" when fresh data was actually fetched
+  const pill = document.getElementById('argosSourcePill');
+  if (pill && argosLiveData) {
+    const anyLive = argosLiveData.anyLive;
+    pill.textContent = anyLive ? 'Live • Public Markets' : 'Baseline • Public Markets';
+    pill.style.background = anyLive ? 'rgba(0,201,167,.12)' : 'var(--gold-faint)';
+    pill.style.borderColor = anyLive ? 'rgba(0,201,167,.3)' : 'rgba(201,162,39,.2)';
+    pill.style.color = anyLive ? 'var(--mint2)' : 'rgba(201,162,39,.9)';
+  }
 }
 
 // ── Main render function ──
