@@ -9,21 +9,62 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch Argos page via Scrape.do
+      - name: Fetch Argos page and extract EV/EBITDA
         id: scrape
         run: |
-          PAGE=$(curl -s "http://api.scrape.do?token=${{ secrets.SCRAPE_DO_TOKEN }}&url=https%3A%2F%2Fwww.argos-wityu.com%2Fen%2Fargos-index%2F&render=true")
-          echo "$PAGE" | head -c 2000
-          echo "=== SEARCHING FOR NUMBERS ==="
-          echo "$PAGE" | grep -oi '[0-9][0-9]*\.[0-9]x' | head -20
-          echo "=== END NUMBERS ==="
+          # Calculate previous quarter (Argos reports previous quarter's data)
+          MONTH=$(date +%-m)
+          YEAR=$(date +%Y)
+          PREV_MONTH=$((MONTH - 3))
+          PREV_YEAR=$YEAR
+          if [ $PREV_MONTH -le 0 ]; then PREV_MONTH=$((PREV_MONTH + 12)); PREV_YEAR=$((YEAR - 1)); fi
+          Q=$(( (PREV_MONTH - 1) / 3 + 1 ))
           
-          EBITDA=$(echo "$PAGE" | grep -oi '[0-9][0-9]*\.[0-9]x' | grep -oP '[0-9]+\.[0-9]' | head -1)
+          # Build quarter name for URL (e.g. "4th-quarter-2025", "1st-quarter-2026")
+          case $Q in
+            1) ORDINAL="1st" ;;
+            2) ORDINAL="2nd" ;;
+            3) ORDINAL="3rd" ;;
+            4) ORDINAL="4th" ;;
+          esac
+          
+          QUARTER="Q${Q} ${PREV_YEAR}"
+          URL="https://argos.fund/argos-index-${ORDINAL}-quarter-${PREV_YEAR}/"
+          
+          echo "Fetching: $URL"
+          echo "Quarter: $QUARTER"
+          
+          PAGE=$(curl -s -L -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "$URL")
+          
+          echo "=== PAGE PREVIEW ==="
+          echo "$PAGE" | head -c 2000
+          echo "=== END PREVIEW ==="
+          
+          # Extract figure like "8.3x EBITDA" or "12.1x"
+          EBITDA=$(echo "$PAGE" | grep -oi '[0-9]\+\.[0-9]x[ ]*EBITDA\|EBITDA[^0-9]*[0-9]\+\.[0-9]x' | grep -oi '[0-9]\+\.[0-9]' | head -1)
+          
+          if [ -z "$EBITDA" ]; then
+            # Fallback: grab any number followed by x near the top of the page
+            EBITDA=$(echo "$PAGE" | grep -oi '[0-9]\+\.[0-9]x' | grep -oi '[0-9]\+\.[0-9]' | head -1)
+          fi
+          
+          echo "Extracted EBITDA: $EBITDA"
           
           if [ -z "$EBITDA" ]; then
             echo "Could not extract figure"
             exit 1
           fi
           
-          MONTH=$(date +%-m)
-          YEAR=$(date +%Y)
+          echo "ebitda=$EBITDA" >> $GITHUB_OUTPUT
+          echo "quarter=$QUARTER" >> $GITHUB_OUTPUT
+
+      - name: Insert into Supabase
+        run: |
+          curl -s -X POST \
+            "https://djexnxctayzbsgljothn.supabase.co/rest/v1/argos_index" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: resolution=ignore-duplicates" \
+            -d "{\"quarter\": \"${{ steps.scrape.outputs.quarter }}\", \"ebitda_mid\": ${{ steps.scrape.outputs.ebitda }}, \"source\": \"github-action\"}"
+          echo "Done
