@@ -2111,6 +2111,11 @@ const ARGOS_QUARTERLY_FALLBACK = [
   { q:'Q3 2024', ebitda:11.9, ebitda_lo:9.4,  ebitda_hi:14.4, rev:2.3, deals:58 },
   { q:'Q4 2024', ebitda:12.1, ebitda_lo:9.6,  ebitda_hi:14.7, rev:2.4, deals:61 },
 ];
+// Sort fallback by year+quarter number
+ARGOS_QUARTERLY_FALLBACK.sort((a, b) => {
+  const p = q => { const [qn, yr] = q.split(' '); return parseInt(yr)*10 + parseInt(qn.replace('Q','')); };
+  return p(a.q) - p(b.q);
+});
 let ARGOS_QUARTERLY = ARGOS_QUARTERLY_FALLBACK; // replaced on load
 
 let _argosQuarterlyReady = null; // promise that resolves when Supabase data is loaded
@@ -2122,9 +2127,12 @@ async function loadArgosQuarterly() {
     try {
       const { data, error } = await _supa
         .from('argos_index')
-        .select('quarter, ebitda_mid, ebitda_lo, ebitda_hi, rev_mid, deals')
-        .order('quarter', { ascending: true });
+        .select('quarter, ebitda_mid, ebitda_lo, ebitda_hi, rev_mid, deals, created_at')
+        .order('created_at', { ascending: true });
       if (error || !data?.length) throw new Error(error?.message || 'empty');
+      // Sort properly by year then quarter number (text sort fails for cross-decade data)
+      const parseQ = q => { const [qn, yr] = q.split(' '); return parseInt(yr)*10 + parseInt(qn.replace('Q','')); };
+      data.sort((a, b) => parseQ(a.quarter) - parseQ(b.quarter));
       ARGOS_QUARTERLY = data.map(r => ({
         q:         r.quarter,
         ebitda:    parseFloat(r.ebitda_mid),
