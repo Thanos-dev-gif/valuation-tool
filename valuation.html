@@ -3106,26 +3106,25 @@ async function parsePDF(file, status) {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
     const rows = [];
+    let allFileYears = new Set(); // all 20XX years found anywhere in the file
 
     for (let p = 1; p <= pdf.numPages; p++) {
       const page = await pdf.getPage(p);
       const content = await page.getTextContent();
 
-      // Collect all items with their X, Y positions
       const items = content.items
         .filter(item => item.str && item.str.trim())
-        .map(item => ({
-          str:  item.str.trim(),
-          x:    item.transform[4],
-          y:    item.transform[5],
-        }));
-
+        .map(item => ({ str: item.str.trim(), x: item.transform[4], y: item.transform[5] }));
       if (!items.length) continue;
 
-      // Group items into lines using Y-tolerance of 5px
-      // (financial PDFs often have labels and numbers at slightly different baselines)
+      // Collect all years seen in this PDF
+      items.forEach(item => {
+        const m = item.str.match(/(20\d{2})/);
+        if (m) allFileYears.add(m[1]);
+      });
+
+      // Group items into Y-bands with 5px tolerance
       const YTOL = 5;
       const bands = [];
       items.forEach(item => {
@@ -3133,52 +3132,98 @@ async function parsePDF(file, status) {
         if (band) { band.items.push(item); band.y = (band.y + item.y) / 2; }
         else bands.push({ y: item.y, items: [item] });
       });
+      bands.sort((a, b) => b.y - a.y); // top-to-bottom
 
-      // Sort bands top-to-bottom (PDF Y is bottom-up so descending = top-to-bottom)
-      bands.sort((a, b) => b.y - a.y);
+      // ── Find year header band: has 2+ items each containing a 20XX year ──
+      let yearXCols = []; // [{yr, x, yi}] sorted by x
+      for (const band of bands) {
+        const found = {};
+        band.items.forEach(item => {
+          const m = item.str.match(/(20\d{2})/);
+          if (m && YEARS.includes(m[1])) found[m[1]] = item.x;
+        });
+        if (Object.keys(found).length >= 1) {
+          yearXCols = Object.entries(found)
+            .map(([yr, x]) => ({ yr, x, yi: YEARS.indexOf(yr) }))
+            .sort((a, b) => a.x - b.x);
+          break;
+        }
+      }
+      const hasXCols = yearXCols.length >= 1;
 
-      // Extract label and numbers from each band, sorted left-to-right by X
+      // ── Extract data rows ──
       const pageLines = [];
       bands.forEach(band => {
         const sorted = band.items.slice().sort((a, b) => a.x - b.x);
-        const lineText = sorted.map(i => i.str).join(' ').trim();
-        if (!lineText) return;
+        const labelParts = [];
+        const numItems = [];
 
-        const rawNums = lineText.match(/\(?\$?\s*-?\d{1,3}(?:[,]\d{3})*(?:\.\d+)?\)?/g) || [];
-        const nums = rawNums
-          .filter(n => !n.includes('%'))
-          .map(n => {
-            const isNeg = n.trim().startsWith('(');
-            const clean = parseFloat(n.replace(/[$,()\s]/g, ''));
-            return isNeg ? -clean : clean;
-          })
-          .filter(n => !isNaN(n) && n !== 0 || n === 0);
+        sorted.forEach(item => {
+          // Skip year headers (e.g. "2022A", "2023E"), dashes, percentages
+          if (/^20\d{2}[AaEeFfBb]?$/.test(item.str)) return;
+          if (/^\d+\.?\d*%$/.test(item.str)) return;
+          if (/^[-—–]+$/.test(item.str)) return;
 
-        const label = lineText
-          .replace(/\(?\$?\s*-?\d{1,3}(?:[,]\d{3})*(?:\.\d+)?\)?/g, '')
-          .replace(/%/g, '').replace(/[-—–]+/g, '').replace(/\s+/g, ' ').trim();
+          const isNeg = item.str.startsWith('(');
+          const cleaned = item.str.replace(/[$,()\s]/g, '');
+          const num = parseFloat(cleaned);
+          if (!isNaN(num) && /\d/.test(item.str)) {
+            numItems.push({ x: item.x, value: isNeg ? -Math.abs(num) : num });
+          } else {
+            labelParts.push(item.str);
+          }
+        });
 
-        pageLines.push({ label, nums, lineText });
+        const label = labelParts.join(' ').trim();
+        pageLines.push({ label, numItems });
       });
 
-      // Merge: if a line has a label but no numbers, check if the NEXT line has numbers but no label
-      // (common in wide financial tables where label and values wrap to adjacent bands)
+      // Merge label-only lines with following number-only lines (split-band case)
       for (let i = 0; i < pageLines.length; i++) {
         const cur = pageLines[i];
-        if (cur.label && cur.nums.length > 0) {
-          // Normal case: label + numbers on same band
-          rows.push([cur.label, ...cur.nums]);
-        } else if (cur.label && cur.nums.length === 0 && i + 1 < pageLines.length) {
+        if (!cur.label && !cur.numItems.length) continue;
+
+        // If label exists but no numbers, peek at next line
+        if (cur.label && cur.numItems.length === 0 && i + 1 < pageLines.length) {
           const next = pageLines[i + 1];
-          if (!next.label && next.nums.length > 0) {
-            // Label on this band, numbers on next band — merge them
-            rows.push([cur.label, ...next.nums]);
-            i++; // skip next since we consumed it
+          if (!next.label && next.numItems.length > 0) {
+            cur.numItems = next.numItems;
+            pageLines.splice(i + 1, 1); // consume next
           }
-          // else: header row with no numbers — skip
         }
-        // else: numbers-only line (subtotals etc.) — skip
+
+        if (!cur.label || !cur.numItems.length) continue;
+
+        if (hasXCols) {
+          // Assign each number to nearest year column by X position
+          const yearValues = new Array(YEARS.length).fill('');
+          cur.numItems.forEach(numItem => {
+            let closestYi = -1, minDist = Infinity;
+            yearXCols.forEach(({ x, yi }) => {
+              const dist = Math.abs(numItem.x - x);
+              if (dist < minDist) { minDist = dist; closestYi = yi; }
+            });
+            if (closestYi >= 0 && minDist < 150) {
+              yearValues[closestYi] = numItem.value;
+            }
+          });
+          if (yearValues.some(v => v !== '')) {
+            rows.push([cur.label, ...yearValues]);
+          }
+        } else {
+          // Positional fallback — no year headers found
+          rows.push([cur.label, ...cur.numItems.map(n => n.value)]);
+        }
       }
+    }
+
+    // ── Minimum 3 years check ──
+    if (allFileYears.size < 3) {
+      status.innerHTML = `<div class="card card-sm" style="background:#fef2f2;border-color:#fca5a5">
+        <div style="font-weight:500;color:var(--red);margin-bottom:4px">File rejected — insufficient data</div>
+        <div style="font-size:12px;color:var(--red)">This PDF contains only ${allFileYears.size} year(s) of data (${[...allFileYears].sort().join(', ')}). Please include at least 3 years of financial data.</div>
+      </div>`;
+      return;
     }
 
     if (!rows.length) {
@@ -3188,6 +3233,12 @@ async function parsePDF(file, status) {
       return;
     }
 
+    // Insert a synthetic year header so parseRowsIntoForm's year detection
+    // aligns correctly with the pre-positioned values
+    if (hasXCols) {
+      rows.unshift(['_header_', ...YEARS]);
+    }
+
     parseRowsIntoForm(rows, file.name, status);
   } catch(e) {
     status.innerHTML = `<div class="card card-sm" style="background:#fef2f2;border-color:#fca5a5">
@@ -3195,6 +3246,9 @@ async function parsePDF(file, status) {
     </div>`;
   }
 }
+
+// Keep hasXCols accessible to the synthetic header logic
+let _pdfHasXCols = false;
 
 // ── Shared keyword map and matcher (used by both parseExcel and parseRowsIntoForm) ──
 function keyMatchesGlobal(label, keySpec) {
@@ -3608,6 +3662,15 @@ function parseExcel(file, status) {
           mapped++;
         });
       }
+      // ── Minimum 3 years check ──
+      if (allFileYears.size < 3) {
+        status.innerHTML = `<div class="card card-sm" style="background:#fef2f2;border-color:#fca5a5">
+          <div style="font-weight:500;color:var(--red);margin-bottom:4px">File rejected — insufficient data</div>
+          <div style="font-size:12px;color:var(--red)">This file contains only ${allFileYears.size} year(s) of data (${[...allFileYears].sort().join(', ')}). Please include at least 3 years of financial data before uploading.</div>
+        </div>`;
+        return;
+      }
+
       // ── Notices ──
       const SHEET_KIND_LABEL = { is:'Income Statement', bs:'Balance Sheet', cf:'Cash Flow Statement', unknown:'Unrecognised' };
       const sheetNote = sheets.length > 1
