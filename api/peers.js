@@ -1,6 +1,6 @@
 // /api/peers.js — Vercel serverless function
 // Fetches live valuation multiples from Financial Modeling Prep for a list of tickers.
-// API key stays server-side via process.env.FMP_API_KEY (set in Vercel env vars).
+// API key stays server-side via process.env.TWELVE_DATA_API_KEY (set in Vercel env vars).
 // Caches results in-memory for 6 hours to preserve the 250/day free-tier quota.
 
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
@@ -33,9 +33,9 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET');
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
 
-  const apiKey = process.env.FMP_API_KEY;
+  const apiKey = process.env.TWELVE_DATA_API_KEY;
   if (!apiKey) {
-    res.status(500).json({ error: 'FMP_API_KEY not configured on server' });
+    res.status(500).json({ error: 'TWELVE_DATA_API_KEY not configured on server' });
     return;
   }
 
