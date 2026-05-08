@@ -1064,7 +1064,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
             <tbody id="peerTableBody"></tbody>
           </table>
           <div style="font-size:10px;color:var(--text3);margin-top:10px;padding:8px;background:var(--lighter);border-radius:6px">
-            Data sourced from Argos Index (European M&amp;A) and public market filings. Updated quarterly. Last refresh: <span id="argosTimestamp2">—</span>
+            Listed peer multiples — reference values for benchmarking only. Refreshed quarterly. Last refresh: <span id="argosTimestamp2">—</span>
           </div>
         </div>
       </div>
@@ -2603,7 +2603,7 @@ function buildArgosPeerTable(D, A, myEBITDA, myRev) {
     </tr>`;
   }).join('') +
   `<tr style="background:rgba(201,162,39,.06);font-weight:600">
-     <td style="padding:8px 10px;font-size:12px;color:rgba(201,162,39,.9)">Argos Index Average</td>
+     <td style="padding:8px 10px;font-size:12px;color:rgba(201,162,39,.9)">Listed Peer Average</td>
      <td style="padding:8px 10px;font-size:12px;color:var(--text2)">EUR</td>
      <td style="padding:8px 10px;font-size:12px;text-align:right;color:rgba(201,162,39,.9)">${A.index_ebitda}x</td>
      <td style="padding:8px 10px;font-size:12px;text-align:right;color:rgba(201,162,39,.9)">${A.index_rev}x</td>
