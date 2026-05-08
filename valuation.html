@@ -2088,26 +2088,33 @@ const ARGOS_QUARTERLY_FALLBACK = [
 ];
 let ARGOS_QUARTERLY = ARGOS_QUARTERLY_FALLBACK; // replaced on load
 
+let _argosQuarterlyReady = null; // promise that resolves when Supabase data is loaded
+
 async function loadArgosQuarterly() {
-  try {
-    const { data, error } = await _supa
-      .from('argos_index')
-      .select('quarter, ebitda_mid, ebitda_lo, ebitda_hi, rev_mid, deals')
-      .order('quarter', { ascending: true });
-    if (error || !data?.length) throw new Error(error?.message || 'empty');
-    ARGOS_QUARTERLY = data.map(r => ({
-      q:         r.quarter,
-      ebitda:    parseFloat(r.ebitda_mid),
-      ebitda_lo: r.ebitda_lo  != null ? parseFloat(r.ebitda_lo)  : null,
-      ebitda_hi: r.ebitda_hi  != null ? parseFloat(r.ebitda_hi)  : null,
-      rev:       r.rev_mid    != null ? parseFloat(r.rev_mid)     : null,
-      deals:     r.deals,
-    }));
-    console.log('[argos] Loaded', ARGOS_QUARTERLY.length, 'quarters from Supabase, latest:', ARGOS_QUARTERLY.at(-1)?.q);
-  } catch (e) {
-    console.warn('[argos] Supabase fetch failed — using fallback data:', e.message);
-    ARGOS_QUARTERLY = ARGOS_QUARTERLY_FALLBACK;
-  }
+  // If already loading/loaded, return same promise
+  if (_argosQuarterlyReady) return _argosQuarterlyReady;
+  _argosQuarterlyReady = (async () => {
+    try {
+      const { data, error } = await _supa
+        .from('argos_index')
+        .select('quarter, ebitda_mid, ebitda_lo, ebitda_hi, rev_mid, deals')
+        .order('quarter', { ascending: true });
+      if (error || !data?.length) throw new Error(error?.message || 'empty');
+      ARGOS_QUARTERLY = data.map(r => ({
+        q:         r.quarter,
+        ebitda:    parseFloat(r.ebitda_mid),
+        ebitda_lo: r.ebitda_lo  != null ? parseFloat(r.ebitda_lo)  : null,
+        ebitda_hi: r.ebitda_hi  != null ? parseFloat(r.ebitda_hi)  : null,
+        rev:       r.rev_mid    != null ? parseFloat(r.rev_mid)     : null,
+        deals:     r.deals,
+      }));
+      console.log('[argos] Loaded', ARGOS_QUARTERLY.length, 'quarters from Supabase, latest:', ARGOS_QUARTERLY.at(-1)?.q);
+    } catch (e) {
+      console.warn('[argos] Supabase fetch failed — using fallback data:', e.message);
+      ARGOS_QUARTERLY = ARGOS_QUARTERLY_FALLBACK;
+    }
+  })();
+  return _argosQuarterlyReady;
 }
 
 // Sector-specific Argos multiplier vs all-market index
@@ -2181,6 +2188,9 @@ async function argosRefresh(manual = false) {
   const sec = document.getElementById('industry')?.value || 'tech';
   const argosBase = ARGOS_DATA[sec];
   if (!argosBase) return;
+
+  // Ensure Supabase quarterly data is loaded before proceeding
+  await loadArgosQuarterly();
 
   // Check cache (skip on manual refresh)
   if (!manual) {
