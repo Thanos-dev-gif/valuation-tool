@@ -3135,18 +3135,20 @@ async function parsePDF(file, status) {
       });
       bands.sort((a, b) => b.y - a.y); // top-to-bottom
 
-      // ── Find year header band: has 2+ items each containing a 20XX year ──
-      let yearXCols = []; // [{yr, x, yi}] sorted by x
+      // ── Find year header band: record ALL year X positions ──
+      let allYearXCols = []; // every 20XX year found in the header band
+      let yearXCols = [];    // only the subset that are in YEARS
       for (const band of bands) {
         const found = {};
         band.items.forEach(item => {
           const m = item.str.match(/(20\d{2})/);
-          if (m && YEARS.includes(m[1])) found[m[1]] = item.x;
+          if (m) found[m[1]] = item.x;
         });
-        if (Object.keys(found).length >= 1) {
-          yearXCols = Object.entries(found)
-            .map(([yr, x]) => ({ yr, x, yi: YEARS.indexOf(yr) }))
+        if (Object.keys(found).length >= 2) {
+          allYearXCols = Object.entries(found)
+            .map(([yr, x]) => ({ yr, x, inYEARS: YEARS.includes(yr), yi: YEARS.indexOf(yr) }))
             .sort((a, b) => a.x - b.x);
+          yearXCols = allYearXCols.filter(c => c.inYEARS);
           break;
         }
       }
@@ -3197,16 +3199,18 @@ async function parsePDF(file, status) {
         if (!cur.label || !cur.numItems.length) continue;
 
         if (hasXColsThisPage) {
-          // Assign each number to nearest year column by X position
+          // For each number, find its globally closest year column (including 2022A, 2026E etc.)
+          // Only assign to a form field if the closest column is a YEARS column.
+          // This prevents 2026E values from bleeding into the 2025 column.
           const yearValues = new Array(YEARS.length).fill('');
           cur.numItems.forEach(numItem => {
-            let closestYi = -1, minDist = Infinity;
-            yearXCols.forEach(({ x, yi }) => {
-              const dist = Math.abs(numItem.x - x);
-              if (dist < minDist) { minDist = dist; closestYi = yi; }
+            let closestCol = null, minDist = Infinity;
+            allYearXCols.forEach(col => {
+              const dist = Math.abs(numItem.x - col.x);
+              if (dist < minDist) { minDist = dist; closestCol = col; }
             });
-            if (closestYi >= 0 && minDist < 150) {
-              yearValues[closestYi] = numItem.value;
+            if (closestCol && closestCol.inYEARS && minDist < 150) {
+              yearValues[closestCol.yi] = numItem.value;
             }
           });
           if (yearValues.some(v => v !== '')) {
