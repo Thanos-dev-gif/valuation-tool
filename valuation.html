@@ -2534,9 +2534,21 @@ function buildArgosTrendChart() {
     },
     options: {
       responsive:true, maintainAspectRatio:false,
+      layout: { padding: { bottom: 10 } },
       plugins:{ legend:{ position:'top', labels:{font:{size:10},boxWidth:12,filter:item=>!item.text.includes('range')} }, tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.raw+'x'}} },
       scales:{
-        x:{ grid:{display:false}, ticks:{font:{size:10},maxRotation:35} },
+        x:{ grid:{display:false}, ticks:{
+          font:{size:9},
+          maxRotation:45,
+          minRotation:45,
+          autoSkip:true,
+          maxTicksLimit:16,
+          callback: function(val, idx) {
+            // Show only Q2 and Q4 labels, abbreviated to year on Q4
+            const label = this.getLabelForValue(val);
+            return label;
+          }
+        }},
         y:{ grid:{color:'rgba(0,0,0,.04)'}, ticks:{callback:v=>v+'x'}, title:{display:true,text:'EV/EBITDA multiple',font:{size:10}} }
       }
     }
@@ -2560,7 +2572,7 @@ function buildArgosTrendChart() {
         return `<div style="padding:5px 8px;${bg}">${q.q}${i===0?' <span style="font-size:9px;color:var(--mint2);font-weight:600">LATEST</span>':''}</div>
                 <div style="padding:5px 8px;text-align:right;font-weight:500;${bg}">${q.ebitda}x <span style="${acls}">${arrow}</span></div>
                 <div style="padding:5px 8px;text-align:right;color:var(--mint2);font-weight:600;${bg}">${sector}x</div>
-                <div style="padding:5px 8px;text-align:right;color:var(--text2);${bg}">${q.deals}</div>`;
+                <div style="padding:5px 8px;text-align:right;color:var(--text2);${bg}">${q.deals ?? '—'}</div>`;
       }).join('')}
     </div>
     <div style="font-size:10px;color:var(--text3);margin-top:8px">Source: Argos Index quarterly reports (argos-wityu.com). Sector index = all-market × sector factor. Deal counts are approximate mid-market European transactions.</div>`;
