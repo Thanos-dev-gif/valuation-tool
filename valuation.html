@@ -968,11 +968,11 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       <!-- Section header with refresh control -->
       <div class="argos-header">
         <div>
-          <div style="font-size:16px;font-weight:600;color:var(--navy);font-family:var(--font-serif)">Argos Index — Peer Comparison</div>
+          <div style="font-size:16px;font-weight:600;color:var(--navy);font-family:var(--font-serif)">Listed Peer Comparison</div>
           <div style="font-size:12px;color:var(--text2);margin-top:2px">Sector: <span id="peerSectorLabel" style="color:var(--mint2);font-weight:600"></span></div>
         </div>
         <div class="argos-meta">
-          <span class="argos-source-pill" id="argosSourcePill">Listed Peers — Public Markets</span>
+          <span class="argos-source-pill" id="argosSourcePill">Listed Peer Baseline — Q1 2026</span>
           <span class="argos-timestamp" id="argosTimestamp">—</span>
           <button class="argos-refresh-btn" id="argosRefreshBtn" onclick="argosRefresh(true)">
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
@@ -995,7 +995,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       <!-- Tab navigation -->
       <div class="argos-tab-bar">
         <button class="argos-tab active" onclick="switchArgosTab('multiples')">Valuation Multiples</button>
-        <button class="argos-tab" onclick="switchArgosTab('trend')">Index Trend</button>
+        <button class="argos-tab" onclick="switchArgosTab('trend')">Sector Trend</button>
         <button class="argos-tab" onclick="switchArgosTab('margins')">Margins &amp; Growth</button>
         <button class="argos-tab" onclick="switchArgosTab('table')">Full Peer Table</button>
       </div>
@@ -2328,21 +2328,14 @@ function switchArgosTab(tab) {
 
 // ── Timestamp helper ──
 function argosSetTimestamp() {
-  const ts = argosLastFetch ? new Date(argosLastFetch).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
-  const suffix = argosLiveData?.anyLive ? ' · live data' : ' · Argos Q4 2024 baseline';
+  // Static baseline — peer multiples are refreshed quarterly from public sources.
+  // Update PEER_BASELINE_AS_OF when you refresh ARGOS_DATA values.
+  const PEER_BASELINE_AS_OF = 'Q1 2026';
   ['argosTimestamp','argosTimestamp2'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.textContent = 'Updated ' + ts + suffix;
+    if (el) el.textContent = 'Listed peer baseline · ' + PEER_BASELINE_AS_OF;
   });
-  // Update the source pill so users see "Live" when fresh data was actually fetched
-  const pill = document.getElementById('argosSourcePill');
-  if (pill && argosLiveData) {
-    const anyLive = argosLiveData.anyLive;
-    pill.textContent = anyLive ? 'Live • Public Markets' : 'Baseline • Public Markets';
-    pill.style.background = anyLive ? 'rgba(0,201,167,.12)' : 'var(--gold-faint)';
-    pill.style.borderColor = anyLive ? 'rgba(0,201,167,.3)' : 'rgba(201,162,39,.2)';
-    pill.style.color = anyLive ? 'var(--mint2)' : 'rgba(201,162,39,.9)';
-  }
+  // Pill stays static — already says "Listed Peer Baseline — Q1 2026" in the HTML
 }
 
 // ── Main render function ──
@@ -2401,7 +2394,7 @@ function renderArgosSection(D) {
 // ── Chart 1 & 2: EV/EBITDA and EV/Revenue bar charts ──
 function buildArgosMultiplesCharts(D, A, myEBITDA, myRev) {
   const companies = A.companies;
-  const labels    = [...companies.map(c => c[0]), 'This Company', 'Argos Avg'];
+  const labels    = [...companies.map(c => c[0]), 'This Company', 'Peer Avg'];
 
   const ebitdaVals = [...companies.map(c => c[2]), myEBITDA, A.index_ebitda];
   const revVals    = [...companies.map(c => c[3]), myRev,    A.index_rev];
