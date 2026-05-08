@@ -3118,68 +3118,143 @@ async function parsePDF(file, status) {
         .map(item => ({ str: item.str.trim(), x: item.transform[4], y: item.transform[5] }));
       if (!items.length) continue;
 
-      // Group into Y-bands with 5px tolerance
-      const YTOL = 5;
-      const bands = [];
+      // Collect all years found
       items.forEach(item => {
-        const band = bands.find(b => Math.abs(b.y - item.y) <= YTOL);
-        if (band) { band.items.push(item); band.y = (band.y + item.y) / 2; }
-        else bands.push({ y: item.y, items: [item] });
+        [...item.str.matchAll(/(20\d{2})/g)].forEach(m => allFileYears.add(m[1]));
       });
-      bands.sort((a, b) => b.y - a.y); // top-to-bottom
 
-      const pageLines = [];
+      // ── Pass 1: Find year header — detect ALL year X positions ──
+      // Group items into Y-bands (3px tight tolerance for year header detection)
+      const YTOL_HDR = 4;
+      const hdrBands = [];
+      items.forEach(item => {
+        const b = hdrBands.find(b => Math.abs(b.y - item.y) <= YTOL_HDR);
+        if (b) { b.items.push(item); b.y = (b.y + item.y) / 2; }
+        else hdrBands.push({ y: item.y, items: [item] });
+      });
 
-      bands.forEach(band => {
-        const sorted = band.items.slice().sort((a, b) => a.x - b.x);
-        const lineText = sorted.map(i => i.str).join(' ').trim();
-        if (!lineText) return;
-
-        // Collect all 20XX years for minimum-years check
-        [...lineText.matchAll(/(20\d{2})/g)].forEach(m => allFileYears.add(m[1]));
-
-        // ── Year header row: line containing 2+ year patterns ──
-        // Push as ['_years_', '2022', '2023', ...] so parseRowsIntoForm
-        // detects correct column→year mapping positionally
-        const yearMatches = [...lineText.matchAll(/(20\d{2})/g)];
-        if (yearMatches.length >= 2) {
-          rows.push(['_years_', ...yearMatches.map(m => m[1])]);
-          return;
+      // Find the band with the most year matches → year header
+      let allYearXMap = {}; // yr → x position (all 20XX years including outside YEARS)
+      let yearHeaderY = null;
+      let bestYearCount = 0;
+      hdrBands.forEach(band => {
+        const yearItems = band.items.filter(i => /^(20\d{2})/.test(i.str));
+        if (yearItems.length > bestYearCount) {
+          bestYearCount = yearItems.length;
+          allYearXMap = {};
+          yearItems.forEach(i => {
+            const m = i.str.match(/(20\d{2})/);
+            if (m) allYearXMap[m[1]] = i.x;
+          });
+          yearHeaderY = band.y;
         }
-
-        // ── Financial data row ──
-        // Extract: ($600) → -600, $1,163 → 1163, skip percentages
-        const rawNums = lineText.match(/\(?\$?\s*-?\d{1,3}(?:[,]\d{3})*(?:\.\d+)?\)?/g) || [];
-        const nums = rawNums
-          .filter(n => !n.includes('%'))
-          .map(n => {
-            const isNeg = n.trim().startsWith('(');
-            const clean = parseFloat(n.replace(/[$,()\s]/g, ''));
-            return isNeg ? -Math.abs(clean) : clean;
-          })
-          .filter(n => !isNaN(n));
-
-        const label = lineText
-          .replace(/\(?\$?\s*-?\d{1,3}(?:[,]\d{3})*(?:\.\d+)?\)?/g, '')
-          .replace(/%/g, '').replace(/[-—–]+/g, '').replace(/\s+/g, ' ').trim();
-
-        pageLines.push({ label, nums });
       });
 
-      // Merge label-only lines with immediately following numbers-only lines
-      for (let i = 0; i < pageLines.length; i++) {
-        const cur = pageLines[i];
-        if (cur.label && cur.nums.length === 0 && i + 1 < pageLines.length) {
-          const next = pageLines[i + 1];
-          if (!next.label && next.nums.length > 0) {
-            cur.nums = next.nums;
-            pageLines.splice(i + 1, 1);
+      // If year items aren't separate tokens (e.g., "2022A 2023A..." as one item)
+      // fall back to parsing the joined line text
+      if (bestYearCount < 2) {
+        hdrBands.forEach(band => {
+          const lineText = band.items.map(i => i.str).join(' ');
+          const yearMatches = [...lineText.matchAll(/(20\d{2})/g)];
+          if (yearMatches.length > bestYearCount) {
+            bestYearCount = yearMatches.length;
+            // Estimate X positions by distributing evenly across the band width
+            const sorted = band.items.slice().sort((a, b) => a.x - b.x);
+            const minX = sorted[0]?.x || 0;
+            const maxX = sorted[sorted.length-1]?.x || 500;
+            const span = maxX - minX || 400;
+            yearMatches.forEach((m, idx) => {
+              allYearXMap[m[1]] = minX + (span * idx / (yearMatches.length - 1 || 1));
+            });
+            yearHeaderY = band.y;
           }
-        }
-        if (cur.label && cur.nums.length > 0) {
-          rows.push([cur.label, ...cur.nums]);
-        }
+        });
       }
+
+      // Build YEARS-only column map sorted by X
+      const yearXCols = Object.entries(allYearXMap)
+        .filter(([yr]) => YEARS.includes(yr))
+        .map(([yr, x]) => ({ yr, x, yi: YEARS.indexOf(yr) }))
+        .sort((a, b) => a.x - b.x);
+
+      if (yearXCols.length === 0) {
+        // No year columns found — push year row from allFileYears order for positional fallback
+        const sortedYears = Object.keys(allYearXMap).sort();
+        if (sortedYears.length >= 2) rows.push(['_years_', ...sortedYears]);
+        continue;
+      }
+
+      // ── Pass 2: Extract data rows ──
+      // Use generous Y-tolerance (8px) so labels and their values group together
+      const YTOL_DATA = 8;
+      const dataBands = [];
+      items.forEach(item => {
+        if (yearHeaderY !== null && Math.abs(item.y - yearHeaderY) <= YTOL_DATA) return; // skip year header
+        const b = dataBands.find(b => Math.abs(b.y - item.y) <= YTOL_DATA);
+        if (b) { b.items.push(item); b.y = (b.y + item.y) / 2; }
+        else dataBands.push({ y: item.y, items: [item] });
+      });
+      dataBands.sort((a, b) => b.y - a.y); // top-to-bottom
+
+      // Determine label column threshold: items significantly left of leftmost year column
+      const leftmostYearX = yearXCols[0].x;
+      const LABEL_THRESHOLD = leftmostYearX - 20; // items left of this are labels
+
+      dataBands.forEach(band => {
+        const sorted = band.items.slice().sort((a, b) => a.x - b.x);
+
+        // Separate label items (far left) from value items (near year columns)
+        const labelParts = [];
+        const numItems = [];
+
+        sorted.forEach(item => {
+          if (item.x < LABEL_THRESHOLD) {
+            // Label column — keep as text regardless of content
+            if (!item.str.match(/^\d+\.?\d*%$/) && !item.str.match(/^[-—–]+$/)) {
+              labelParts.push(item.str);
+            }
+          } else {
+            // Value column — try to parse as number
+            if (item.str.match(/^\d+\.?\d*%$/) || item.str.match(/^[-—–]+$/)) return; // skip %/dashes
+            const isNeg = item.str.startsWith('(');
+            const cleaned = item.str.replace(/[$,()\s]/g, '');
+            const num = parseFloat(cleaned);
+            if (!isNaN(num) && /\d/.test(item.str)) {
+              numItems.push({ x: item.x, value: isNeg ? -Math.abs(num) : num });
+            } else if (!item.str.match(/^[A-Z]/)) {
+              // Short non-capitalized text in value area — might be part of label
+              labelParts.push(item.str);
+            }
+          }
+        });
+
+        const label = labelParts.join(' ').trim();
+        if (!label || !numItems.length) return;
+
+        // For each YEARS column, find the number item closest to it
+        const yearValues = new Array(YEARS.length).fill('');
+        yearXCols.forEach(({ x: yearX, yi }) => {
+          let closest = null, minDist = Infinity;
+          numItems.forEach(numItem => {
+            const dist = Math.abs(numItem.x - yearX);
+            if (dist < minDist) { minDist = dist; closest = numItem; }
+          });
+          // Accept if within half the column spacing (prevents cross-column bleed)
+          const colSpacing = yearXCols.length > 1
+            ? (yearXCols[yearXCols.length-1].x - yearXCols[0].x) / (yearXCols.length - 1)
+            : 80;
+          if (closest && minDist <= colSpacing * 0.6) {
+            yearValues[yi] = closest.value;
+          }
+        });
+
+        if (yearValues.some(v => v !== '')) {
+          rows.push([label, ...yearValues]);
+        }
+      });
+
+      // Push synthetic year header for parseRowsIntoForm's column detection
+      rows.unshift(['_years_', ...YEARS]);
     }
 
     // ── Minimum 3 years check ──
@@ -3191,7 +3266,7 @@ async function parsePDF(file, status) {
       return;
     }
 
-    if (!rows.length) {
+    if (rows.filter(r => r[0] !== '_years_').length === 0) {
       status.innerHTML = `<div class="card card-sm" style="background:#fef2f2;border-color:#fca5a5">
         <div style="color:var(--red)">Could not extract data from this PDF. Try a text-based PDF (not a scanned image).</div>
       </div>`;
