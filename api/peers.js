@@ -7,20 +7,22 @@ const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 const cache = new Map(); // ticker -> { ts, data }
 
 async function fetchOne(ticker, apiKey) {
-  // Use FMP's stable key-metrics-ttm endpoint — confirmed available on the free tier.
-  // Returns enterpriseValueTTM, marketCapTTM, evToSalesTTM, evToEbitdaTTM, peRatioTTM, pbRatioTTM.
-  const url = `https://financialmodelingprep.com/stable/key-metrics-ttm?symbol=${encodeURIComponent(ticker)}&apikey=${apiKey}`;
+  // Twelve Data: use the /statistics endpoint for valuation ratios.
+  // Returns valuations_metrics with enterprise_to_ebitda, enterprise_to_revenue, trailing_pe, etc.
+  const url = `https://api.twelvedata.com/statistics?symbol=${encodeURIComponent(ticker)}&apikey=${apiKey}`;
   const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-  if (!res.ok) throw new Error(`FMP ${res.status}`);
-  const arr = await res.json();
-  if (!Array.isArray(arr) || !arr.length) throw new Error('empty response');
-  const r = arr[0];
+  if (!res.ok) throw new Error(`Twelve Data ${res.status}`);
+  const body = await res.json();
+  // Twelve Data signals errors via a "code" field in the JSON body even on 200 responses
+  if (body.code && body.code !== 200) throw new Error(`Twelve Data ${body.code}: ${body.message || 'error'}`);
+  const v = body.statistics?.valuations_metrics || {};
+  const f = body.statistics?.financials || {};
   return {
     ticker,
-    ebitda: r.evToEBITDATTM ?? r.evToEbitdaTTM ?? null,
-    rev:    r.evToSalesTTM ?? null,
-    pe:     r.peRatioTTM ?? null,
-    pb:     r.pbRatioTTM ?? r.priceToBookRatioTTM ?? null,
+    ebitda: parseFloat(v.enterprise_to_ebitda) || null,
+    rev:    parseFloat(v.enterprise_to_revenue) || null,
+    pe:     parseFloat(v.trailing_pe) || null,
+    pb:     parseFloat(v.price_to_book_mrq ?? f.price_to_book) || null,
     fetchedAt: Date.now(),
   };
 }
