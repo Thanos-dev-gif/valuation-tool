@@ -9,14 +9,21 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch Argos page and extract EV/EBITDA
+      - name: Fetch Argos page via Scrape.do
         id: scrape
         run: |
-          URL="https://www.google.com"
-          PAGE=$(curl -s -L -A "Mozilla/5.0" "$URL")
-          echo "=== PAGE PREVIEW ==="
-          echo "$PAGE" | head -c 3000
-          echo "=== END PREVIEW ==="
+          PAGE=$(curl -s "http://api.scrape.do?token=${{ secrets.SCRAPE_DO_TOKEN }}&url=https%3A%2F%2Fwww.argos-wityu.com%2Fen%2Fargos-index%2F")
+          
           echo "=== SEARCHING FOR NUMBERS ==="
           echo "$PAGE" | grep -oi '[0-9][0-9]*\.[0-9]x' | head -20
           echo "=== END NUMBERS ==="
+          
+          EBITDA=$(echo "$PAGE" | grep -oi '[0-9][0-9]*\.[0-9]x' | grep -oP '[0-9]+\.[0-9]' | head -1)
+          
+          if [ -z "$EBITDA" ]; then
+            echo "Could not extract figure"
+            exit 1
+          fi
+          
+          MONTH=$(date +%-m)
+          YEAR=$(date +%Y)
