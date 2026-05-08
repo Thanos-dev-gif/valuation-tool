@@ -2072,7 +2072,32 @@ function safeCreateChart(canvasId, config) {
 
 // Real Argos Index quarterly data — loaded from Supabase (argos_index table)
 // Falls back to the last known values if the fetch fails or returns no rows.
+// Historical data (pre-2022) sourced from Argos Index chart — semi-annual, mapped to Q1/Q3
 const ARGOS_QUARTERLY_FALLBACK = [
+  { q:'Q1 2004', ebitda:6.1,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2005', ebitda:7.5,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2006', ebitda:8.3,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q3 2006', ebitda:9.1,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2008', ebitda:8.4,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2009', ebitda:5.7,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q2 2010', ebitda:6.6,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q2 2011', ebitda:7.7,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2012', ebitda:7.7,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q3 2012', ebitda:6.3,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q3 2013', ebitda:8.3,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2014', ebitda:6.7,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q3 2014', ebitda:8.3,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q2 2015', ebitda:9.1,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q2 2016', ebitda:9.2,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2017', ebitda:8.5,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q3 2017', ebitda:9.5,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2018', ebitda:9.9,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q3 2018', ebitda:9.1,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2019', ebitda:10.3, ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q3 2019', ebitda:10.0, ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q3 2020', ebitda:9.2,  ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q1 2021', ebitda:11.1, ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
+  { q:'Q3 2021', ebitda:11.6, ebitda_lo:null, ebitda_hi:null, rev:null, deals:null },
   { q:'Q1 2022', ebitda:11.5, ebitda_lo:9.0,  ebitda_hi:13.8, rev:2.1, deals:46 },
   { q:'Q2 2022', ebitda:11.2, ebitda_lo:8.8,  ebitda_hi:13.5, rev:2.0, deals:52 },
   { q:'Q3 2022', ebitda:10.8, ebitda_lo:8.5,  ebitda_hi:13.1, rev:1.9, deals:44 },
