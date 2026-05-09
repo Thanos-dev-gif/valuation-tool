@@ -1104,6 +1104,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       <button class="tab-btn" onclick="switchDcfTab('charts')">Charts</button>
     </div>
     <div class="tab-content active" id="dcf-overview">
+      <div id="dcfGordonNotice" style="margin-bottom:4px"></div>
       <div class="grid4" id="dcfKpis"></div>
       <div class="card" style="margin-top:16px">
         <div class="card-header"><div class="card-title">5-Year Free Cash Flow Projection</div></div>
@@ -1159,13 +1160,11 @@ const SECTORS = {
   manufacturing:{label:'Manufacturing',            ebitda:[4,7],   ebit:[5,9],   rev:[0.5,1.2],pe:[10,16], mb:[1,2.5], beta:1.0,  capex:6},
   finserv:     {label:'Financial Services',        ebitda:[6,12],  ebit:[7,13],  rev:[2,4],    pe:[10,18], mb:[0.8,2], beta:0.9,  capex:2},
   insurance:   {label:'Insurance',                 ebitda:[5,10],  ebit:[6,11],  rev:[1.5,3],  pe:[8,14],  mb:[0.8,1.8],beta:0.7, capex:1.5},
-  logistics:   {label:'Logistics',           ebitda:[4,7],  ebit:[5,8],  rev:[0.4,1], pe:[10,15], mb:[1,2]},
-  food:        {label:'Agri-food',           ebitda:[4,8],  ebit:[5,9],  rev:[0.5,1.2],pe:[10,18],mb:[1.5,3]},
-  hospitality: {label:'Hospitality',         ebitda:[3,6],  ebit:[4,7],  rev:[0.4,1], pe:[8,15],  mb:[1,2]},
-  construction:{label:'Construction',        ebitda:[4,7],  ebit:[5,8],  rev:[0.4,1], pe:[8,14],  mb:[1,2]},
-  wholesale:   {label:'Wholesale',           ebitda:[3,6],  ebit:[4,7],  rev:[0.3,0.8],pe:[8,14], mb:[1,2],   beta:0.8,  capex:2},
-  finserv:     {label:'Financial Services',  ebitda:[6,12], ebit:[7,13], rev:[2,4],    pe:[10,18], mb:[0.8,2], beta:0.9,  capex:2},
-  insurance:   {label:'Insurance',           ebitda:[5,10], ebit:[6,11], rev:[1.5,3],  pe:[8,14],  mb:[0.8,1.8],beta:0.7, capex:1.5},
+  logistics:   {label:'Transport & Logistics',     ebitda:[4,7],   ebit:[5,8],   rev:[0.4,1],  pe:[10,15], mb:[1,2],   beta:1.0,  capex:5},
+  food:        {label:'Agri-food & Beverages',     ebitda:[4,8],   ebit:[5,9],   rev:[0.5,1.2],pe:[10,18], mb:[1.5,3], beta:0.8,  capex:4},
+  hospitality: {label:'Hospitality & Tourism',     ebitda:[3,6],   ebit:[4,7],   rev:[0.4,1],  pe:[8,15],  mb:[1,2],   beta:1.1,  capex:5},
+  construction:{label:'Construction',              ebitda:[4,7],   ebit:[5,8],   rev:[0.4,1],  pe:[8,14],  mb:[1,2],   beta:1.0,  capex:4},
+  wholesale:   {label:'Wholesale & Distribution',  ebitda:[3,6],   ebit:[4,7],   rev:[0.3,0.8],pe:[8,14],  mb:[1,2],   beta:0.8,  capex:2},
 };
 
 
@@ -1207,6 +1206,8 @@ const ARGOS_DATA = {
   hospitality:{label:'Hospitality & Tourism', index_ebitda:7.4,  index_rev:1.9,  companies:[['Whitbread','GBP',9.8,3.2],['Mitchells & Butlers','GBP',7.4,1.8],['Marston\'s','GBP',6.2,1.4],['Restaurant Group','GBP',5.8,0.8],['Carnival','GBP',8.1,2.1]]},
   construction:{label:'Construction & Technology',index_ebitda:7.3,index_rev:0.3,companies:[['Balfour Beatty','GBP',8.2,0.3],['Galliford Try','GBP',6.1,0.2],['Kier','GBP',5.8,0.2],['Morgan Sindall','GBP',9.4,0.4],['Severfield','GBP',7.1,0.6]]},
   wholesale:{label:'Wholesale & Distribution', index_ebitda:10.8,index_rev:0.8,  companies:[['Bunzl','GBP',14.2,1.1],['Grafton','EUR',10.8,0.8],['Travis Perkins','GBP',7.4,0.5],['Ferguson','GBP',12.1,0.9],['DCC','EUR',9.8,0.7]]},
+  finserv:  {label:'Financial Services',       index_ebitda:10.2,index_rev:2.8,  companies:[['Close Brothers','GBP',10.4,2.6],['Intermediate Capital','GBP',14.1,4.2],['Hargreaves Lansdown','GBP',12.8,3.8],['IG Group','GBP',9.6,2.4],['Provident Financial','GBP',7.8,1.8]]},
+  insurance:{label:'Insurance',               index_ebitda:8.4, index_rev:1.4,  companies:[['Beazley','GBP',9.2,1.6],['Hiscox','GBP',10.1,1.8],['Lancashire Holdings','GBP',8.8,1.4],['Conduit Holdings','GBP',7.4,1.2],['Chaucer','GBP',6.9,1.1]]},
 };
 
 const SC_ITEMS = [
@@ -2846,6 +2847,20 @@ function toggleWorking(idx) {
 // ═══ DCF ═══
 function buildDCF(D) {
   const yrs = [1,2,3,4,5];
+
+  // ── BUG-003 fix: show Gordon Growth status notice on DCF page ──
+  const gordonNotice = D.tvGordon > 0
+    ? `<div style="padding:10px 14px;background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.3);border-radius:8px;font-size:12px;color:var(--mint2);margin-bottom:12px">
+        <strong>Terminal Value:</strong> Blended average of Gordon Growth Model (${fmt(D.tvGordon)}) and Exit Multiple (${fmt(D.tvExit)}).
+       </div>`
+    : `<div style="padding:10px 14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:8px;font-size:12px;color:#b45309;margin-bottom:12px">
+        <strong>⚠ Gordon Growth Model disabled</strong> — Terminal growth rate (${(D.tg*100).toFixed(1)}%) must be lower than WACC (${(D.wacc*100).toFixed(2)}%) for Gordon Growth to be valid.
+        Terminal value uses the <strong>Exit Multiple only</strong> (${fmt(D.tvExit)}). To enable both methods, reduce TG or increase WACC on the Assumptions page.
+       </div>`;
+
+  const noticeEl = document.getElementById('dcfGordonNotice');
+  if (noticeEl) noticeEl.innerHTML = gordonNotice;
+
   document.getElementById('dcfKpis').innerHTML = `
     <div class="kpi"><div class="kpi-label">PV of FCFs (5yr)</div><div class="kpi-value">${fmt(D.pvFCFTotal)}</div><div class="kpi-sub">${pct(D.pvFCFTotal/D.dcfEV*100)} of EV</div></div>
     <div class="kpi"><div class="kpi-label">Terminal Value (PV)</div><div class="kpi-value">${fmt(D.termVal)}</div><div class="kpi-sub">${pct(D.termVal/D.dcfEV*100)} of EV</div></div>
