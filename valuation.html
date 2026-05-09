@@ -3794,6 +3794,9 @@ function parseRowsIntoForm(rows, fileName, status) {
       ['total financial debt',['debt']],['financial debt',['debt']],['total debt',['debt']],
       ['capital expenditures',['capex']],['capital expenditure',['capex']],['capex',['capex']],
       ['change in working capital',['wcChange']],['changes in working capital',['wcChange']],
+      // ── Total OpEx sentinel: always overwrites individual line accumulation ──
+      ['total opex',['other_opex_total']],['total operating expenses',['other_opex_total']],
+      ['operating expenses total',['other_opex_total']],
     ];
     const ALWAYS_POSITIVE = ['capex'];
     const ADDITIVE = ['other_opex'];
@@ -3836,9 +3839,14 @@ function parseRowsIntoForm(rows, fileName, status) {
               const el = document.getElementById(elId);
               if (!el || el.classList.contains('calc-cell')) return;
               const parsed = ALWAYS_POSITIVE.includes(resolvedFid) ? Math.abs(parseFloat(val)) : parseFloat(val);
-              if (isSentinel) { if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) { _parsedUpload[elId] = parsed; mapped++; } }
-              else if (ADDITIVE.includes(resolvedFid)) { _parsedUpload[elId] = (parseFloat(_parsedUpload[elId]) || 0) + parsed; mapped++; }
-              else if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) { _parsedUpload[elId] = parsed; mapped++; }
+              if (isSentinel) {
+                // Total OpEx: always overwrite — it's the authoritative sum from the file
+                _parsedUpload[elId] = parsed; mapped++;
+              } else if (ADDITIVE.includes(resolvedFid)) {
+                _parsedUpload[elId] = (parseFloat(_parsedUpload[elId]) || 0) + parsed; mapped++;
+              } else if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
+                _parsedUpload[elId] = parsed; mapped++;
+              }
             });
           } else {
             YEARS.forEach((yr, yi) => {
@@ -3847,9 +3855,13 @@ function parseRowsIntoForm(rows, fileName, status) {
               const el = document.getElementById(elId);
               if (!el || el.classList.contains('calc-cell') || val === undefined || val === '') return;
               const parsed = ALWAYS_POSITIVE.includes(resolvedFid) ? Math.abs(parseFloat(val)) : parseFloat(val);
-              if (isSentinel) { if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) { _parsedUpload[elId] = parsed; mapped++; } }
-              else if (ADDITIVE.includes(resolvedFid)) { _parsedUpload[elId] = (parseFloat(_parsedUpload[elId]) || 0) + parsed; mapped++; }
-              else if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) { _parsedUpload[elId] = parsed; mapped++; }
+              if (isSentinel) {
+                _parsedUpload[elId] = parsed; mapped++;
+              } else if (ADDITIVE.includes(resolvedFid)) {
+                _parsedUpload[elId] = (parseFloat(_parsedUpload[elId]) || 0) + parsed; mapped++;
+              } else if (!Object.prototype.hasOwnProperty.call(_parsedUpload, elId)) {
+                _parsedUpload[elId] = parsed; mapped++;
+              }
             });
           }
         });
