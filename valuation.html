@@ -97,6 +97,10 @@ body{font-family:var(--font);background:var(--light);color:var(--text);min-heigh
 .btn-sm{padding:6px 14px;font-size:12px}
 .btn-ghost{background:transparent;border-color:transparent;color:var(--text2)}
 .btn-ghost:hover{background:var(--light);border-color:var(--border)}
+.lang-toggle{display:inline-flex;align-items:center;background:var(--light);border:1px solid var(--border2);border-radius:99px;padding:2px;gap:2px}
+.lang-btn{padding:4px 10px;border-radius:99px;border:none;background:transparent;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--text2);transition:all .15s;letter-spacing:.04em}
+.lang-btn.active{background:var(--navy);color:#fff}
+
 .content{padding:32px;max-width:1100px}
 .page{display:none}
 .page.active{display:block;animation:fadeIn .2s ease}
@@ -556,8 +560,8 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       </div>
     </div>
     <div style="text-align:center;margin-bottom:20px">
-      <div class="disc-title">Important Disclaimer</div>
-      <div style="font-size:12px;color:var(--text2);margin-top:4px">Please read carefully before proceeding</div>
+      <div class="disc-title" data-i18n="disc_title">Important Disclaimer</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px" data-i18n="disc_sub">Please read carefully before proceeding</div>
     </div>
     <div class="ifrs-badge" style="width:100%;justify-content:center;margin-bottom:18px">
       <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -577,7 +581,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
         <span style="font-style:italic;color:var(--text3)">(Optional)</span> I agree to be contacted by ValueBridge Partners regarding this valuation and related advisory services.
       </label>
     </div>
-    <button class="disc-proceed" id="discProceedBtn" disabled onclick="acceptDisclaimer()">Proceed to Valuation Tool</button>
+    <button class="disc-proceed" id="discProceedBtn" disabled onclick="acceptDisclaimer()" data-i18n="disc_proceed">Proceed to Valuation Tool</button>
     <div style="text-align:center;margin-top:12px"><span style="font-size:11px;color:var(--text3);cursor:pointer" onclick="authLogout()">Sign out</span></div>
   </div>
 </div>
@@ -596,56 +600,56 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
     <div class="sb-logo-sub">Professional Valuation Platform</div>
   </div>
   <div class="sb-section">
-    <div class="sb-section-label">Inputs</div>
+    <div class="sb-section-label" data-i18n="nav_inputs">Inputs</div>
     <button class="sb-item active" onclick="navigate('company')">
       <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-      Company &amp; Non-Financial
+      <span data-i18n="nav_company">Company &amp; Non-Financial</span>
     </button>
     <button class="sb-item" onclick="navigate('financials')">
       <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 20h16a2 2 0 002-2V8a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-      Financial Statements
+      <span data-i18n="nav_financials">Financial Statements</span>
     </button>
     <button class="sb-item" onclick="navigate('scorecard')">
       <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
-      Qualitative Scorecard
+      <span data-i18n="nav_scorecard">Qualitative Scorecard</span>
     </button>
     <button class="sb-item" onclick="navigate('assumptions')">
       <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"/></svg>
-      Assumptions &amp; WACC
+      <span data-i18n="nav_assumptions">Assumptions &amp; WACC</span>
     </button>
   </div>
   <div class="sb-section">
-    <div class="sb-section-label">Results</div>
+    <div class="sb-section-label" data-i18n="nav_results">Results</div>
     <button class="sb-item" onclick="navigate('overview')">
       <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
-      Valuation Overview
+      <span data-i18n="nav_overview">Valuation Overview</span>
     </button>
     <button class="sb-item" onclick="navigate('methods')">
       <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg>
-      Method Breakdown
+      <span data-i18n="nav_methods">Method Breakdown</span>
     </button>
     <button class="sb-item" onclick="navigate('dcf')">
       <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
-      DCF Method
+      <span data-i18n="nav_dcf">DCF Method</span>
     </button>
     <button class="sb-item" onclick="navigate('sensitivity')">
       <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75.125v-6.75A1.125 1.125 0 013.375 10.5m0 0h.375m-0.375 0H3m2.25 0h.375m0 0h3.375m0 0H9m3.375 0h.375m-.375 0H12m3.375 0H12m6 0h-3.375m0 0H18m0 0h.375M18 10.5v6.75A1.125 1.125 0 0119.125 18.375H21"/></svg>
-      Sensitivity Analysis
+      <span data-i18n="nav_sensitivity">Sensitivity Analysis</span>
     </button>
   </div>
   <div class="sb-progress">
-    <div class="sb-progress-label">Completion</div>
+    <div class="sb-progress-label" data-i18n="progress_label">Completion</div>
     <div class="sb-progress-bar"><div class="sb-progress-fill" id="progressFill" style="width:20%"></div></div>
     <div class="sb-steps">
-      <div class="sb-step done" id="step1"><div class="sb-step-dot"></div>Company Info</div>
-      <div class="sb-step current" id="step2"><div class="sb-step-dot"></div>Financial Data</div>
-      <div class="sb-step" id="step3"><div class="sb-step-dot"></div>Scorecard</div>
-      <div class="sb-step" id="step4"><div class="sb-step-dot"></div>Assumptions</div>
-      <div class="sb-step" id="step5"><div class="sb-step-dot"></div>Results</div>
+      <div class="sb-step done" id="step1"><div class="sb-step-dot"></div><span data-i18n="step_company">Company Info</span></div>
+      <div class="sb-step current" id="step2"><div class="sb-step-dot"></div><span data-i18n="step_financials">Financial Data</span></div>
+      <div class="sb-step" id="step3"><div class="sb-step-dot"></div><span data-i18n="step_scorecard">Scorecard</span></div>
+      <div class="sb-step" id="step4"><div class="sb-step-dot"></div><span data-i18n="step_assumptions">Assumptions</span></div>
+      <div class="sb-step" id="step5"><div class="sb-step-dot"></div><span data-i18n="step_results">Results</span></div>
     </div>
   </div>
   <div class="sb-footer">
-    <div class="sb-footer-text">For indicative purposes only. Not financial advice. Consult a qualified professional before making commercial decisions.</div>
+    <div class="sb-footer-text" data-i18n="footer_disclaimer">For indicative purposes only. Not financial advice. Consult a qualified professional before making commercial decisions.</div>
   </div>
 </aside>
 
@@ -672,7 +676,8 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
         Export PDF
       </button>
-      <button class="btn btn-sm btn-primary" onclick="navigate('overview')">View Results →</button>
+      <button class="btn btn-sm btn-primary" onclick="navigate('overview')"><span data-i18n="btn_view_results">View Results →</span></button>
+      <div class="lang-toggle"><button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button><button class="lang-btn" id="btnFR" onclick="setLang('fr')">FR</button></div>
       <button class="btn btn-sm btn-ghost" onclick="authLogout()" title="Sign out" style="padding:6px 10px">
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
       </button>
@@ -684,8 +689,8 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
   <!-- ════ PAGE: COMPANY ════ -->
   <div class="page active" id="page-company">
     <div class="page-header">
-      <h2>Company Information</h2>
-      <p>Enter the company details and qualitative profile. These inform the valuation method weights and multiple adjustments.</p>
+      <h2 data-i18n="page_company_title">Company Information</h2>
+      <p data-i18n="page_company_desc">Enter the company details and qualitative profile. These inform the valuation method weights and multiple adjustments.</p>
     </div>
     <div class="ifrs-badge" style="margin-bottom:20px">
       <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -694,15 +699,15 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
     <div class="grid2" style="gap:20px;align-items:start">
       <div>
         <div class="card">
-          <div class="section-label">Company Details</div>
-          <div class="form-group"><label class="form-label">Company Name <span class="req">*</span></label><input class="form-input" id="companyName" placeholder="e.g. Acme Technologies Ltd" oninput="updateHeader()"></div>
-          <div class="form-group"><label class="form-label">Valuation Date</label><input class="form-input" type="date" id="valDate" value="2025-12-31"></div>
-          <div class="form-group"><label class="form-label">Currency</label>
+          <div class="section-label" data-i18n="section_company_details">Company Details</div>
+          <div class="form-group"><label class="form-label"><span data-i18n="label_company_name">Company Name</span> <span class="req">*</span></label><input class="form-input" id="companyName" placeholder="e.g. Acme Technologies Ltd" oninput="updateHeader()"></div>
+          <div class="form-group"><label class="form-label" data-i18n="label_val_date">Valuation Date</label><input class="form-input" type="date" id="valDate" value="2025-12-31"></div>
+          <div class="form-group"><label class="form-label" data-i18n="label_currency">Currency</label>
             <select class="form-input" id="currency" onchange="refreshCurrencyLabels();recalc()">
               <option value="£">GBP (£)</option><option value="€">EUR (€)</option><option value="$">USD ($)</option><option value="CHF">CHF</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Industry <span class="req">*</span></label>
+          <div class="form-group"><label class="form-label"><span data-i18n="label_industry">Industry</span> <span class="req">*</span></label>
             <select class="form-input" id="industry" onchange="argosLiveData=null;applyIndustryDefaults();recalc()">
               <option value="tech">Software Development / Technology</option>
               <option value="saas">SaaS / Subscription Software</option>
@@ -723,24 +728,24 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
           <div id="industryNote" style="display:none;margin-top:8px;padding:8px 12px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.3);border-radius:6px;font-size:12px;color:rgba(201,162,39,.9)"></div>
         </div>
         <div class="card" style="margin-top:16px">
-          <div class="section-label">Business Model</div>
-          <div class="form-group"><label class="form-label">Company Business Model</label>
+          <div class="section-label" data-i18n="section_business_model">Business Model</div>
+          <div class="form-group"><label class="form-label" data-i18n="label_biz_model">Company Business Model</label>
             <select class="form-input" id="bizModel" onchange="recalc()">
               <option value="product">Product Sales</option><option value="service">Service Provision</option>
               <option value="subscription">Subscription / Recurring</option><option value="mixed" selected>Mixed Model</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Revenue Recurrence</label>
+          <div class="form-group"><label class="form-label" data-i18n="label_rev_recurrence">Revenue Recurrence</label>
             <select class="form-input" id="revenueType" onchange="recalc()">
               <option value="high">Predominantly Recurring</option><option value="mid" selected>Partially Recurring</option><option value="low">Non-Recurring</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Primary Market Served</label>
+          <div class="form-group"><label class="form-label" data-i18n="label_market">Primary Market Served</label>
             <select class="form-input" id="market" onchange="recalc()">
               <option value="local">Local</option><option value="national" selected>National</option><option value="international">International</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Competitive Positioning</label>
+          <div class="form-group"><label class="form-label" data-i18n="label_competitive">Competitive Positioning</label>
             <select class="form-input" id="competitive" onchange="recalc()">
               <option value="leader">Market Leader</option><option value="challenger">Challenger</option>
               <option value="niche">Niche Player</option><option value="follower" selected>Follower</option>
@@ -750,30 +755,30 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       </div>
       <div>
         <div class="card">
-          <div class="section-label">Non-Financial Information</div>
-          <div class="form-group"><label class="form-label">Number of Employees</label><input class="form-input" type="number" id="employees" placeholder="" min="1"></div>
-          <div class="form-group"><label class="form-label">Years in Business</label><input class="form-input" type="number" id="yearsInBusiness" placeholder="" min="1"></div>
-          <div class="form-group"><label class="form-label">Average Tenure of Key Management</label>
+          <div class="section-label" data-i18n="section_non_financial">Non-Financial Information</div>
+          <div class="form-group"><label class="form-label" data-i18n="label_employees">Number of Employees</label><input class="form-input" type="number" id="employees" placeholder="" min="1"></div>
+          <div class="form-group"><label class="form-label" data-i18n="label_years_biz">Years in Business</label><input class="form-input" type="number" id="yearsInBusiness" placeholder="" min="1"></div>
+          <div class="form-group"><label class="form-label" data-i18n="label_mgmt_tenure">Average Tenure of Key Management</label>
             <select class="form-input" id="mgmtTenure">
               <option value="1">&lt; 2 years</option><option value="2" selected>2–5 years</option><option value="3">5+ years</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Share of Revenue from Main Customer (%)</label>
+          <div class="form-group"><label class="form-label" data-i18n="label_cust_conc">Share of Revenue from Main Customer (%)</label>
             <input class="form-input" type="number" id="custConcentration" placeholder="" min="0" max="100">
-            <span class="form-hint">High concentration (&gt;40%) is a risk discount factor</span>
+            <span class="form-hint" data-i18n="hint_cust_conc">High concentration (&gt;40%) is a risk discount factor</span>
           </div>
-          <div class="form-group"><label class="form-label">Average Contract Duration</label>
+          <div class="form-group"><label class="form-label" data-i18n="label_contract_dur">Average Contract Duration</label>
             <select class="form-input" id="contractDuration">
               <option value="1">Project-based / No contract</option><option value="2" selected>6–12 months</option>
               <option value="3">1–3 years</option><option value="4">3+ years</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Number of Shares Outstanding</label>
+          <div class="form-group"><label class="form-label" data-i18n="label_shares_out">Number of Shares Outstanding</label>
             <input class="form-input" type="number" id="sharesOut" placeholder="" min="1">
           </div>
         </div>
         <div style="margin-top:16px;display:flex;justify-content:flex-end">
-          <button class="btn btn-primary" onclick="navigate('financials')">Next: Financial Statements →</button>
+          <button class="btn btn-primary" onclick="navigate('financials')"><span data-i18n="btn_next_financials">Next: Financial Statements →</span></button>
         </div>
       </div>
     </div>
@@ -782,12 +787,12 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
   <!-- ════ PAGE: FINANCIALS ════ -->
   <div class="page" id="page-financials">
     <div class="page-header">
-      <h2>Financial Statements</h2>
-      <p>Enter historical figures for three years and the most recent run-rate period. All values in thousands.</p>
+      <h2 data-i18n="page_financials_title">Financial Statements</h2>
+      <p data-i18n="page_financials_desc">Enter historical figures for three years and the most recent run-rate period. All values in thousands.</p>
     </div>
     <div class="tab-bar">
-      <button class="tab-btn active" onclick="switchTab('manual')">Manual Entry</button>
-      <button class="tab-btn" onclick="switchTab('upload')">Upload Statements</button>
+      <button class="tab-btn active" onclick="switchTab('manual')" data-i18n="tab_manual">Manual Entry</button>
+      <button class="tab-btn" onclick="switchTab('upload')" data-i18n="tab_upload">Upload Statements</button>
     </div>
     <div class="tab-content active" id="tab-manual">
       <div class="card">
@@ -821,7 +826,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       <div class="card">
         <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
           <div class="upload-icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#4A6580" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
-          <div class="upload-title">Upload Financial Statements</div>
+          <div class="upload-title" data-i18n="upload_title">Upload Financial Statements</div>
           <div class="upload-sub">Drag &amp; drop or click to browse — Excel or PDF files</div>
           <div class="upload-types"><span class="upload-type">XLSX</span><span class="upload-type">XLS</span><span class="upload-type">PDF</span></div>
           <input type="file" id="fileInput" style="display:none" accept=".xlsx,.xls,.pdf" onchange="handleFileUpload(event)">
@@ -830,16 +835,16 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       </div>
     </div>
     <div class="card" style="margin-top:16px">
-      <div class="card-header"><div class="card-title">EBITDA Add-Back Normalisation</div><div class="card-sub">Adjustments to derive Adjusted EBITDA for the LTM period</div></div>
-      <div class="form-group"><label class="form-label">Owner's Discretionary Expenses</label><input class="form-input" type="number" id="ab_disc" value="0" oninput="recalc()" placeholder="0"><span class="form-hint">Personal travel, car allowance, non-business perks</span></div>
-      <div class="form-group"><label class="form-label">Salary Normalisation</label><input class="form-input" type="number" id="ab_sal" value="0" oninput="recalc()" placeholder="0"><span class="form-hint">Difference between owner pay and market-rate manager salary</span></div>
-      <div class="form-group"><label class="form-label">One-Time / Non-Recurring Costs</label><input class="form-input" type="number" id="ab_one" value="0" oninput="recalc()" placeholder="0"><span class="form-hint">Legal disputes, rebranding, restructuring — non-recurring only</span></div>
-      <div class="form-group"><label class="form-label">Other Add-Backs</label><input class="form-input" type="number" id="ab_oth" value="0" oninput="recalc()" placeholder="0"></div>
+      <div class="card-header"><div class="card-title" data-i18n="card_addback">EBITDA Add-Back Normalisation</div><div class="card-sub" data-i18n="card_addback_sub">Adjustments to derive Adjusted EBITDA for the LTM period</div></div>
+      <div class="form-group"><label class="form-label" data-i18n="addback_disc">Owner's Discretionary Expenses</label><input class="form-input" type="number" id="ab_disc" value="0" oninput="recalc()" placeholder="0"><span class="form-hint" data-i18n="addback_disc_hint">Personal travel, car allowance, non-business perks</span></div>
+      <div class="form-group"><label class="form-label" data-i18n="addback_sal">Salary Normalisation</label><input class="form-input" type="number" id="ab_sal" value="0" oninput="recalc()" placeholder="0"><span class="form-hint" data-i18n="addback_sal_hint">Difference between owner pay and market-rate manager salary</span></div>
+      <div class="form-group"><label class="form-label" data-i18n="addback_one">One-Time / Non-Recurring Costs</label><input class="form-input" type="number" id="ab_one" value="0" oninput="recalc()" placeholder="0"><span class="form-hint" data-i18n="addback_one_hint">Legal disputes, rebranding, restructuring — non-recurring only</span></div>
+      <div class="form-group"><label class="form-label" data-i18n="addback_oth">Other Add-Backs</label><input class="form-input" type="number" id="ab_oth" value="0" oninput="recalc()" placeholder="0"></div>
       <hr class="divider">
       <div id="addbackSummary"></div>
     </div>
     <div style="display:flex;justify-content:space-between;margin-top:16px">
-      <button class="btn" onclick="navigate('company')">← Back</button>
+      <button class="btn" onclick="navigate('company')"><span data-i18n="btn_back">← Back</span></button>
       <button class="btn btn-primary" onclick="navigate('scorecard')">Next: Scorecard →</button>
     </div>
   </div>
@@ -847,8 +852,8 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
   <!-- ════ PAGE: SCORECARD ════ -->
   <div class="page" id="page-scorecard">
     <div class="page-header">
-      <h2>Qualitative Scorecard</h2>
-      <p>Rate each factor 1–5. Every point above 3 adds +0.5× to the EBITDA multiple; below 3 subtracts −0.5×. Maximum total adjustment: ±5×.</p>
+      <h2 data-i18n="page_scorecard_title">Qualitative Scorecard</h2>
+      <p data-i18n="page_scorecard_desc">Rate each factor 1–5. Every point above 3 adds +0.5× to the EBITDA multiple; below 3 subtracts −0.5×. Maximum total adjustment: ±5×.</p>
     </div>
     <div class="grid2" style="gap:16px;align-items:start">
       <div>
@@ -866,7 +871,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       </div>
     </div>
     <div style="display:flex;justify-content:space-between;margin-top:16px">
-      <button class="btn" onclick="navigate('financials')">← Back</button>
+      <button class="btn" onclick="navigate('financials')"><span data-i18n="btn_back">← Back</span></button>
       <button class="btn btn-primary" onclick="navigate('assumptions')">Next: Assumptions →</button>
     </div>
   </div>
@@ -874,31 +879,31 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
   <!-- ════ PAGE: ASSUMPTIONS ════ -->
   <div class="page" id="page-assumptions">
     <div class="page-header">
-      <h2>Assumptions &amp; WACC</h2>
-      <p>Review and edit the assumptions used in each valuation method. Changes update all results immediately.</p>
+      <h2 data-i18n="page_assumptions_title">Assumptions &amp; WACC</h2>
+      <p data-i18n="page_assumptions_desc">Review and edit the assumptions used in each valuation method. Changes update all results immediately.</p>
     </div>
     <div class="grid2" style="gap:16px;align-items:start">
       <div>
         <div class="assumption-group">
-          <div class="assumption-group-title">DCF Assumptions</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 1)</span><input class="assumption-input" type="number" id="a_g1" value="15" placeholder="15" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 2)</span><input class="assumption-input" type="number" id="a_g2" value="12" placeholder="12" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 3)</span><input class="assumption-input" type="number" id="a_g3" value="10" placeholder="10" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Growth Rate (Year 4–5)</span><input class="assumption-input" type="number" id="a_g45" value="8" placeholder="8" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Terminal Growth Rate</span><input class="assumption-input" type="number" id="a_tg" value="2.5" placeholder="2.5" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">EBITDA Margin (forecast)</span><input class="assumption-input" type="number" id="a_margin" value="20" placeholder="20" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">CapEx as % of Revenue</span><input class="assumption-input" type="number" id="a_capex" value="5" placeholder="5" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Change in Working Capital %</span><input class="assumption-input" type="number" id="a_wc" value="2" placeholder="2" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-group-title" data-i18n="assump_dcf">DCF Assumptions</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_g1">Revenue Growth Rate (Year 1)</span><input class="assumption-input" type="number" id="a_g1" value="15" placeholder="15" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_g2">Revenue Growth Rate (Year 2)</span><input class="assumption-input" type="number" id="a_g2" value="12" placeholder="12" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_g3">Revenue Growth Rate (Year 3)</span><input class="assumption-input" type="number" id="a_g3" value="10" placeholder="10" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_g45">Revenue Growth Rate (Year 4–5)</span><input class="assumption-input" type="number" id="a_g45" value="8" placeholder="8" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_tg">Terminal Growth Rate</span><input class="assumption-input" type="number" id="a_tg" value="2.5" placeholder="2.5" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_margin">EBITDA Margin (forecast)</span><input class="assumption-input" type="number" id="a_margin" value="20" placeholder="20" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_capex_pct">CapEx as % of Revenue</span><input class="assumption-input" type="number" id="a_capex" value="5" placeholder="5" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_wc">Change in Working Capital %</span><input class="assumption-input" type="number" id="a_wc" value="2" placeholder="2" step="0.5" onchange="recalc()"> %</div>
         </div>
         <div class="assumption-group">
-          <div class="assumption-group-title">WACC Components <span class="required-badge">Required for DCF</span></div>
-          <div class="assumption-row"><span class="assumption-label">Risk-Free Rate</span><input class="assumption-input required-input" type="number" id="a_rf" value="4.5" placeholder="4.5" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Equity Risk Premium</span><input class="assumption-input required-input" type="number" id="a_erp" value="5.0" placeholder="5.0" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Beta (levered)</span><input class="assumption-input required-input" type="number" id="a_beta" value="1.1" placeholder="1.1" step="0.05" onchange="recalc()"></div>
-          <div class="assumption-row"><span class="assumption-label">Cost of Debt (pre-tax)</span><input class="assumption-input required-input" type="number" id="a_cod" value="6.0" placeholder="6.0" step="0.1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Tax Rate</span><input class="assumption-input required-input" type="number" id="a_tax" value="25" placeholder="25" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Debt / (Debt + Equity)</span><input class="assumption-input required-input" type="number" id="a_leverage" value="30" placeholder="30" step="1" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label"><strong>WACC (calculated)</strong></span><span id="waccDisplay" style="font-weight:600;color:var(--mint2)">—</span></div>
+          <div class="assumption-group-title" data-i18n="assump_wacc">WACC Components</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_rf">Risk-Free Rate</span><input class="assumption-input required-input" type="number" id="a_rf" value="4.5" placeholder="4.5" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_erp">Equity Risk Premium</span><input class="assumption-input required-input" type="number" id="a_erp" value="5.0" placeholder="5.0" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_beta">Beta (levered)</span><input class="assumption-input required-input" type="number" id="a_beta" value="1.1" placeholder="1.1" step="0.05" onchange="recalc()"></div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_cod">Cost of Debt (pre-tax)</span><input class="assumption-input required-input" type="number" id="a_cod" value="6.0" placeholder="6.0" step="0.1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_tax">Tax Rate</span><input class="assumption-input required-input" type="number" id="a_tax" value="25" placeholder="25" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_leverage">Debt / (Debt + Equity)</span><input class="assumption-input required-input" type="number" id="a_leverage" value="30" placeholder="30" step="1" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_wacc_calc"><strong>WACC (calculated)</strong></span><span id="waccDisplay" style="font-weight:600;color:var(--mint2)">—</span></div>
         </div>
         <div id="sanityWarnings" style="display:none;background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.25);border-radius:8px;padding:12px 14px;margin-top:12px">
           <div style="font-size:11px;font-weight:700;color:#f09595;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">⚠ Validation Warnings</div>
@@ -908,36 +913,36 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       </div>
       <div>
         <div class="assumption-group">
-          <div class="assumption-group-title">Multiples — Peer Group <span class="required-badge">Required for multiples-based methods</span></div>
-          <div class="assumption-row"><span class="assumption-label">EBITDA Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_ebitdaMult" value="8" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">EBIT Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_ebitMult" value="10" placeholder="10" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Revenue Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_revMult" value="2.0" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">P/E Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_peMult" value="15" placeholder="15" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Market / Book Multiple</span><input class="assumption-input required-input" type="number" id="a_mbMult" value="2.0" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Terminal EV/EBITDA Multiple</span><input class="assumption-input required-input" type="number" id="a_termMult" value="8" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-group-title" data-i18n="assump_multiples">Multiples — Peer Group</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_ebitda_mult">EBITDA Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_ebitdaMult" value="8" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_ebit_mult">EBIT Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_ebitMult" value="10" placeholder="10" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_rev_mult">Revenue Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_revMult" value="2.0" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_pe_mult">P/E Multiple (mid)</span><input class="assumption-input required-input" type="number" id="a_peMult" value="15" placeholder="15" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_mb_mult">Market / Book Multiple</span><input class="assumption-input required-input" type="number" id="a_mbMult" value="2.0" placeholder="2.0" step="0.1" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_term_mult">Terminal EV/EBITDA Multiple</span><input class="assumption-input required-input" type="number" id="a_termMult" value="8" placeholder="8" step="0.5" onchange="recalc()"> ×</div>
         </div>
         <div class="assumption-group">
           <div class="assumption-group-title">Capitalised Earnings & Practitioner's <span class="required-badge">Required for those methods</span></div>
-          <div class="assumption-row"><span class="assumption-label">Capitalisation Rate</span><input class="assumption-input required-input" type="number" id="a_capRate" value="20" placeholder="20" step="0.5" onchange="recalc()"> %</div>
-          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (low)</span><input class="assumption-input required-input" type="number" id="a_practLo" value="2" placeholder="2" step="0.5" onchange="recalc()"> ×</div>
-          <div class="assumption-row"><span class="assumption-label">Practitioner's Method — Multiplier (high)</span><input class="assumption-input required-input" type="number" id="a_practHi" value="4" placeholder="4" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_cap_rate">Capitalisation Rate</span><input class="assumption-input required-input" type="number" id="a_capRate" value="20" placeholder="20" step="0.5" onchange="recalc()"> %</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_pract_lo">Practitioner's Method — Multiplier (low)</span><input class="assumption-input required-input" type="number" id="a_practLo" value="2" placeholder="2" step="0.5" onchange="recalc()"> ×</div>
+          <div class="assumption-row"><span class="assumption-label" data-i18n="assump_pract_hi">Practitioner's Method — Multiplier (high)</span><input class="assumption-input required-input" type="number" id="a_practHi" value="4" placeholder="4" step="0.5" onchange="recalc()"> ×</div>
         </div>
         <div class="card" style="margin-top:0">
-          <div class="section-label">Method Weights for Blended EV</div>
+          <div class="section-label" data-i18n="method_weights">Method Weights for Blended EV</div>
           <div id="weightDisplay"></div>
         </div>
       </div>
     </div>
     <div style="display:flex;justify-content:space-between;margin-top:16px">
-      <button class="btn" onclick="navigate('scorecard')">← Back</button>
-      <button class="btn btn-mint" onclick="navigate('overview')">Run Valuation →</button>
+      <button class="btn" onclick="navigate('scorecard')"><span data-i18n="btn_back">← Back</span></button>
+      <button class="btn btn-mint" onclick="navigate('overview')"><span data-i18n="btn_run_valuation">Run Valuation →</span></button>
     </div>
   </div>
 
   <!-- ════ PAGE: OVERVIEW ════ -->
   <div class="page" id="page-overview">
     <div class="page-header">
-      <h2>Valuation Overview</h2>
+      <h2 data-i18n="page_overview_title">Valuation Overview</h2>
       <p id="overviewSub">Multi-method enterprise and equity value summary.</p>
     </div>
     <div class="grid4" style="margin-bottom:20px" id="kpiRow"></div>
@@ -1099,9 +1104,9 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
       <p>Discounted Cash Flow valuation based on 5-year free cash flow projections and terminal value.</p>
     </div>
     <div class="tab-bar">
-      <button class="tab-btn active" onclick="switchDcfTab('overview')">Overview</button>
-      <button class="tab-btn" onclick="switchDcfTab('detailed')">Detailed Calculation</button>
-      <button class="tab-btn" onclick="switchDcfTab('charts')">Charts</button>
+      <button class="tab-btn active" onclick="switchDcfTab('overview')" data-i18n="dcf_tab_overview">Overview</button>
+      <button class="tab-btn" onclick="switchDcfTab('detailed')" data-i18n="dcf_tab_detailed">Detailed Calculation</button>
+      <button class="tab-btn" onclick="switchDcfTab('charts')" data-i18n="dcf_tab_charts">Charts</button>
     </div>
     <div class="tab-content active" id="dcf-overview">
       <div id="dcfGordonNotice" style="margin-bottom:4px"></div>
@@ -1125,8 +1130,8 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
   <!-- ════ PAGE: SENSITIVITY ════ -->
   <div class="page" id="page-sensitivity">
     <div class="page-header">
-      <h2>Sensitivity Analysis</h2>
-      <p>DCF Enterprise Value under different WACC and terminal growth rate combinations, plus a tornado chart showing which assumptions drive the most value.</p>
+      <h2 data-i18n="page_sensitivity_title">Sensitivity Analysis</h2>
+      <p data-i18n="page_sensitivity_desc">DCF Enterprise Value under different WACC and terminal growth rate combinations, plus a tornado chart showing which assumptions drive the most value.</p>
     </div>
     <div class="card" style="margin-bottom:16px">
       <div class="card-header"><div class="card-title">Tornado Chart — Key Value Drivers</div><div class="card-sub">Impact of ±1 unit change in each assumption on Blended EV</div></div>
@@ -1210,87 +1215,93 @@ const ARGOS_DATA = {
   insurance:{label:'Insurance',               index_ebitda:8.4, index_rev:1.4,  companies:[['Beazley','GBP',9.2,1.6],['Hiscox','GBP',10.1,1.8],['Lancashire Holdings','GBP',8.8,1.4],['Conduit Holdings','GBP',7.4,1.2],['Chaucer','GBP',6.9,1.1]]},
 };
 
-const SC_ITEMS = [
-  {id:'sc0',label:'Recurring Revenue',       desc:'Long-term contracts, subscriptions, retainers'},
-  {id:'sc1',label:'Owner Independence',      desc:'Can the business run without the founder?'},
-  {id:'sc2',label:'Market Growth',           desc:'Is the sector expanding? (AI, green energy, etc.)'},
-  {id:'sc3',label:'Brand Strength',          desc:'High NPS, customer loyalty, strong reputation'},
-  {id:'sc4',label:'IP / Barriers to Entry',  desc:'Patents, proprietary tech, licences, competitive moats'},
-  {id:'sc5',label:'Management Team Depth',   desc:'Experienced, stable team beyond the founder'},
-  {id:'sc6',label:'Customer Diversification',desc:'No single customer >20% of revenue'},
-];
+function getSCItems() {
+  return [
+    {id:'sc0', labelKey:'sc_recurring_revenue',  descKey:'sc_recurring_revenue_desc'},
+    {id:'sc1', labelKey:'sc_owner_independence', descKey:'sc_owner_independence_desc'},
+    {id:'sc2', labelKey:'sc_market_growth',      descKey:'sc_market_growth_desc'},
+    {id:'sc3', labelKey:'sc_brand_strength',     descKey:'sc_brand_strength_desc'},
+    {id:'sc4', labelKey:'sc_ip_barriers',        descKey:'sc_ip_barriers_desc'},
+    {id:'sc5', labelKey:'sc_mgmt_depth',         descKey:'sc_mgmt_depth_desc'},
+    {id:'sc6', labelKey:'sc_customer_div',       descKey:'sc_customer_div_desc'},
+  ];
+}
+const SC_ITEMS = getSCItems(); // backward compat
 
-const INCOME_ROWS = [
-  {id:'rev',        label:'Operating Revenue (Sales)',         color:'#00C9A7', req:true, section:'Revenue'},
-  {id:'rev_growth', label:'Sales Growth Rate (%)',             calc:true, pct:true},
-  {id:'cogs',       label:'Expenses for Materials & Services', req:true},
-  {id:'gp1',        label:'Gross Profit I',                    calc:true, bold:true},
-  {id:'gp1_margin', label:'Gross Profit I Margin (%)',         calc:true, pct:true},
-  {id:'personnel',  label:'Personnel Expenses',                section:'Operating Costs'},
-  {id:'gp2',        label:'Gross Profit II',                   calc:true, bold:true},
-  {id:'gp2_margin', label:'Gross Profit II Margin (%)',        calc:true, pct:true},
-  {id:'other_opex', label:'Other Operating Expenses'},
-  {id:'other_opinc',label:'Other Operating Income'},
-  {id:'ebitda',     label:'EBITDA',                            calc:true, bold:true, color:'#00C9A7', section:'Earnings'},
-  {id:'ebitda_mg',  label:'EBITDA Margin (%)',                 calc:true, pct:true},
-  {id:'da_fa',      label:'D&A — Financial Assets'},
-  {id:'da_lt',      label:'D&A — Long-term Investments'},
-  {id:'da_ppe',     label:'D&A — Plant & Equipment'},
-  {id:'da_prop',    label:'D&A — Property & Buildings'},
-  {id:'da_int',     label:'D&A — Intangible Assets'},
-  {id:'da',         label:'Total Depreciation & Amortisation', calc:true, bold:true},
-  {id:'ebit',       label:'EBIT',                              calc:true, bold:true, color:'#00C9A7'},
-  {id:'ebit_mg',    label:'EBIT Margin (%)',                   calc:true, pct:true},
-  {id:'fin_exp',    label:'Financial Expenses'},
-  {id:'fin_inc',    label:'Financial Income'},
-  {id:'op_bt',      label:'Operating Income Before Taxes',     calc:true, bold:true},
-  {id:'non_op_inc', label:'Non-Operating Income'},
-  {id:'extraordinary',label:'Extraordinary / Non-Recurring Items'},
-  {id:'ebt',        label:'Earnings Before Taxes (EBT)',       calc:true, bold:true},
-  {id:'tax',        label:'Taxes',                                             req:true},
-  {id:'npat',       label:'Net Income',                        calc:true, bold:true, color:'#00C9A7'},
-];
+function getIncomeRows() { return [
+  {id:'rev',        labelKey:'row_rev',         color:'#00C9A7', req:true, sectionKey:'section_revenue'},
+  {id:'rev_growth', labelKey:'row_rev_growth',  calc:true, pct:true},
+  {id:'cogs',       labelKey:'row_cogs',        req:true},
+  {id:'gp1',        labelKey:'row_gp1',         calc:true, bold:true},
+  {id:'gp1_margin', labelKey:'row_gp1_margin',  calc:true, pct:true},
+  {id:'personnel',  labelKey:'row_personnel',   sectionKey:'section_op_costs'},
+  {id:'gp2',        labelKey:'row_gp2',         calc:true, bold:true},
+  {id:'gp2_margin', labelKey:'row_gp2_margin',  calc:true, pct:true},
+  {id:'other_opex', labelKey:'row_other_opex'},
+  {id:'other_opinc',labelKey:'row_other_opinc'},
+  {id:'ebitda',     labelKey:'row_ebitda',      calc:true, bold:true, color:'#00C9A7', sectionKey:'section_earnings'},
+  {id:'ebitda_mg',  labelKey:'row_ebitda_mg',   calc:true, pct:true},
+  {id:'da_fa',      labelKey:'row_da_fa'},
+  {id:'da_lt',      labelKey:'row_da_lt'},
+  {id:'da_ppe',     labelKey:'row_da_ppe'},
+  {id:'da_prop',    labelKey:'row_da_prop'},
+  {id:'da_int',     labelKey:'row_da_int'},
+  {id:'da',         labelKey:'row_da',          calc:true, bold:true},
+  {id:'ebit',       labelKey:'row_ebit',        calc:true, bold:true, color:'#00C9A7'},
+  {id:'ebit_mg',    labelKey:'row_ebit_mg',     calc:true, pct:true},
+  {id:'fin_exp',    labelKey:'row_fin_exp'},
+  {id:'fin_inc',    labelKey:'row_fin_inc'},
+  {id:'op_bt',      labelKey:'row_op_bt',       calc:true, bold:true},
+  {id:'non_op_inc', labelKey:'row_non_op_inc'},
+  {id:'extraordinary',labelKey:'row_extraordinary'},
+  {id:'ebt',        labelKey:'row_ebt',         calc:true, bold:true},
+  {id:'tax',        labelKey:'row_tax',         req:true},
+  {id:'npat',       labelKey:'row_npat',        calc:true, bold:true, color:'#00C9A7'},
+]; }
+const INCOME_ROWS = getIncomeRows();
 
-const BALANCE_ROWS = [
-  {id:'cash',          label:'Cash & Short-term Investments',           section:'Current Assets'},
-  {id:'receivables',   label:'Accounts Receivable'},
-  {id:'other_ca',      label:'Other Current Assets'},
-  {id:'inventories',   label:'Inventories & Unbilled Services'},
-  {id:'prepayments',   label:'Accrued Income & Prepaid Expenses'},
-  {id:'current_assets',label:'Current Assets',                          calc:true, bold:true, color:'#00C9A7'},
-  {id:'fin_assets',    label:'Financial Assets',                        section:'Fixed Assets'},
-  {id:'lt_invest',     label:'Long-term Investments'},
-  {id:'ppe',           label:'Plant & Equipment'},
-  {id:'property',      label:'Property & Buildings'},
-  {id:'intangibles',   label:'Intangible Assets'},
-  {id:'fixed_assets',  label:'Fixed Assets',                            calc:true, bold:true},
-  {id:'assets',        label:'TOTAL ASSETS',                            calc:true, bold:true, color:'#00C9A7', req:true},
-  {id:'acc_payable',   label:'Accounts Payable',                        section:'Current Liabilities'},
-  {id:'st_debt',       label:'Short-term Interest-bearing Liabilities'},
-  {id:'other_cl',      label:'Other Current Liabilities'},
-  {id:'deferred_inc',  label:'Deferred Income & Accrued Expenses'},
-  {id:'st_liabs',      label:'Short-term Liabilities',                  calc:true, bold:true},
-  {id:'lt_debt',       label:'Long-term Interest-bearing Liabilities',  section:'Long-term Liabilities'},
-  {id:'other_ll',      label:'Other Long-term Liabilities'},
-  {id:'provisions',    label:'Provisions & Similar Items'},
-  {id:'lt_liabs',      label:'Long-term Liabilities',                   calc:true, bold:true},
-  {id:'liabs',         label:'TOTAL LIABILITIES',                       calc:true, bold:true},
-  {id:'share_cap',     label:'Share / Equity Capital',                  section:"Shareholders' Equity"},
-  {id:'reserves',      label:'Reserves & Retained Earnings'},
-  {id:'net_inc_bs',    label:'Net Income (current year)'},
-  {id:'equity',        label:"Shareholders' Equity",                    calc:true, bold:true, color:'#00C9A7'},
-  {id:'total_liabs_eq',label:'LIABILITIES & SHAREHOLDERS EQUITY',       calc:true, bold:true},
-  {id:'debt',          label:'Financial Debt (Total)',                   req:true, section:'Key Inputs'},
-  {id:'shares',        label:'Number of Shares Outstanding'},
-  {id:'nav_bs',        label:'Net Asset Value (Assets - Liabilities)',   calc:true, bold:true, color:'#00C9A7'},
-];
+function getBalanceRows() { return [
+  {id:'cash',          labelKey:'row_cash',           sectionKey:'section_current_assets'},
+  {id:'receivables',   labelKey:'row_receivables'},
+  {id:'other_ca',      labelKey:'row_other_ca'},
+  {id:'inventories',   labelKey:'row_inventories'},
+  {id:'prepayments',   labelKey:'row_prepayments'},
+  {id:'current_assets',labelKey:'row_current_assets', calc:true, bold:true, color:'#00C9A7'},
+  {id:'fin_assets',    labelKey:'row_fin_assets',     sectionKey:'section_fixed_assets'},
+  {id:'lt_invest',     labelKey:'row_lt_invest'},
+  {id:'ppe',           labelKey:'row_ppe'},
+  {id:'property',      labelKey:'row_property'},
+  {id:'intangibles',   labelKey:'row_intangibles'},
+  {id:'fixed_assets',  labelKey:'row_fixed_assets',   calc:true, bold:true},
+  {id:'assets',        labelKey:'row_assets',         calc:true, bold:true, color:'#00C9A7', req:true},
+  {id:'acc_payable',   labelKey:'row_acc_payable',    sectionKey:'section_current_liab'},
+  {id:'st_debt',       labelKey:'row_st_debt'},
+  {id:'other_cl',      labelKey:'row_other_cl'},
+  {id:'deferred_inc',  labelKey:'row_deferred_inc'},
+  {id:'st_liabs',      labelKey:'row_st_liabs',       calc:true, bold:true},
+  {id:'lt_debt',       labelKey:'row_lt_debt',        sectionKey:'section_lt_liab'},
+  {id:'other_ll',      labelKey:'row_other_ll'},
+  {id:'provisions',    labelKey:'row_provisions'},
+  {id:'lt_liabs',      labelKey:'row_lt_liabs',       calc:true, bold:true},
+  {id:'liabs',         labelKey:'row_liabs',          calc:true, bold:true},
+  {id:'share_cap',     labelKey:'row_share_cap',      sectionKey:'section_equity'},
+  {id:'reserves',      labelKey:'row_reserves'},
+  {id:'net_inc_bs',    labelKey:'row_net_inc_bs'},
+  {id:'equity',        labelKey:'row_equity',         calc:true, bold:true, color:'#00C9A7'},
+  {id:'total_liabs_eq',labelKey:'row_total_liabs_eq', calc:true, bold:true},
+  {id:'debt',          labelKey:'row_debt',           req:true, sectionKey:'section_key_inputs'},
+  {id:'shares',        labelKey:'row_shares'},
+  {id:'nav_bs',        labelKey:'row_nav_bs',         calc:true, bold:true, color:'#00C9A7'},
+]; }
+const BALANCE_ROWS = getBalanceRows();
 
-const CF_ROWS = [
-  {id:'capex',      label:'Capital Expenditure (CapEx)',              req:true},
-  {id:'wcChange',   label:'Change in Net Working Capital'},
-  {id:'lt_liab_chg',label:'Changes in Non-interest-bearing LT Liabilities'},
-  {id:'fcf_calc',   label:'Free Cash Flow',                           calc:true, bold:true, color:'#00C9A7'},
-];
+function getCFRows() { return [
+  {id:'capex',      labelKey:'row_capex',       req:true},
+  {id:'wcChange',   labelKey:'row_wcChange'},
+  {id:'lt_liab_chg',labelKey:'row_lt_liab_chg'},
+  {id:'fcf_calc',   labelKey:'row_fcf_calc',    calc:true, bold:true, color:'#00C9A7'},
+]; }
+const CF_ROWS = getCFRows();
 
 const _cy = new Date().getFullYear();
 const YEARS = [String(_cy-3), String(_cy-2), String(_cy-1)];
@@ -1416,8 +1427,9 @@ function switchDcfTab(t) {
 function buildForms() {
   function makeRow(row) {
     let html = '';
-    if (row.section) {
-      html += `<div style="background:var(--navy);color:rgba(255,255,255,.7);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:6px 8px;margin:6px 0 2px;border-radius:4px">${row.section}</div>`;
+    const sectionText = row.sectionKey ? t(row.sectionKey) : (row.section || '');
+    if (sectionText) {
+      html += `<div style="background:var(--navy);color:rgba(255,255,255,.7);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:6px 8px;margin:6px 0 2px;border-radius:4px">${sectionText}</div>`;
     }
     const reqMark = row.req ? ' <span class="required-badge">required</span>' : '';
     const inputs = YEARS.map(y => {
@@ -1427,19 +1439,20 @@ function buildForms() {
       return `<input class="form-input${row.req?' required-input':''}" type="number" id="${row.id}_${y}" oninput="recalc()" style="text-align:right;font-size:13px;${row.bold?'font-weight:600':''}" placeholder=" ">`;
     }).join('');
     const labelStyle = row.bold ? 'font-weight:600;color:var(--navy);font-size:13px' : 'color:var(--text2);font-size:12.5px';
+    const labelText = row.labelKey ? t(row.labelKey) : (row.label || '');
     html += `<div class="form-year-grid" style="margin-bottom:3px;align-items:center">
       <div style="${labelStyle};display:flex;align-items:center;gap:4px;padding:2px 0">
         <span style="width:5px;height:5px;border-radius:50%;background:${row.color||'var(--border2)'};flex-shrink:0;display:inline-block"></span>
-        ${row.label}${reqMark}
+        ${labelText}${reqMark}
       </div>
       ${inputs}
     </div>`;
     return html;
   }
 
-  document.getElementById('incomeRows').innerHTML  = INCOME_ROWS.map(r => makeRow(r)).join('');
-  document.getElementById('balanceRows').innerHTML = BALANCE_ROWS.map(r => makeRow(r)).join('');
-  document.getElementById('cashflowRows').innerHTML = CF_ROWS.map(r => makeRow(r)).join('');
+  document.getElementById('incomeRows').innerHTML  = getIncomeRows().map(r => makeRow(r)).join('');
+  document.getElementById('balanceRows').innerHTML = getBalanceRows().map(r => makeRow(r)).join('');
+  document.getElementById('cashflowRows').innerHTML = getCFRows().map(r => makeRow(r)).join('');
 
   document.querySelectorAll('.year-header').forEach((el, i) => {
     const yr = YEARS[i % YEARS.length];
@@ -1488,11 +1501,12 @@ function buildScorecard() {
   if (!wrap) return;
   if (wrap.dataset.built === '1' && wrap.innerHTML.trim() !== '') return;
   wrap.dataset.built = '1';
-  wrap.innerHTML = `<div class="section-label">Rate Each Factor 1–5</div>` +
-    SC_ITEMS.map(item => `
+  const scItems = getSCItems();
+  wrap.innerHTML = `<div class="section-label">${t('scorecard_rate_label')}</div>` +
+    scItems.map(item => `
     <div class="score-row">
       <div class="score-header">
-        <div><div class="score-name">${item.label}</div><div style="font-size:12px;color:var(--text2)">${item.desc}</div></div>
+        <div><div class="score-name">${t(item.labelKey)}</div><div style="font-size:12px;color:var(--text2)">${t(item.descKey)}</div></div>
         <div class="score-val" id="${item.id}_val">3</div>
       </div>
       <div class="score-btns">
@@ -5231,11 +5245,521 @@ let _saveTimer = null;
 function _schedSave(user) { clearTimeout(_saveTimer); _saveTimer = setTimeout(() => saveInputs(user), 500); }
 // ───────────────────────────────────────────────────────────────
 
+
+// ═══════════════════════════════════════════════════════
+// INTERNATIONALISATION (i18n)
+// ═══════════════════════════════════════════════════════
+window.LANG = (function() {
+  try { return localStorage.getItem('vbp_lang') || 'en'; } catch(e) { return 'en'; }
+})();
+
+const TRANSLATIONS = {
+  en: {
+    // Nav
+    nav_inputs: 'Inputs',
+    nav_results: 'Results',
+    nav_company: 'Company &amp; Non-Financial',
+    nav_financials: 'Financial Statements',
+    nav_scorecard: 'Qualitative Scorecard',
+    nav_assumptions: 'Assumptions &amp; WACC',
+    nav_overview: 'Valuation Overview',
+    nav_methods: 'Method Breakdown',
+    nav_dcf: 'DCF Method',
+    nav_sensitivity: 'Sensitivity Analysis',
+    // Progress
+    progress_label: 'Completion',
+    step_company: 'Company Info',
+    step_financials: 'Financial Data',
+    step_scorecard: 'Scorecard',
+    step_assumptions: 'Assumptions',
+    step_results: 'Results',
+    // Footer
+    footer_disclaimer: 'For indicative purposes only. Not financial advice. Consult a qualified professional before making commercial decisions.',
+    // Buttons
+    btn_new_valuation: 'New Valuation',
+    btn_recalculate: 'Recalculate',
+    btn_export_pdf: 'Export PDF',
+    btn_view_results: 'View Results →',
+    btn_back: '← Back',
+    btn_next_financials: 'Next: Financial Statements →',
+    btn_next_scorecard: 'Next: Scorecard →',
+    btn_next_assumptions: 'Next: Assumptions →',
+    btn_run_valuation: 'Run Valuation →',
+    // Company page
+    page_company_title: 'Company Information',
+    page_company_desc: 'Enter the company details and qualitative profile. These inform the valuation method weights and multiple adjustments.',
+    section_company_details: 'Company Details',
+    section_business_model: 'Business Model',
+    section_non_financial: 'Non-Financial Information',
+    // Financials page
+    page_financials_title: 'Financial Statements',
+    page_financials_desc: 'Enter historical figures for three years and the most recent run-rate period. All values in thousands.',
+    tab_manual: 'Manual Entry',
+    tab_upload: 'Upload Statements',
+    card_addback: 'EBITDA Add-Back Normalisation',
+    card_addback_sub: 'Adjustments to derive Adjusted EBITDA for the LTM period',
+    // Scorecard page
+    page_scorecard_title: 'Qualitative Scorecard',
+    page_scorecard_desc: 'Rate each factor 1–5. Every point above 3 adds +0.5× to the EBITDA multiple; below 3 subtracts −0.5×. Maximum total adjustment: ±5×.',
+    scorecard_rate_label: 'Rate Each Factor 1–5',
+    // Assumptions page
+    page_assumptions_title: 'Assumptions & WACC',
+    page_assumptions_desc: 'Review and edit the assumptions used in each valuation method. Changes update all results immediately.',
+    // Overview page
+    page_overview_title: 'Valuation Overview',
+    // DCF page
+    dcf_tab_overview: 'Overview',
+    dcf_tab_detailed: 'Detailed Calculation',
+    dcf_tab_charts: 'Charts',
+    // Sensitivity page
+    page_sensitivity_title: 'Sensitivity Analysis',
+    page_sensitivity_desc: 'DCF Enterprise Value under different WACC and terminal growth rate combinations, plus a tornado chart showing which assumptions drive the most value.',
+    // Disclaimer
+    disc_title: 'Important Disclaimer',
+    disc_sub: 'Please read carefully before proceeding',
+    disc_proceed: 'Proceed to Valuation Tool',
+
+    label_company_name: 'Company Name',
+    label_val_date: 'Valuation Date',
+    label_currency: 'Currency',
+    label_industry: 'Industry',
+    label_biz_model: 'Company Business Model',
+    label_rev_recurrence: 'Revenue Recurrence',
+    label_market: 'Primary Market Served',
+    label_competitive: 'Competitive Positioning',
+    label_employees: 'Number of Employees',
+    label_years_biz: 'Years in Business',
+    label_mgmt_tenure: 'Average Tenure of Key Management',
+    label_cust_conc: 'Share of Revenue from Main Customer (%)',
+    hint_cust_conc: 'High concentration (>40%) is a risk discount factor',
+    label_contract_dur: 'Average Contract Duration',
+    label_shares_out: 'Number of Shares Outstanding',
+    // Scorecard items
+    sc_recurring_revenue: 'Recurring Revenue',
+    sc_recurring_revenue_desc: 'Long-term contracts, subscriptions, retainers',
+    sc_owner_independence: 'Owner Independence',
+    sc_owner_independence_desc: 'Can the business run without the founder?',
+    sc_market_growth: 'Market Growth',
+    sc_market_growth_desc: 'Is the sector expanding? (AI, green energy, etc.)',
+    sc_brand_strength: 'Brand Strength',
+    sc_brand_strength_desc: 'High NPS, customer loyalty, strong reputation',
+    sc_ip_barriers: 'IP / Barriers to Entry',
+    sc_ip_barriers_desc: 'Patents, proprietary tech, licences, competitive moats',
+    sc_mgmt_depth: 'Management Team Depth',
+    sc_mgmt_depth_desc: 'Experienced, stable team beyond the founder',
+    sc_customer_div: 'Customer Diversification',
+    sc_customer_div_desc: 'No single customer >20% of revenue',
+    // Income rows
+    row_rev: 'Operating Revenue (Sales)',
+    row_rev_growth: 'Sales Growth Rate (%)',
+    row_cogs: 'Expenses for Materials & Services',
+    row_gp1: 'Gross Profit I',
+    row_gp1_margin: 'Gross Profit I Margin (%)',
+    row_personnel: 'Personnel Expenses',
+    row_gp2: 'Gross Profit II',
+    row_gp2_margin: 'Gross Profit II Margin (%)',
+    row_other_opex: 'Other Operating Expenses',
+    row_other_opinc: 'Other Operating Income',
+    row_ebitda: 'EBITDA',
+    row_ebitda_mg: 'EBITDA Margin (%)',
+    row_da_fa: 'D&A — Financial Assets',
+    row_da_lt: 'D&A — Long-term Investments',
+    row_da_ppe: 'D&A — Plant & Equipment',
+    row_da_prop: 'D&A — Property & Buildings',
+    row_da_int: 'D&A — Intangible Assets',
+    row_da: 'Total Depreciation & Amortisation',
+    row_ebit: 'EBIT',
+    row_ebit_mg: 'EBIT Margin (%)',
+    row_fin_exp: 'Financial Expenses',
+    row_fin_inc: 'Financial Income',
+    row_op_bt: 'Operating Income Before Taxes',
+    row_non_op_inc: 'Non-Operating Income',
+    row_extraordinary: 'Extraordinary / Non-Recurring Items',
+    row_ebt: 'Earnings Before Taxes (EBT)',
+    row_tax: 'Taxes',
+    row_npat: 'Net Income',
+    // Balance rows
+    row_cash: 'Cash & Short-term Investments',
+    row_receivables: 'Accounts Receivable',
+    row_other_ca: 'Other Current Assets',
+    row_inventories: 'Inventories & Unbilled Services',
+    row_prepayments: 'Accrued Income & Prepaid Expenses',
+    row_current_assets: 'Current Assets',
+    row_fin_assets: 'Financial Assets',
+    row_lt_invest: 'Long-term Investments',
+    row_ppe: 'Plant & Equipment',
+    row_property: 'Property & Buildings',
+    row_intangibles: 'Intangible Assets',
+    row_fixed_assets: 'Fixed Assets',
+    row_assets: 'TOTAL ASSETS',
+    row_acc_payable: 'Accounts Payable',
+    row_st_debt: 'Short-term Interest-bearing Liabilities',
+    row_other_cl: 'Other Current Liabilities',
+    row_deferred_inc: 'Deferred Income & Accrued Expenses',
+    row_st_liabs: 'Short-term Liabilities',
+    row_lt_debt: 'Long-term Interest-bearing Liabilities',
+    row_other_ll: 'Other Long-term Liabilities',
+    row_provisions: 'Provisions & Similar Items',
+    row_lt_liabs: 'Long-term Liabilities',
+    row_liabs: 'TOTAL LIABILITIES',
+    row_share_cap: 'Share / Equity Capital',
+    row_reserves: 'Reserves & Retained Earnings',
+    row_net_inc_bs: 'Net Income (current year)',
+    row_equity: "Shareholders' Equity",
+    row_total_liabs_eq: 'LIABILITIES & SHAREHOLDERS EQUITY',
+    row_debt: 'Financial Debt (Total)',
+    row_shares: 'Number of Shares Outstanding',
+    row_nav_bs: 'Net Asset Value (Assets - Liabilities)',
+    // CF rows
+    row_capex: 'Capital Expenditure (CapEx)',
+    row_wcChange: 'Change in Net Working Capital',
+    row_lt_liab_chg: 'Changes in Non-interest-bearing LT Liabilities',
+    row_fcf_calc: 'Free Cash Flow',
+    // Sections
+    section_revenue: 'Revenue',
+    section_op_costs: 'Operating Costs',
+    section_earnings: 'Earnings',
+    section_current_assets: 'Current Assets',
+    section_fixed_assets: 'Fixed Assets',
+    section_current_liab: 'Current Liabilities',
+    section_lt_liab: 'Long-term Liabilities',
+    section_equity: "Shareholders' Equity",
+    section_key_inputs: 'Key Inputs',
+    // IFRS badge
+    ifrs_badge: 'This valuation framework is structured in accordance with IFRS-based financial statement principles and classification standards.',
+    ifrs_badge_short: 'This valuation framework is structured in accordance with IFRS-based financial statement principles.',
+    // Assumption labels
+    assump_dcf: 'DCF Assumptions',
+    assump_wacc: 'WACC Components',
+    assump_multiples: 'Multiples — Peer Group',
+    assump_cap_pract: 'Capitalised Earnings & Practitioner's',
+    assump_g1: 'Revenue Growth Rate (Year 1)',
+    assump_g2: 'Revenue Growth Rate (Year 2)',
+    assump_g3: 'Revenue Growth Rate (Year 3)',
+    assump_g45: 'Revenue Growth Rate (Year 4–5)',
+    assump_tg: 'Terminal Growth Rate',
+    assump_margin: 'EBITDA Margin (forecast)',
+    assump_capex_pct: 'CapEx as % of Revenue',
+    assump_wc: 'Change in Working Capital %',
+    assump_rf: 'Risk-Free Rate',
+    assump_erp: 'Equity Risk Premium',
+    assump_beta: 'Beta (levered)',
+    assump_cod: 'Cost of Debt (pre-tax)',
+    assump_tax: 'Tax Rate',
+    assump_leverage: 'Debt / (Debt + Equity)',
+    assump_wacc_calc: 'WACC (calculated)',
+    assump_ebitda_mult: 'EBITDA Multiple (mid)',
+    assump_ebit_mult: 'EBIT Multiple (mid)',
+    assump_rev_mult: 'Revenue Multiple (mid)',
+    assump_pe_mult: 'P/E Multiple (mid)',
+    assump_mb_mult: 'Market / Book Multiple',
+    assump_term_mult: 'Terminal EV/EBITDA Multiple',
+    assump_cap_rate: 'Capitalisation Rate',
+    assump_pract_lo: "Practitioner's Method — Multiplier (low)",
+    assump_pract_hi: "Practitioner's Method — Multiplier (high)",
+    method_weights: 'Method Weights for Blended EV',
+    // Add-backs
+    addback_disc: "Owner's Discretionary Expenses",
+    addback_disc_hint: 'Personal travel, car allowance, non-business perks',
+    addback_sal: 'Salary Normalisation',
+    addback_sal_hint: 'Difference between owner pay and market-rate manager salary',
+    addback_one: 'One-Time / Non-Recurring Costs',
+    addback_one_hint: 'Legal disputes, rebranding, restructuring — non-recurring only',
+    addback_oth: 'Other Add-Backs',
+    // Upload
+    upload_title: 'Upload Financial Statements',
+    upload_sub: 'Drag & drop or click to browse — Excel or PDF files',
+    // Chart titles
+    chart_valuation_range: 'Valuation Range — All Methods',
+    chart_ev_composition: 'EV Composition (Blended)',
+    chart_bridge: 'EV → Equity Value Bridge',
+    chart_history: 'Historical Revenue & EBITDA',
+    chart_5yr_fcf: '5-Year Free Cash Flow Projection',
+  },
+  fr: {
+    // Nav
+    nav_inputs: 'Données',
+    nav_results: 'Résultats',
+    nav_company: 'Entreprise &amp; Non-Financier',
+    nav_financials: 'États Financiers',
+    nav_scorecard: 'Scorecard Qualitatif',
+    nav_assumptions: 'Hypothèses &amp; WACC',
+    nav_overview: "Vue d'ensemble",
+    nav_methods: 'Méthodes Détaillées',
+    nav_dcf: 'Méthode DCF',
+    nav_sensitivity: 'Analyse de Sensibilité',
+    // Progress
+    progress_label: 'Complétion',
+    step_company: 'Infos Entreprise',
+    step_financials: 'Données Financières',
+    step_scorecard: 'Scorecard',
+    step_assumptions: 'Hypothèses',
+    step_results: 'Résultats',
+    // Footer
+    footer_disclaimer: "À titre indicatif uniquement. Ne constitue pas un conseil financier. Consultez un professionnel qualifié avant toute décision commerciale.",
+    // Buttons
+    btn_new_valuation: 'Nouvelle Évaluation',
+    btn_recalculate: 'Recalculer',
+    btn_export_pdf: 'Exporter PDF',
+    btn_view_results: 'Voir les résultats →',
+    btn_back: '← Retour',
+    btn_next_financials: 'Suivant : États Financiers →',
+    btn_next_scorecard: 'Suivant : Scorecard →',
+    btn_next_assumptions: 'Suivant : Hypothèses →',
+    btn_run_valuation: 'Lancer la Valorisation →',
+    // Company page
+    page_company_title: "Informations sur l'Entreprise",
+    page_company_desc: "Saisissez les détails de l'entreprise et son profil qualitatif. Ces données informent les pondérations des méthodes de valorisation.",
+    section_company_details: "Détails de l'Entreprise",
+    section_business_model: "Modèle d'Affaires",
+    section_non_financial: 'Informations Non-Financières',
+    // Financials page
+    page_financials_title: 'États Financiers',
+    page_financials_desc: 'Saisissez les données historiques pour trois exercices et la période courante. Toutes les valeurs en milliers.',
+    tab_manual: 'Saisie Manuelle',
+    tab_upload: 'Importer les États',
+    card_addback: "Normalisation des Retraitements EBITDA",
+    card_addback_sub: "Retraitements pour obtenir l'EBITDA Ajusté de la période LTM",
+    // Scorecard page
+    page_scorecard_title: 'Scorecard Qualitatif',
+    page_scorecard_desc: "Notez chaque facteur de 1 à 5. Chaque point au-dessus de 3 ajoute +0,5× au multiple d'EBITDA ; en dessous de 3, il soustrait −0,5×. Ajustement total maximum : ±5×.",
+    scorecard_rate_label: 'Notez Chaque Facteur de 1 à 5',
+    // Assumptions page
+    page_assumptions_title: 'Hypothèses & WACC',
+    page_assumptions_desc: 'Révisez et modifiez les hypothèses utilisées dans chaque méthode. Les modifications mettent à jour tous les résultats immédiatement.',
+    // Overview page
+    page_overview_title: "Vue d'ensemble de la Valorisation",
+    // DCF page
+    dcf_tab_overview: 'Synthèse',
+    dcf_tab_detailed: 'Calcul Détaillé',
+    dcf_tab_charts: 'Graphiques',
+    // Sensitivity page
+    page_sensitivity_title: 'Analyse de Sensibilité',
+    page_sensitivity_desc: "Valeur d'entreprise DCF selon différentes combinaisons de WACC et de taux de croissance terminal, plus un graphique en tornade montrant les hypothèses les plus déterminantes.",
+    // Disclaimer
+    disc_title: 'Avertissement Important',
+    disc_sub: 'Veuillez lire attentivement avant de continuer',
+    disc_proceed: "Accéder à l'Outil de Valorisation",
+
+    label_company_name: 'Company Name',
+    label_val_date: 'Valuation Date',
+    label_currency: 'Currency',
+    label_industry: 'Industry',
+    label_biz_model: 'Company Business Model',
+    label_rev_recurrence: 'Revenue Recurrence',
+    label_market: 'Primary Market Served',
+    label_competitive: 'Competitive Positioning',
+    label_employees: 'Number of Employees',
+    label_years_biz: 'Years in Business',
+    label_mgmt_tenure: 'Average Tenure of Key Management',
+    label_cust_conc: 'Share of Revenue from Main Customer (%)',
+    hint_cust_conc: 'High concentration (>40%) is a risk discount factor',
+    label_contract_dur: 'Average Contract Duration',
+    label_shares_out: 'Number of Shares Outstanding',
+
+    label_company_name: "Nom de l'Entreprise",
+    label_val_date: 'Date de Valorisation',
+    label_currency: 'Devise',
+    label_industry: 'Secteur d'Activité',
+    label_biz_model: "Modèle d'Affaires",
+    label_rev_recurrence: 'Récurrence des Revenus',
+    label_market: 'Marché Principal Servi',
+    label_competitive: 'Positionnement Concurrentiel',
+    label_employees: "Nombre d'Employés",
+    label_years_biz: "Années d'Existence",
+    label_mgmt_tenure: 'Ancienneté Moyenne du Dirigeant',
+    label_cust_conc: 'Part du CA du Client Principal (%)',
+    hint_cust_conc: 'Concentration élevée (>40%) est un facteur de décote',
+    label_contract_dur: 'Durée Moyenne des Contrats',
+    label_shares_out: "Nombre d'Actions en Circulation",
+    // Scorecard items
+    sc_recurring_revenue: 'Revenus Récurrents',
+    sc_recurring_revenue_desc: 'Contrats long terme, abonnements, retainers',
+    sc_owner_independence: 'Indépendance vis-à-vis du Dirigeant',
+    sc_owner_independence_desc: "L'entreprise peut-elle fonctionner sans le fondateur ?",
+    sc_market_growth: 'Croissance du Marché',
+    sc_market_growth_desc: "Le secteur est-il en expansion ? (IA, énergie verte, etc.)",
+    sc_brand_strength: 'Force de la Marque',
+    sc_brand_strength_desc: 'NPS élevé, fidélité client, solide réputation',
+    sc_ip_barriers: 'PI / Barrières à l'Entrée',
+    sc_ip_barriers_desc: 'Brevets, technologie propriétaire, licences, fossés concurrentiels',
+    sc_mgmt_depth: "Profondeur de l'Équipe Dirigeante",
+    sc_mgmt_depth_desc: 'Équipe expérimentée et stable au-delà du fondateur',
+    sc_customer_div: 'Diversification Clients',
+    sc_customer_div_desc: "Aucun client représentant plus de 20 % du chiffre d'affaires",
+    // Income rows
+    row_rev: "Chiffre d'Affaires (Ventes)",
+    row_rev_growth: 'Taux de Croissance des Ventes (%)',
+    row_cogs: 'Dépenses en Matières et Services',
+    row_gp1: 'Marge Brute I',
+    row_gp1_margin: 'Taux de Marge Brute I (%)',
+    row_personnel: 'Charges de Personnel',
+    row_gp2: 'Marge Brute II',
+    row_gp2_margin: 'Taux de Marge Brute II (%)',
+    row_other_opex: "Autres Charges d'Exploitation",
+    row_other_opinc: "Autres Produits d'Exploitation",
+    row_ebitda: 'EBITDA',
+    row_ebitda_mg: "Marge d'EBITDA (%)",
+    row_da_fa: 'Amort. — Actifs Financiers',
+    row_da_lt: 'Amort. — Investissements LT',
+    row_da_ppe: 'Amort. — Immobilisations Corporelles',
+    row_da_prop: 'Amort. — Immeubles',
+    row_da_int: 'Amort. — Actifs Incorporels',
+    row_da: 'Total Amortissements & Dépréciations',
+    row_ebit: 'EBIT',
+    row_ebit_mg: "Marge d'EBIT (%)",
+    row_fin_exp: 'Charges Financières',
+    row_fin_inc: 'Produits Financiers',
+    row_op_bt: "Résultat d'Exploitation Avant Impôts",
+    row_non_op_inc: 'Produits Hors Exploitation',
+    row_extraordinary: 'Éléments Extraordinaires / Non Récurrents',
+    row_ebt: "Résultat Avant Impôts (EBT)",
+    row_tax: 'Impôts',
+    row_npat: 'Résultat Net',
+    // Balance rows
+    row_cash: 'Trésorerie & Équivalents',
+    row_receivables: 'Créances Clients',
+    row_other_ca: 'Autres Actifs Courants',
+    row_inventories: 'Stocks & Prestations en Cours',
+    row_prepayments: 'Charges Constatées & Produits à Recevoir',
+    row_current_assets: 'Actifs Courants',
+    row_fin_assets: 'Actifs Financiers',
+    row_lt_invest: 'Investissements à Long Terme',
+    row_ppe: 'Immobilisations Corporelles',
+    row_property: 'Immeubles & Bâtiments',
+    row_intangibles: 'Actifs Incorporels',
+    row_fixed_assets: 'Actifs Immobilisés',
+    row_assets: 'TOTAL ACTIF',
+    row_acc_payable: 'Dettes Fournisseurs',
+    row_st_debt: 'Dettes Financières Court Terme',
+    row_other_cl: 'Autres Passifs Courants',
+    row_deferred_inc: 'Produits Constatés & Charges à Payer',
+    row_st_liabs: 'Passifs Courants',
+    row_lt_debt: 'Dettes Financières Long Terme',
+    row_other_ll: 'Autres Passifs Long Terme',
+    row_provisions: 'Provisions & Éléments Similaires',
+    row_lt_liabs: 'Passifs Long Terme',
+    row_liabs: 'TOTAL PASSIF',
+    row_share_cap: 'Capital Social',
+    row_reserves: 'Réserves & Report à Nouveau',
+    row_net_inc_bs: 'Résultat Net (exercice en cours)',
+    row_equity: 'Capitaux Propres',
+    row_total_liabs_eq: 'PASSIF & CAPITAUX PROPRES',
+    row_debt: 'Dette Financière (Totale)',
+    row_shares: "Nombre d'Actions en Circulation",
+    row_nav_bs: 'Actif Net (Actif - Passif)',
+    // CF rows
+    row_capex: "Dépenses d'Investissement (CapEx)",
+    row_wcChange: 'Variation du Besoin en Fonds de Roulement',
+    row_lt_liab_chg: 'Variation des Passifs LT Non Financiers',
+    row_fcf_calc: 'Flux de Trésorerie Libre',
+    // Sections
+    section_revenue: 'Chiffre d'Affaires',
+    section_op_costs: "Charges d'Exploitation",
+    section_earnings: 'Résultats',
+    section_current_assets: 'Actifs Courants',
+    section_fixed_assets: 'Actifs Immobilisés',
+    section_current_liab: 'Passifs Courants',
+    section_lt_liab: 'Passifs Long Terme',
+    section_equity: 'Capitaux Propres',
+    section_key_inputs: 'Données Clés',
+    // IFRS badge
+    ifrs_badge: "Ce cadre de valorisation est structuré conformément aux principes et normes de présentation des états financiers basés sur les IFRS.",
+    ifrs_badge_short: "Ce cadre de valorisation est structuré conformément aux principes des états financiers basés sur les IFRS.",
+    // Assumption labels
+    assump_dcf: 'Hypothèses DCF',
+    assump_wacc: 'Composantes du WACC',
+    assump_multiples: 'Multiples — Groupe de Pairs',
+    assump_cap_pract: "Capitalisation des Résultats & Méthode du Praticien",
+    assump_g1: 'Taux de Croissance du CA (Année 1)',
+    assump_g2: 'Taux de Croissance du CA (Année 2)',
+    assump_g3: 'Taux de Croissance du CA (Année 3)',
+    assump_g45: 'Taux de Croissance du CA (Années 4–5)',
+    assump_tg: 'Taux de Croissance Terminal',
+    assump_margin: "Marge d'EBITDA (prévision)",
+    assump_capex_pct: '% CapEx / CA',
+    assump_wc: '% Variation BFR',
+    assump_rf: 'Taux Sans Risque',
+    assump_erp: 'Prime de Risque Actions',
+    assump_beta: 'Bêta (endetté)',
+    assump_cod: 'Coût de la Dette (avant impôt)',
+    assump_tax: "Taux d'Imposition",
+    assump_leverage: 'Dette / (Dette + Capitaux Propres)',
+    assump_wacc_calc: 'WACC (calculé)',
+    assump_ebitda_mult: "Multiple d'EBITDA (médian)",
+    assump_ebit_mult: "Multiple d'EBIT (médian)",
+    assump_rev_mult: 'Multiple de CA (médian)',
+    assump_pe_mult: 'Multiple P/E (médian)',
+    assump_mb_mult: 'Multiple Prix / Valeur Comptable',
+    assump_term_mult: 'Multiple VE/EBITDA Terminal',
+    assump_cap_rate: 'Taux de Capitalisation',
+    assump_pract_lo: 'Méthode du Praticien — Multiplicateur (bas)',
+    assump_pract_hi: 'Méthode du Praticien — Multiplicateur (haut)',
+    method_weights: 'Pondérations des Méthodes pour la VE Composite',
+    // Add-backs
+    addback_disc: 'Dépenses Discrétionnaires du Dirigeant',
+    addback_disc_hint: 'Voyages personnels, allocation voiture, avantages non professionnels',
+    addback_sal: 'Normalisation des Salaires',
+    addback_sal_hint: 'Différence entre la rémunération du dirigeant et le salaire de marché',
+    addback_one: 'Charges Ponctuelles / Non Récurrentes',
+    addback_one_hint: 'Litiges, rebranding, restructuration — non récurrent uniquement',
+    addback_oth: 'Autres Retraitements',
+    // Upload
+    upload_title: 'Importer les États Financiers',
+    upload_sub: 'Glisser-déposer ou cliquer pour parcourir — fichiers Excel ou PDF',
+    // Chart titles
+    chart_valuation_range: 'Plage de Valorisation — Toutes Méthodes',
+    chart_ev_composition: 'Composition de la VE (Composite)',
+    chart_bridge: 'Pont VE → Valeur des Capitaux Propres',
+    chart_history: 'CA & EBITDA Historiques',
+    chart_5yr_fcf: 'Projection des Flux de Trésorerie Libres sur 5 Ans',
+  }
+};
+
+function t(key) {
+  const lang = window.LANG || 'en';
+  return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS['en'][key] || key;
+}
+
+function setLang(lang) {
+  window.LANG = lang;
+  try { localStorage.setItem('vbp_lang', lang); } catch(e) {}
+  // Update toggle buttons
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+  document.getElementById('btnFR').classList.toggle('active', lang === 'fr');
+  // Update html lang attr
+  document.documentElement.lang = lang;
+  // Apply translations to all data-i18n elements
+  applyLang();
+  // Rebuild dynamic sections
+  rebuildDynamicContent();
+}
+
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) el.innerHTML = val;
+  });
+}
+
+function rebuildDynamicContent() {
+  // Rebuild scorecard (clear built flag)
+  const sw = document.getElementById('scorecardWrap');
+  if (sw) { sw.dataset.built = '0'; sw.innerHTML = ''; buildScorecard(); }
+  // Rebuild income / balance / CF rows
+  buildForms();
+  // Re-run recalc to refresh any dynamically generated text
+  recalc();
+}
+// ─────────────────────────────────────────────────────────────────
 // ── INIT ──
 window.addEventListener('DOMContentLoaded', () => {
   initConsentBanner();
   initAuth();
   buildForms();
+  // Apply saved language
+  if (window.LANG && window.LANG !== 'en') setLang(window.LANG); else applyLang();
   // Load Argos quarterly history from Supabase — runs async so it doesn't block auth
   loadArgosQuarterly();
 });
